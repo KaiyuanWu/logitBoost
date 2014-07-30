@@ -14,7 +14,7 @@
 
 class treeScalarDiretion:public directionFunction {
 public:
-    treeScalarDiretion(dataManager* data,int nLeaves, int minimumNodeSize, _TREE_TYPE_ treeType);
+    treeScalarDiretion(dataManager* data,int nLeaves, int minimumNodeSize, _TREE_TYPE_ treeType,int treeClass1,int treeClass2=-1);
     virtual ~treeScalarDiretion();
     void buildDirection();
     //Data Manager
