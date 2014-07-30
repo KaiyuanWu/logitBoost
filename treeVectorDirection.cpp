@@ -7,18 +7,14 @@
 
 #include <bitset>
 #include "treeVectorDirection.h"
+#include "treeScalarDirection.h"
 
 //arrays for node splitting
-double *leftSumG, *leftSumH;
-double *rightSumG, *rightSumH;
-double *leftSumG1, *leftSumH1;
-double *rightSumG1, *rightSumH1;
-double leftLoss,rightLoss;
-double leftLoss1,rightLoss1;
-int *classN;
-treeVectorDiretion::treeVectorDiretion(dataManager* data, int nLeaves) {
+treeVectorDiretion::treeVectorDiretion(dataManager* data,int nLeaves, int minimumNodeSize, _TREE_TYPE_ treeType) {
     _data = data;
     _nLeaves = nLeaves;
+    _minimumNodeSize=minimumNodeSize;
+    _treeType=treeType;
     if (_nLeaves < 2) {
         cout << "Number of terminate nodes is " << _nLeaves << ", change it to 2!" << endl;
         _nLeaves = 2;
@@ -33,15 +29,6 @@ treeVectorDiretion::treeVectorDiretion(dataManager* data, int nLeaves) {
     _indexMask     = new bitArray(_nEvents)   ;
     
     _zMax = 4.   ;
-    
-    leftSumG =new double[_nClass];
-    leftSumH =new double[_nClass];
-    rightSumG=new double[_nClass];
-    rightSumH=new double[_nClass];
-    leftSumG1 =new double[_nClass];
-    leftSumH1 =new double[_nClass];
-    rightSumG1=new double[_nClass];
-    rightSumH1=new double[_nClass];
 }
 
 void treeVectorDiretion::resetRootNode() {
@@ -73,9 +60,29 @@ treeVectorDiretion::NODE::NODE(dataManager* data, treeVectorDiretion* tree, int 
     _isInternal = false;
     //initialize the sumH, sumH array
     _nodeLoss=loss;
-    _nodeSumG=new double[_tree->_nClass];
-    _nodeSumH=new double[_tree->_nClass];
-    _purity=0.;
+    
+    switch(_tree->_treeType){
+        case _AOSO_LOGITBOOST_:
+            _nG=_nClass*_nClass;
+            break;
+        case _SLOGITBOOST_:
+            _nG=_nClass;
+            break;
+        default:
+            cout<<"This type of tree: "<<_treeType<<" has not been implmented!"<<endl;
+            exit(-1);
+    }
+    _nodeSumG=new double[_nG];
+    _nodeSumH=new double[_nG];
+    leftSumG =new double[_nG];
+    leftSumH =new double[_nG];
+    rightSumG=new double[_nG];
+    rightSumH=new double[_nG];
+    
+    leftSumG1 =new double[_nG];
+    leftSumH1 =new double[_nG];
+    rightSumG1=new double[_nG];
+    rightSumH1=new double[_nG];
 }
 
 treeVectorDiretion::NODE::~NODE() {
@@ -87,22 +94,24 @@ treeVectorDiretion::NODE::~NODE() {
     _rightChildNode = NULL;
     delete[] _nodeSumG;
     delete[] _nodeSumH;
+    
+    delete[] leftSumG ;
+    delete[] leftSumG1;
+    delete[] leftSumH ;
+    delete[] leftSumH1;
+    
+    delete[] rightSumG;
+    delete[] rightSumG1;
+    delete[] rightSumH ;
+    delete[] rightSumH1;
 }
 
-double treeVectorDiretion::evalp(double* s,int& iClass,bool printPurity) {
+double treeVectorDiretion::evalp(double* s,int& iClass) {
     NODE* n = _rootNode;
     while (n->_isInternal) {
         if (s[n->_iDimension] <= n->_cut) {
-            if (printPurity&&!n->_leftChildNode->_isInternal) {
-                cout << "Left " << n->_leftV << ", Right " << n->_rightV << " cut " << n->_cut << " x " << s[n->_iDimension] << "(" << n->_leftPoint << ", " << n->_rightPoint << ")" << endl;
-                cout << "Purity= " << n->_leftChildNode->_purity << ", base class= " << n->_leftChildNode->_class << ", c= " << iClass << endl;
-            }
             n = n->_leftChildNode;
         } else{
-            if (printPurity&&!n->_rightChildNode->_isInternal) {
-                cout << "Left " << n->_leftV << ", Right " << n->_rightV << " cut " << n->_cut << " x " << s[n->_iDimension] << "(" << n->_leftPoint << ", " << n->_rightPoint << ")" << endl;
-                cout << "Purity= " << n->_rightChildNode->_purity << ", base class= " << n->_rightChildNode->_class << ", c= " << iClass << endl;
-            }
             n = n->_rightChildNode;
         }
     }
@@ -117,14 +126,14 @@ void treeVectorDiretion::initNode() {
     n->_ableSplit  = true ;
     n->_additiveGain = 0. ;
     n->_nodeLoss=0;
-    memset(n->_nodeSumG,0,sizeof(double)*_nClass);
-    memset(n->_nodeSumH,0,sizeof(double)*_nClass);
+    memset(n->_nodeSumG,0,_nG);
+    memset(n->_nodeSumH,0,_nG);
 
     for (int iPoint = 0; iPoint < _nEvents; iPoint++) {
         n->_nodeLoss+=_data->_loss[iPoint];
-        for(int iClass=0;iClass<_nClass;iClass++){
-            n->_nodeSumG[iClass]+=_data->_lossGradient[iPoint*_nClass+iClass];
-            n->_nodeSumH[iClass]+=_data->_lossHessian[iPoint*_nClass+iClass];
+        for(int iG=0;iG<_nG;iG++){
+            n->_nodeSumG[iG]+=_data->_lossGradient[iPoint*_nG+iG];
+            n->_nodeSumH[iG]+=_data->_lossHessian[iPoint*_nG+iG];
         }
     }
     n->_iDimension=0;
@@ -139,38 +148,17 @@ void treeVectorDiretion::NODE::splitNode() {
     int maxI         = -1;
     int    iDimension;
     double bestC = 0.;
-    double bestLeftV,bestRightV;
-//////////////////////////////////////////////////
-//    cout<<"++++++++++++ Node("<<_leftPoint<<", "<<_rightPoint<<") Loss= "<<_nodeLoss<<" +++++++++++++++"<<endl;
-//    for(int iClass=0;iClass<_tree->_nClass;iClass++){
-//        cout<<"["<<_nodeSumG[iClass]<<", "<<_nodeSumH[iClass]<<"]"<<endl;
-//    }
-//    double* nodeSumG=new double[_tree->_nClass];
-//    double* nodeSumH=new double[_tree->_nClass];
-//    memset(nodeSumG,0,sizeof(double)*_tree->_nClass);
-//    memset(nodeSumH,0,sizeof(double)*_tree->_nClass);
-//    for(int iPoint=_leftPoint;iPoint<=_rightPoint;iPoint++){
-//        for(int iClass=0;iClass<_tree->_nClass;iClass++){
-//            nodeSumG[iClass]+=_data->_lossGradient[_tree->_dataIndex[0][iPoint]*_tree->_nClass+iClass];
-//            nodeSumH[iClass]+=_data->_lossHessian[_tree->_dataIndex[0][iPoint]*_tree->_nClass+iClass];
-//        }
-//    }
-//    cout<<"-----------------------"<<endl;
-//    for(int iClass=0;iClass<_tree->_nClass;iClass++){
-//        cout<<"["<<nodeSumG[iClass]<<", "<<nodeSumH[iClass]<<"]"<<endl;
-//    }
-//    
-//////////////////////////////////////////////////    
+    double bestLeftV,bestRightV;   
     
     int shift=_tree->_minimumNodeSize;
     
     for (iDimension = 0; iDimension < _tree->_nDimension; iDimension++) {
-        memset(leftSumG, 0,sizeof(double)*_tree->_nClass);
-        memset(leftSumH, 0,sizeof(double)*_tree->_nClass);
+        memset(leftSumG, 0,sizeof(double)*_nG);
+        memset(leftSumH, 0,sizeof(double)*_nG);
         leftLoss=0;
         rightLoss= _nodeLoss;
-        memcpy(rightSumG , _nodeSumG,sizeof(double)*_tree->_nClass);
-        memcpy(rightSumH , _nodeSumH,sizeof(double)*_tree->_nClass);
+        memcpy(rightSumG , _nodeSumG,sizeof(double)*_nG);
+        memcpy(rightSumH , _nodeSumH,sizeof(double)*_nG);
         
         splitPoint = _leftPoint;
         //get rid of the same value elements
@@ -178,13 +166,13 @@ void treeVectorDiretion::NODE::splitNode() {
         double cVal  = 1.e300   ;
         double leftV,rightV     ;
         for (splitPoint = _leftPoint; splitPoint < _leftPoint + shift; splitPoint++) {
-            for (int iClass = 0; iClass < _tree->_nClass; iClass++) {
+            for (int iG = 0; iG < _nG; iG++) {
                 double g,h;
-                g=_data->_lossGradient[_data->_dataIndex[iDimension][splitPoint]*_tree->_nClass+iClass];
-                h=_data->_lossHessian[_data->_dataIndex[iDimension][splitPoint]*_tree->_nClass+iClass];
+                g=_data->_lossGradient[_data->_dataIndex[iDimension][splitPoint]*_nG+iG];
+                h=_data->_lossHessian[_data->_dataIndex[iDimension][splitPoint]*_nG+iG];
                 
-                leftSumG[iClass]  += g; leftSumH[iClass]  += h;
-                rightSumG[iClass] -= g; rightSumH[iClass] -= h;
+                leftSumG[iG]  += g; leftSumH[iG]  += h;
+                rightSumG[iG] -= g; rightSumH[iG] -= h;
             }
             double l=_data->_loss[_data->_dataIndex[iDimension][splitPoint]];
             leftLoss  +=l; 
@@ -193,13 +181,12 @@ void treeVectorDiretion::NODE::splitNode() {
         for (splitPoint = _leftPoint + shift; splitPoint <=_rightPoint-shift; splitPoint++) {
             double x = _data->_trainX[_data->_dataIndex[iDimension][splitPoint] * _tree->_nDimension + iDimension];
 //            cout<<"Cut at "<<splitPoint<<": ";
-            for (int iClass = 0; iClass < _tree->_nClass; iClass++) {
+            for (int iG = 0; iG < _nG; iG++) {
                 double  g, h;
-                g=_data->_lossGradient[_data->_dataIndex[iDimension][splitPoint]*_tree->_nClass+iClass];
-                h=_data->_lossHessian[_data->_dataIndex[iDimension][splitPoint]*_tree->_nClass+iClass];
-                leftSumG[iClass]  += g; leftSumH[iClass]  += h;
-                rightSumG[iClass] -= g; rightSumH[iClass] -= h;
-//                cout<<"["<<g<<", "<<h<<"] ("<<leftSumH[iClass]<<", "<<rightSumH[iClass]<<"), ";
+                g=_data->_lossGradient[_data->_dataIndex[iDimension][splitPoint]*_nG+iG];
+                h=_data->_lossHessian[_data->_dataIndex[iDimension][splitPoint]*_nG+iG];
+                leftSumG[iG]  += g; leftSumH[iG]  += h;
+                rightSumG[iG] -= g; rightSumH[iG] -= h;
             }
 //            cout<<endl;
             double l=_data->_loss[_data->_dataIndex[iDimension][splitPoint]];
@@ -213,12 +200,12 @@ void treeVectorDiretion::NODE::splitNode() {
             postX = x                   ;
             cVal  = 0.5 * (x + postX)   ;
             double gain=-1.;
-            for(int ic=0;ic<_tree->_nClass;ic++) {
-                if (leftSumH[ic] == 0.||rightSumH[ic]==0.) {
+            for(int iG=0;iG<_nG;iG++) {
+                if (leftSumH[iG] == 0.||rightSumH[iG]==0.) {
                     cout << "Something is wrong! Hessian is 0 in [treeVectorDiretion::NODE::splitNode]" << endl;
                     exit(0);
                 }
-                double newgain=(leftSumG[ic] *leftSumG[ic]*rightSumH[ic]+rightSumG[ic]*rightSumG[ic]*leftSumH[ic])/(leftSumH[ic]*rightSumH[ic]);
+                double newgain=(leftSumG[iG] *leftSumG[iG]*rightSumH[iG]+rightSumG[iG]*rightSumG[iG]*leftSumH[iG])/(leftSumH[iG]*rightSumH[iG]);
                 if(newgain>gain)
                     gain=newgain;
             }
@@ -243,8 +230,6 @@ void treeVectorDiretion::NODE::splitNode() {
     if (maxI != -1) {
         _iDimension = maxDimension;
         _cut        = bestC;
-        _leftV      = bestLeftV;
-        _rightV     = bestRightV;
         _additiveGain =maxGain-_nodeGain;
         _tree->reArrange(this, maxI);
         
@@ -284,7 +269,7 @@ void treeVectorDiretion::reArrange(NODE* node, int splitPoint) {
             continue;
         for (int ip = splitPoint + 1; ip <= node->_rightPoint; ip++) {
             if (!_indexMask->set(_data->_dataReverseIndex[id][_data->_dataIndex[iDimension][ip]])) {
-                cout << "here here " << _shrinkage << ", " << _nLeaves << endl;
+                cout << "Fail to set the index mask!"<< endl;
                 exit(0);
             }
         }
@@ -312,23 +297,6 @@ void treeVectorDiretion::reArrange(NODE* node, int splitPoint) {
 treeVectorDiretion::~treeVectorDiretion() {
     delete _indexMask;
     delete  _rootNode;
-    
-    delete[] leftSumG ;
-    delete[] leftSumG1;
-    delete[] leftSumH ;
-    delete[] leftSumH1;
-    delete[] rightSumG;
-    delete[] rightSumG1;
-    delete[] rightSumH ;
-    delete[] rightSumH1;
-}
-
-void treeVectorDiretion::updateDirection() {
-    for (int iEvent = 0; iEvent < _data->_nTrainEvents; iEvent++)
-        eval(_data->_trainX + iEvent * _data->_nDimension, _data->_trainDescendingDirection + iEvent * _data->_nClass, iEvent,true);
-    for (int iEvent = 0; iEvent < _data->_nTestEvents; iEvent++)
-        eval(_data->_testX + iEvent * _data->_nDimension, _data->_testDescendingDirection + iEvent * _data->_nClass, iEvent,false);
-    resetRootNode();
 }
 
 bool treeVectorDiretion::NODE::printInfo(const char* indent, bool last) {
@@ -353,11 +321,11 @@ bool treeVectorDiretion::NODE::printInfo(const char* indent, bool last) {
     } else{
         if(!last){
             sprintf(rightS,"%s",indent);
-            printf("%s+-f= %f (%d,%d) Base Class= %d Purity=%f\n",rightS, _f, _leftPoint, _rightPoint,_class,_purity);
+            printf("%s+-f= %f (%d,%d)\n",rightS, _f, _leftPoint, _rightPoint);
         }
         else{
             sprintf(rightS,"%s",indent);
-            printf("%s|-f= %f (%d,%d) Base Class= %d Purity=%f\n",rightS, _f, _leftPoint, _rightPoint,_class,_purity);
+            printf("%s|-f= %f (%d,%d)\n",rightS, _f, _leftPoint, _rightPoint);
         }
         return true;
     }
@@ -366,15 +334,15 @@ bool treeVectorDiretion::NODE::printInfo(const char* indent, bool last) {
 void treeVectorDiretion::NODE::selectBestClass(){
     double maxG=0.;
     int maxIndex=-1;
-    for(int iClass=0;iClass<_tree->_nClass;iClass++){
-        if(_nodeSumH[iClass]==0.){
+    for(int iG=0;iG<_nG;iG++){
+        if(_nodeSumH[iG]<=0.){
             cout<<"Something is wrong! [treeVectorDiretion::NODE::selectBestClass]"<<endl;
-            exit(0);
+            continue;
         }
-        double gain=_nodeSumG[iClass]*_nodeSumG[iClass]/_nodeSumH[iClass];
+        double gain=_nodeSumG[iG]*_nodeSumG[iG]/_nodeSumH[iG];
         if(gain>=maxG){
             maxG=gain      ;
-            maxIndex=iClass;
+            maxIndex=iG;
         }
     }
     if(maxIndex!=-1)
@@ -383,19 +351,9 @@ void treeVectorDiretion::NODE::selectBestClass(){
         _class=0;
     _nodeGain=maxG;
     
-    for(int ip=_leftPoint;ip<=_rightPoint;ip++)
-        if(_data->_trainClass[_data->_dataIndex[_iDimension][ip]]==_class)
-            _purity++;
-    _purity/=(_rightPoint-_leftPoint+1.);
     if(maxIndex==-1){
         cout<<"All probabilities of this node are either 1 or 0!"<<endl;
         _ableSplit=false;
-        //possible guess for the node values
-        //original default value is 0
-//        if(_purity==1)
-//            _f=1.;
-//        else
-//            _f=-1.;
         _f=0.;
     }
     else {
@@ -411,16 +369,34 @@ void treeVectorDiretion::NODE::selectBestClass(){
     //cout<<"Node("<<_leftPoint<<", "<<_rightPoint<<") Loss= "<<_nodeLoss<<endl;
 }
 
-void treeVectorDiretion::eval(double* pnt, double* direction, int iEvent,bool isTrain) {
+void treeVectorDiretion::eval(double* pnt, double* direction) {
     double f;
-    int workingClass;
+    int workingClass, workingClass1, workingClass2;
     f = evalp(pnt,workingClass);
-    
-    for (int iClass = 0.; iClass < _nClass; iClass++) {
-        if(iClass==workingClass)
-            direction[iClass]=(_nClass-1.)*f;
-        else
-            direction[iClass]=-f;
+    workingClass1=workingClass/_nClass;
+    workingClass2=workingClass%_nClass;
+    switch(_treeType){
+        case _AOSO_LOGITBOOST_:
+            for (int iClass = 0.; iClass < _nClass; iClass++) {
+                if (iClass == workingClass)
+                    direction[iClass] = (_nClass - 1.) * f;
+                else
+                    direction[iClass] = -f;
+            }    
+            break;
+        case _SLOGITBOOST_:
+            for (int iClass = 0.; iClass < _nClass; iClass++) {
+                if (iClass == workingClass1)
+                    direction[iClass] =  f;
+                else if(iClass == workingClass2)
+                    direction[iClass] = -f;
+                else
+                    direction[iClass] = 0;
+            } 
+            break;
+        default:
+            cout<<"This tree type "<<_treeType<<" has not been implemented!"<<endl;
+            break;
     }
 }
 

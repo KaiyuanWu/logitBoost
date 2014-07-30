@@ -14,11 +14,10 @@
 
 class treeVectorDiretion:public directionFunction {
 public:
-    treeVectorDiretion(dataManager* data,int nLeaves);
+    treeVectorDiretion(dataManager* data,int nLeaves, int minimumNodeSize, _TREE_TYPE_ treeType);
     virtual ~treeVectorDiretion();
     void eval(double* pnt, double* direction,int iEvent=-1,bool isTrain=true);
     void buildDirection();
-    void updateDirection();
     //Data Manager
     dataManager* _data;
     void printInfo(){
@@ -47,9 +46,6 @@ private:
         bool _isInternal;
         int _iDimension;
         double _cut;
-        double _leftV;
-        double _rightV;
-        double _purity;
         //current working class
         int _class;
         //regression value of current node
@@ -62,6 +58,15 @@ private:
         bool printInfo(const char* indent,bool last);
         //select best working class
         void selectBestClass();
+
+        //variables for node split
+        double *leftSumG, *leftSumH;
+        double *rightSumG, *rightSumH;
+        double *leftSumG1, *leftSumH1;
+        double *rightSumG1, *rightSumH1;
+        double leftLoss, rightLoss;
+        double leftLoss1, rightLoss1;
+        
     };
     
     bitArray* _indexMask;
@@ -70,11 +75,11 @@ private:
     //tree array for different classes
     NODE* _rootNode;
     //tree evaluation
-    double evalp(double* s,int &iClass,bool printPurity=false);
+    double evalp(double* s,int& iClass);
     //initialize root nodes
     void initNode();
     void reArrange(NODE* node, int splitPoint);
-    
+    int _nG;
 };
 
 
