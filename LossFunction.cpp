@@ -12,7 +12,6 @@ LossFunction::LossFunction(_LOSSTYPE lossType,int nDimension,int nClass) {
     _nDimension=nDimension;
     _nClass=nClass;
     _MIN_HESSIAN_=1.e-300;
-    _C=0.;
 }
 
 LossFunction::~LossFunction() {
@@ -99,20 +98,16 @@ double LossFunction::lossabcLogitNewton(double* f, int y, int c1,int c2, double&
     else
         loss=100;
     gradient=0;
-    if(y==c1){
+    if(y==c1)
         gradient+=pc1-1;
-    }
-    else{
+    else
         gradient+=pc1;
-    }
     if(y==c2)
         gradient-=(pc2-1);
     else
         gradient-=pc2;
-    gradient+=2*_C*(f[c1]-f[c2]);
     gradient*=-1;
     hessian=pc1*(1.-pc1)+pc2*(1.-pc2)+2.*pc1*pc2;
-    hessian+=4*_C;
     if(hessian<_MIN_HESSIAN_)
         hessian=_MIN_HESSIAN_;
     return loss;

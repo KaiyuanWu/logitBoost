@@ -17,7 +17,6 @@ public:
     LossFunction(_LOSSTYPE lossType,int nDimension,int nClass);
     virtual ~LossFunction();
     double loss(double*f,int y,double& gradient, double& hessian, int c1, int c2=-1);
-    double _C;
 private:
     _LOSSTYPE _lossType;
     int _nDimension;

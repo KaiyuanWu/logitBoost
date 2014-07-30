@@ -16,6 +16,7 @@ public:
     virtual void eval(double* pnt, double* direction)= 0;
     virtual void buildDirection()= 0;
     virtual ~directionFunction();
+    enum _GAIN_TYPE_{_NEWTON_GAIN_=0,_GAIDIENT_GAIN_};
     
 public:
     int _nDimension;
@@ -27,6 +28,7 @@ public:
     double _zMax;
     //bagging probability
     double _minimumNodeSize;
+    _GAIN_TYPE_ _gainType;
 private:
     
 };
