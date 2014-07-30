@@ -6,7 +6,7 @@
  */
 
 #include "linearSearch.h"
-#include "treeSingleDirection.h"
+#include "treeVectorDirection.h"
 linearSearch::linearSearch(dataManager*  data,int nLeaves, double shrinkage, int minimumNodeSize){
     _data=data  ;
     _nLeaves=nLeaves;

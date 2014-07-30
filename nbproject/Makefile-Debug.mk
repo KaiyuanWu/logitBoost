@@ -43,7 +43,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/evaluation.o \
 	${OBJECTDIR}/linearSearch.o \
 	${OBJECTDIR}/main.o \
-	${OBJECTDIR}/treeSingleDirection.o
+	${OBJECTDIR}/treeVectorDirection.o
 
 
 # C Compiler Flags
@@ -110,10 +110,10 @@ ${OBJECTDIR}/main.o: main.cpp
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
 
-${OBJECTDIR}/treeSingleDirection.o: treeSingleDirection.cpp 
+${OBJECTDIR}/treeVectorDirection.o: treeVectorDirection.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/treeSingleDirection.o treeSingleDirection.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/treeVectorDirection.o treeVectorDirection.cpp
 
 # Subprojects
 .build-subprojects:
