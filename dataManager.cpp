@@ -31,6 +31,20 @@ void dataManager::allocateDataSpace() {
         _lossGradient=new double[_nTrainEvents*_nClass];
         _lossHessian=new double[_nTrainEvents*_nClass];
         _trainClass=new int[_nTrainEvents];
+
+        _projectedX = new double[_nTrainEvents];
+        _dataIndex = new int*[_nDimension];
+        _dataIndex0 = new int*[_nDimension];
+        _dataReverseIndex = new int*[_nDimension];
+        _dataReverseIndex0 = new int*[_nDimension];
+        _dataIndexTemp = new int[_nTrainEvents];
+        
+        for (int iDimension = 0; iDimension < _nDimension; iDimension++) {
+            _dataIndex[iDimension] = new int[_nTrainEvents];
+            _dataIndex0[iDimension] = new int[_nTrainEvents];
+            _dataReverseIndex[iDimension] = new int[_nTrainEvents];
+            _dataReverseIndex0[iDimension] = new int[_nTrainEvents];
+        }
     }
     
     if (_nTestEvents > 0) {
@@ -113,6 +127,20 @@ dataManager::~dataManager() {
         delete[] _loss;
         delete[] _lossGradient;
         delete[] _lossHessian;
+
+        delete[] _projectedX;
+        delete[] _dataIndexTemp;
+
+        for (int iDimension = 0; iDimension < _nDimension; iDimension++) {
+            delete[] _dataIndex[iDimension];
+            delete[] _dataIndex0[iDimension];
+            delete[] _dataReverseIndex[iDimension];
+            delete[] _dataReverseIndex0[iDimension];
+        }
+        delete[] _dataIndex;
+        delete[] _dataIndex0;
+        delete[] _dataReverseIndex;
+        delete[] _dataReverseIndex0;
     }
     if (_nTestEvents > 0) {
         delete[] _testDescendingDirection;
@@ -134,6 +162,23 @@ void dataManager::finishAddingEvent(){
     if(_trainCurrentEvent<_nTrainEvents){
         cout<<"You have added "<<_trainCurrentEvent<<" training events, which is less than "<<_nTrainEvents<<endl;
         _nTrainEvents=_trainCurrentEvent;
+        for (int iDimension = 0; iDimension < _nDimension; iDimension++) {
+            for (int iEvent = 0; iEvent < _nTrainEvents; iEvent++) {
+                _projectedX[iEvent] = _trainX[iEvent * _nDimension + iDimension];
+                _dataIndex0[iDimension][iEvent] = iEvent;
+            }
+            sort(0, _nTrainEvents - 1, iDimension, true);
+            //store reverse data index table
+            for (int iEvent = 0; iEvent < _nTrainEvents; iEvent++)
+                _dataReverseIndex0[iDimension][_dataIndex0[iDimension][iEvent]] = iEvent;
+        }
+        ////print sort result
+        //    for (int iDimension = 0; iDimension < _nDimension; iDimension++) {
+        //        for (int iEvent = 0; iEvent < _nEvents; iEvent++) {
+        //            cout<<_data->_trainX[_dataIndex0[iDimension][iEvent] * _nDimension + iDimension]<<", ";
+        //        }
+        //        cout<<endl;
+        //    }
     }
     if(_testCurrentEvent<_nTestEvents){
         cout<<"You have added "<<_testCurrentEvent<<" validating events, which is less than "<<_nTestEvents<<endl;
@@ -170,18 +215,18 @@ void  dataManager::increment(double shrinkage,directionFunction* df,int iRound) 
     _trainLoss=0.;
     _testLoss=0.;
     for(int iEvent=0;iEvent<_nTrainEvents;iEvent++){
-       _maxF=-1.e300;
-       _maxI=-1;
+       double maxF=-1.e300;
+       int maxI=-1;
        for(int iClass=0;iClass<_nClass;iClass++){
            _trainF[iEvent*_nClass+iClass]+=shrinkage*_trainDescendingDirection[iEvent*_nClass+iClass];
-           if(_maxF<_trainF[iEvent*_nClass+iClass]){
-               _maxF=_trainF[iEvent*_nClass+iClass];
-               _maxI=iClass;
+           if(maxF<_trainF[iEvent*_nClass+iClass]){
+               maxF=_trainF[iEvent*_nClass+iClass];
+               maxI=iClass;
            }
        }
        for (int iClass = 0; iClass < _nClass; iClass++) {
             if (_trainClass[iEvent] == iClass) {
-                if (_maxI == iClass){
+                if (maxI == iClass){
                     _correctNew[iClass]++;
                     _trainCorrectClassification++;
                 }
@@ -202,18 +247,18 @@ void  dataManager::increment(double shrinkage,directionFunction* df,int iRound) 
     }
     //_trainLoss/=_nTrainEvents;
     for (int iEvent = 0; iEvent < _nTestEvents; iEvent++) {
-        _maxF = -1.e300;
-        _maxI = -1;
+        double maxF = -1.e300;
+        double maxI = -1;
         for (int iClass = 0; iClass < _nClass; iClass++){
             _testF[iEvent * _nClass + iClass] += shrinkage * _testDescendingDirection[iEvent * _nClass + iClass];
-            if(_maxF<_testF[iEvent * _nClass + iClass]){
-                _maxF=_testF[iEvent * _nClass + iClass];
-                _maxI=iClass;
+            if(maxF<_testF[iEvent * _nClass + iClass]){
+                maxF=_testF[iEvent * _nClass + iClass];
+                maxI=iClass;
             }
         }
         for (int iClass = 0; iClass < _nClass; iClass++) {
             if (_testClass[iEvent] == iClass) {
-                if (_maxI == iClass){
+                if (maxI == iClass){
                     _correctNewTest[iClass]++;
                     _testCorrectClassification++;
                 }
@@ -262,5 +307,47 @@ void  dataManager::increment(double shrinkage,directionFunction* df,int iRound) 
             _correctOldTest[iClass] = _correctNewTest[iClass];
             _wrongOldTest[iClass] = _wrongNewTest[iClass];
         }
+    }
+}
+void dataManager::sort(int low, int high, int iDimension, bool atInit) {
+    if (low >= high)
+        return;
+    //copy the low,high values
+    int _low = low;
+    int _high = high;
+    int currentPoint;
+    int middlePoint = (_low + _high) / 2;
+    while (_low < _high) {
+        swap((_low + _high) / 2, _low, iDimension, atInit);
+        currentPoint = _low;
+        for (int i = _low + 1; i <= _high; i++) {
+            if (_projectedX[i] < _projectedX[_low]) {
+                currentPoint++;
+                swap(currentPoint, i, iDimension, atInit);
+            }
+        }
+        swap(_low, currentPoint, iDimension, atInit);
+        if (currentPoint <= middlePoint) _low = currentPoint + 1;
+        if (currentPoint >= middlePoint) _high = currentPoint - 1;
+    }
+    sort(low, middlePoint - 1, iDimension, atInit);
+    sort(middlePoint + 1, high, iDimension, atInit);
+}
+
+
+void dataManager::swap(int i, int j, int iDimension, bool atInit) {
+    if (i == j)
+        return;
+    double temp = _projectedX[i];
+    _projectedX[i] = _projectedX[j];
+    _projectedX[j] = temp;
+    if (atInit) {
+        int tempIndex = _dataIndex0[iDimension][i];
+        _dataIndex0[iDimension][i] = _dataIndex0[iDimension][j];
+        _dataIndex0[iDimension][j] = tempIndex;
+    } else {
+        int tempIndex = _dataIndex[iDimension][i];
+        _dataIndex[iDimension][i] = _dataIndex[iDimension][j];
+        _dataIndex[iDimension][j] = tempIndex;
     }
 }

@@ -63,23 +63,8 @@ private:
         //select best working class
         void selectBestClass();
     };
-    //temp array for projected data
-    double* _projectedX;
-    //original index of the sorted array
-    int** _dataIndex;
-    //reverse index table
-    int** _dataReverseIndex;
-    //index of all original data
-    int** _dataIndex0;
-    //reverse index table;
-    int** _dataReverseIndex0;
-    int* _dataIndexTemp;
-    bitArray* _indexMask;
-    //recursively sort the projected data
-    void sort(int low,int high,int iDimension,bool atInit=false);
-    void swap(int i,int j,int iDimension,bool atInit=false);
-    void reArrange(NODE* node,int splitPoint);
     
+    bitArray* _indexMask;
     //recursively reset the root node;
     void resetRootNode();
     //tree array for different classes
@@ -88,7 +73,7 @@ private:
     double evalp(double* s,int &iClass,bool printPurity=false);
     //initialize root nodes
     void initNode();
-    
+    void reArrange(NODE* node, int splitPoint);
 
 };
 

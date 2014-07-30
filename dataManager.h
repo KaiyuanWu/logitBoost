@@ -17,14 +17,10 @@
 
 using namespace std;
 //dataManager class will be served as a pure memory class
-//it will not write/read any data into disk
-//The reason for this kind of design is to avoid difficulties when using openMP
-//From here, we will assume all dimension are continuous double type
-//Although we have all data information in the upper level class, this class seems to have a duplicate copy of data
-//But when implement the openMP, it will have some advantages
+//dataManager stores training data & testing data, the order information of the samples, the classifier values of the sample and the discending directions and the gradients&hessian of the samples.
 class dataManager {
 public:
-    dataManager(int nDimension,int nClass, LossFunction::_LOSSTYPE lossType, LossFunction::_PHIFUNCTION phiFunction, int nTrainEvent,int nTestEvent=0);
+    dataManager(int nDimension,int nClass, LossFunction::_LOSSTYPE lossType, int nTrainEvent,int nTestEvent=0);
     //adding training event, after adding training events, and initialize the logist p/F
     void   addEvent(double* event,int iclass)   ;
     //adding validating event, after adding validating events, and initialize the logist p/F
@@ -35,27 +31,50 @@ public:
     //allocate data space
     void   allocateDataSpace() ;
     //increment the logist p/F
-    void   increment(double shrinkage,directionFunction* df,int iRound=0) ;
+    void   increment(double shrinkage,int iRound=0) ;
     virtual ~dataManager() ;
 
     //space for training data
+    //training features
     double* _trainX;
-    int* _trainClass;    
+    //training labels
+    int* _trainClass;
+    //discending directions of training samples
     double* _trainDescendingDirection;    
+    //classifiers values of the training samples
     double* _trainF;
-    
+    //gradient and hessian values of the training samples
     double* _lossGradient;
     double* _lossHessian;
+    //loss value of each sample
     double* _loss;
+    //total training loss
     double  _trainLoss;
     int  _trainCurrentEvent;
     double   _trainAccuracy             ;
     int      _trainCorrectClassification;
-
+    //orders information of the training samples
+    //original index of the sorted array
+    int** _dataIndex;
+    //reverse index table
+    int** _dataReverseIndex;
+    //index of all original data
+    int** _dataIndex0;
+    //reverse index table;
+    int** _dataReverseIndex0;
+    //temporary array
+    int* _projectedX;
+    int* _dataIndexTemp;
+    
+    
     //space for testing data
+    //features of test samples
     double* _testX;
+    //labels of test samples
     int* _testClass;
+    //discending directions of test samples
     double* _testDescendingDirection;   
+    //classifier values of test samples
     double* _testF;
     
     int _testCurrentEvent;
@@ -68,10 +87,7 @@ public:
     int _nTrainEvents;
     int _nTestEvents;
     
-public:
-    //some variable for calculating the accuracy
-    double _maxF;
-    int    _maxI;
+private:
     //correct/wrongly classified number of training events
     int* _correctOld;
     int* _correctNew;
@@ -82,10 +98,13 @@ public:
     int* _correctNewTest;
     int* _wrongOldTest;
     int* _wrongNewTest;
-    
 
     LossFunction* _lossFunction;
     //costSensitiveLossFunction* _lossFunction;
+    
+    //recursively sort the projected data
+    void sort(int low,int high,int iDimension,bool atInit=false);
+    void swap(int i,int j,int iDimension,bool atInit=false);
 
 };
 #endif	/* DATAMANAGER_H */
