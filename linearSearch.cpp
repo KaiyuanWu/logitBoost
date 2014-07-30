@@ -6,12 +6,13 @@
  */
 
 #include "linearSearch.h"
+#include "treeScaleDirection.h"
 #include "treeVectorDirection.h"
 linearSearch::linearSearch(dataManager*  data,int nLeaves, double shrinkage, int minimumNodeSize){
     _data=data  ;
     _nLeaves=nLeaves;
     _shrinkage=shrinkage;
-    _df=new treeSingleDirection(data,_nLeaves);
+    _df=new treeScaleDirection(data,_nLeaves);
     if(minimumNodeSize==0)
         _df->_minimumNodeSize=1;
     else 
@@ -26,8 +27,12 @@ linearSearch::~linearSearch() {
 double linearSearch::minimization(int iRound){
     double ret=0.;
     _df->buildDirection();
-    _df->updateDirection();
+    updateDirection();
     _data->increment(_shrinkage, _df, iRound);
     ret = _data->_trainAccuracy;
     return ret;
+}
+
+void linearSearch::updateDirection(){
+    
 }

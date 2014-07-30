@@ -26,6 +26,7 @@ public:
     
     directionFunction* _df;
     dataManager*  _data;
+    void updateDirection();
     
 private:
     
