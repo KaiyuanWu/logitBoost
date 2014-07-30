@@ -74,7 +74,7 @@ private:
     //initialize root nodes
     void initNode();
     void reArrange(NODE* node, int splitPoint);
-
+    
 };
 
 

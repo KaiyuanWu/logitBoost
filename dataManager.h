@@ -99,6 +99,7 @@ private:
     int* _wrongOldTest;
     int* _wrongNewTest;
 
+    LossFunction::_LOSSTYPE _lossType;
     LossFunction* _lossFunction;
     //costSensitiveLossFunction* _lossFunction;
     
