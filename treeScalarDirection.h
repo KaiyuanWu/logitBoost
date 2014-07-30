@@ -1,5 +1,5 @@
 /* 
- * File:   treeScaleDirection.h
+ * File:   treeScalarDiretion.h
  * Author: kaiwu
  *
  * Created on March 16, 2014, 11:22 PM
@@ -12,14 +12,15 @@
 #include "LossFunction.h"
 #include "bitArray.h"
 
-class treeScaleDirection:public directionFunction {
+class treeScalarDiretion:public directionFunction {
 public:
-    treeScaleDirection(dataManager* data,int nLeaves,int treeClass);
-    virtual ~treeScaleDirection();
+    treeScalarDiretion(dataManager* data,int nLeaves, int minimumNodeSize, _TREE_TYPE_ treeType);
+    virtual ~treeScalarDiretion();
     void buildDirection();
     //Data Manager
     dataManager* _data;
-    int _treeClass;
+    int _treeClass1;
+    int _treeClass2;
     void printInfo(){
         //_rootNode->printInfo("",true);
     }
@@ -30,7 +31,7 @@ public:
 private:
     class NODE{
     public:
-        NODE(dataManager* data,treeScaleDirection* tree,int leftPoint,int rightPoint);
+        NODE(dataManager* data,treeScalarDiretion* tree,int leftPoint,int rightPoint);
         ~NODE();
         int _leftPoint;
         int _rightPoint;
@@ -52,7 +53,7 @@ private:
         double _f;
         bool _ableSplit;
         dataManager* _data;
-        treeScaleDirection* _tree;
+        treeScalarDiretion* _tree;
         void bestNode(NODE*& n,double& gain);
         void splitNode();
         bool printInfo(const char* indent,bool last);

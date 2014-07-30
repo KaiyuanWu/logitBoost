@@ -1,5 +1,5 @@
 /*
- * File:   treeScaleDirection.cpp
+ * File:   treeScalarDiretion.cpp
  * Author: kaiwu
  *
  * Created on March 16, 2014, 11:22 PM
@@ -7,7 +7,7 @@
 
 #include <bitset>
 #include <iostream>
-#include "treeScaleDirection.h"
+#include "treeScalarDirection.h"
 
 using namespace std;
 
@@ -16,7 +16,7 @@ double rightSumG,rightSumH;
 double leftSumG1,leftSumH1;
 double rightSumG1,rightSumH1;
 
-treeScaleDirection::treeScaleDirection(dataManager* data, int nLeaves,int treeClass) {
+treeScalarDiretion::treeScalarDiretion(dataManager* data,int nLeaves, int minimumNodeSize, _TREE_TYPE_ treeType) {
     _data = data;
     _nLeaves = nLeaves;
     if (_nLeaves < 2) {
@@ -43,7 +43,7 @@ treeScaleDirection::treeScaleDirection(dataManager* data, int nLeaves,int treeCl
 //    }
     _zMax = 4.   ;
 }
-void treeScaleDirection::resetRootNode() {
+void treeScalarDiretion::resetRootNode() {
     if (_rootNode) {
         if (_rootNode->_leftChildNode)
             delete _rootNode->_leftChildNode;
@@ -56,7 +56,7 @@ void treeScaleDirection::resetRootNode() {
     }
 }
 
-treeScaleDirection::NODE::NODE(dataManager* data, treeScaleDirection* tree, int leftPoint, int rightPoint) {
+treeScalarDiretion::NODE::NODE(dataManager* data, treeScalarDiretion* tree, int leftPoint, int rightPoint) {
     _additiveGain = 0.;
     _data = data;
     _tree = tree;
@@ -72,7 +72,7 @@ treeScaleDirection::NODE::NODE(dataManager* data, treeScaleDirection* tree, int 
     _isInternal = false;
 }
 
-treeScaleDirection::NODE::~NODE() {
+treeScalarDiretion::NODE::~NODE() {
     if (_leftChildNode)
         delete _leftChildNode;
     _leftChildNode = NULL;
@@ -81,7 +81,7 @@ treeScaleDirection::NODE::~NODE() {
     _rightChildNode = NULL;
 }
 
-double treeScaleDirection::eval(double* s) {
+double treeScalarDiretion::eval(double* s) {
     NODE* n = _rootNode;
     while (n->_isInternal) {
         if (s[n->_iDimension] <= n->_cut) {
@@ -95,7 +95,7 @@ double treeScaleDirection::eval(double* s) {
 
 //initialization of a given node
 
-void treeScaleDirection::initNode() {
+void treeScalarDiretion::initNode() {
     NODE* n = _rootNode;
     //calculate the gain
     n->_isInternal = false;
@@ -114,7 +114,7 @@ void treeScaleDirection::initNode() {
     n->calculateF();
 }
 
-void treeScaleDirection::NODE::splitNode() {
+void treeScalarDiretion::NODE::splitNode() {
     int splitPoint;
     //initialization
     double maxGain   = _nodeGain;
@@ -211,7 +211,7 @@ void treeScaleDirection::NODE::splitNode() {
     _ableSplit = false;
 }
 
-void treeScaleDirection::reArrange(NODE* node, int splitPoint) {
+void treeScalarDiretion::reArrange(NODE* node, int splitPoint) {
     int iDimension = node->_iDimension;
     for (int id = 0; id < _nDimension; id++) {
         _indexMask->reset(node->_leftPoint, node->_rightPoint);
@@ -245,12 +245,12 @@ void treeScaleDirection::reArrange(NODE* node, int splitPoint) {
     }
 }
 
-treeScaleDirection::~treeScaleDirection() {
+treeScalarDiretion::~treeScalarDiretion() {
     delete _indexMask;
     delete  _rootNode;
 }
 
-bool treeScaleDirection::NODE::printInfo(const char* indent, bool last) {
+bool treeScalarDiretion::NODE::printInfo(const char* indent, bool last) {
     bool ret;
     char leftS[1024];
     char rightS[1024];
@@ -282,7 +282,7 @@ bool treeScaleDirection::NODE::printInfo(const char* indent, bool last) {
     }
     return ret;
 }
-void treeScaleDirection::NODE::calculateF(){
+void treeScalarDiretion::NODE::calculateF(){
     if(_nodeSumH>0)
         _nodeGain=_nodeSumG * _nodeSumG/_nodeSumH;
     else
@@ -303,7 +303,7 @@ void treeScaleDirection::NODE::calculateF(){
     }
 }
 
-void treeScaleDirection::buildDirection() {
+void treeScalarDiretion::buildDirection() {
     _round++;
     for (int iDimension = 0; iDimension < _nDimension; iDimension++) {
         memcpy(_data->_dataIndex[iDimension], _data->_dataIndex0[iDimension], _nEvents * sizeof (int));
@@ -321,7 +321,7 @@ void treeScaleDirection::buildDirection() {
     }
 }
 
-void treeScaleDirection::NODE::bestNode(NODE*& n, double& gain) {
+void treeScalarDiretion::NODE::bestNode(NODE*& n, double& gain) {
     //if this node has not been split
     if (_ableSplit)
         splitNode();

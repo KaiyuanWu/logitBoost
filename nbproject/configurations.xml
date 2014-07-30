@@ -33,8 +33,8 @@
     <itemPath>evaluation.h</itemPath>
     <itemPath>linearSearch.cpp</itemPath>
     <itemPath>linearSearch.h</itemPath>
-    <itemPath>treeScaleDirection.cpp</itemPath>
-    <itemPath>treeScaleDirection.h</itemPath>
+    <itemPath>treeScalarDirection.cpp</itemPath>
+    <itemPath>treeScalarDirection.h</itemPath>
     <itemPath>treeVectorDirection.cpp</itemPath>
     <itemPath>treeVectorDirection.h</itemPath>
   </logicalFolder>
@@ -78,9 +78,9 @@
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="treeScaleDirection.cpp" ex="false" tool="1" flavor2="0">
+      <item path="treeScalarDirection.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="treeScaleDirection.h" ex="false" tool="3" flavor2="0">
+      <item path="treeScalarDirection.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="treeVectorDirection.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -137,9 +137,9 @@
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="treeScaleDirection.cpp" ex="false" tool="1" flavor2="0">
+      <item path="treeScalarDirection.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="treeScaleDirection.h" ex="false" tool="3" flavor2="0">
+      <item path="treeScalarDirection.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="treeVectorDirection.cpp" ex="false" tool="1" flavor2="0">
       </item>

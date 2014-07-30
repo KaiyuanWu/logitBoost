@@ -16,19 +16,18 @@ public:
     virtual void eval(double* pnt, double* direction)= 0;
     virtual void buildDirection()= 0;
     virtual ~directionFunction();
-    enum _GAIN_TYPE_{_NEWTON_GAIN_=0,_GAIDIENT_GAIN_};
+    enum _TREE_TYPE_{_LOGITBOOST_=0,_ABC_LOGITBOOST_,_MART_,_AOSO_LOGITBOOST_,_SLOGITBOOST_};
     
 public:
     int _nDimension;
     int _nClass;
     int _nEvents;
-    int _round;
-    int _nLeaves;
-    double _shrinkage;
     double _zMax;
+    int _round;
     //bagging probability
-    double _minimumNodeSize;
-    _GAIN_TYPE_ _gainType;
+    int _nLeaves;
+    int _minimumNodeSize;
+    _TREE_TYPE_ _treeType;
 private:
     
 };

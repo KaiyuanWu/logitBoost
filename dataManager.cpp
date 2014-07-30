@@ -8,7 +8,7 @@
 #include <string.h>
 #include "dataManager.h"
 
-dataManager::dataManager(int nDimension,int nClass,LossFunction::_LOSSTYPE lossType, LossFunction::_PHIFUNCTION phiFunction, int nTrainEvent,int nTestEvent){
+dataManager::dataManager(int nDimension,int nClass,LossFunction::_LOSSTYPE lossType,  int nTrainEvent,int nTestEvent){
     _nTrainEvents=nTrainEvent;
     _nTestEvents=nTestEvent;
     _nDimension=nDimension;

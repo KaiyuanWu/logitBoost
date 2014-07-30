@@ -43,7 +43,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/evaluation.o \
 	${OBJECTDIR}/linearSearch.o \
 	${OBJECTDIR}/main.o \
-	${OBJECTDIR}/treeScaleDirection.o \
+	${OBJECTDIR}/treeScalarDirection.o \
 	${OBJECTDIR}/treeVectorDirection.o
 
 
@@ -111,10 +111,10 @@ ${OBJECTDIR}/main.o: main.cpp
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
 
-${OBJECTDIR}/treeScaleDirection.o: treeScaleDirection.cpp 
+${OBJECTDIR}/treeScalarDirection.o: treeScalarDirection.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/treeScaleDirection.o treeScaleDirection.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/treeScalarDirection.o treeScalarDirection.cpp
 
 ${OBJECTDIR}/treeVectorDirection.o: treeVectorDirection.cpp 
 	${MKDIR} -p ${OBJECTDIR}
