@@ -50,7 +50,6 @@ linearSearch::linearSearch(dataManager*  data,int nLeaves,double shrinkage,int m
     _G=20;
     _baseClass=0;
     _F=new double[_nClass];
-
 }
 linearSearch::~linearSearch() {
     for(int id=0;id<_nDirection;id++)
@@ -98,7 +97,12 @@ void linearSearch::updateDirection2() {
                 for (int iClass2 = 0; iClass2 < _nClass; iClass2++) {
                     if (iClass1 == iClass2)
                         continue;
-                    _F[iClass2] = _data->_trainF[iEvent * _nClass + iClass2] + _shrinkage * _df[iClass1 * _nClass + iClass2]->eval(_data->_trainX + iEvent * _nDimension);
+                    if(iClass1<iClass2)
+                        _F[iClass2] = _data->_trainF[iEvent * _nClass + iClass2] + 
+                                _shrinkage * _df[iClass1 * _nClass + iClass2]->eval(_data->_trainX + iEvent * _nDimension);
+                    else
+                        _F[iClass2] = _data->_trainF[iEvent * _nClass + iClass2] - 
+                                _shrinkage * _df[iClass1 * _nClass + iClass2]->eval(_data->_trainX + iEvent * _nDimension);
                     sumF += _F[iClass2];
                     if (_F[iClass2] < maxF)
                         maxF = _F[iClass2];
@@ -137,7 +141,11 @@ void linearSearch::updateDirection2() {
         for (int iClass = 0; iClass < _nClass; iClass++) {
             if (iClass == _baseClass)
                 continue;
-            double d = _df[_baseClass * _nClass + iClass]->eval(_data->_testX + iEvent * _nDimension);
+            double d;
+            if(iClass<_baseClass)
+                d= -1.*_df[_baseClass * _nClass + iClass]->eval(_data->_testX + iEvent * _nDimension);
+            else
+                d=_df[_baseClass * _nClass + iClass]->eval(_data->_testX + iEvent * _nDimension);
             _data->_testDescendingDirection[iEvent * _nClass + iClass] = d;
             sumD += d;
         }
