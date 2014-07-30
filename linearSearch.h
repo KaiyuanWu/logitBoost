@@ -21,11 +21,13 @@ public:
     
     double minimization(int iRound=0);
     //parameter for training
-    int _nLeaves;
-    int _minimumNodeSize;
-    double _shrinkage;
     directionFunction::_TREE_TYPE_ _treeType;
     
+    int _nLeaves;
+    double _shrinkage;
+    int _minimumNodeSize;
+    
+    int _nDirection;
     directionFunction** _df;
     dataManager*  _data;
     void updateDirection();

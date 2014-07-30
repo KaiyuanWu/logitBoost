@@ -14,13 +14,12 @@
 
 class treeScalarDiretion:public directionFunction {
 public:
-    treeScalarDiretion(dataManager* data,int nLeaves, int minimumNodeSize, _TREE_TYPE_ treeType,int treeClass1,int treeClass2=-1);
+    treeScalarDiretion(dataManager* data,int nLeaves, int minimumNodeSize, _TREE_TYPE_ treeType,int treeClass);
     virtual ~treeScalarDiretion();
     void buildDirection();
     //Data Manager
     dataManager* _data;
-    int _treeClass1;
-    int _treeClass2;
+    int _treeClass;
     void printInfo(){
         //_rootNode->printInfo("",true);
     }

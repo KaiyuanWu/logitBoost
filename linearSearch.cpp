@@ -10,19 +10,24 @@
 #include "treeVectorDirection.h"
 linearSearch::linearSearch(dataManager*  data,int nLeaves,double shrinkage,int minimumNodeSize,directionFunction::_TREE_TYPE_ treeType){
     _data=data;
-    _nLeaves=nLeaves;
     _treeType=treeType;
+    _nLeaves=nLeaves;
+    _minimumNodeSize=minimumNodeSize;
     _shrinkage=shrinkage;
-    
-    if (minimumNodeSize == 0)
-        _minimumNodeSize = 1;
-    else
-        _minimumNodeSize = _data->_nTrainEvents * 0.01 * minimumNodeSize;    
     switch(_treeType){
         case directionFunction::_MART_:
         case directionFunction::_LOGITBOOST_:
+            _nDirection=_data->_nClass;
+            _df=new treeScalarDiretion*[_nDirection];
+            for(int id=0;id<_nDirection;id++)
+                _df[id]=new treeScalarDiretion(data,_nLeaves,_minimumNodeSize,_treeType,id);
+            break;
         case directionFunction::_ABC_LOGITBOOST_:
-            
+            _nDirection=_data->_nClass*_data->_nClass;
+            _df=new treeScalarDiretion*[_nDirection];
+            for(int id=0;id<_nDirection;id++)
+                _df[id]=new treeScalarDiretion(data,_nLeaves,_minimumNodeSize,_treeType,id);
+            break;
             break;
         case directionFunction::_AOSO_LOGITBOOST_:
         case directionFunction::_SLOGITBOOST_:

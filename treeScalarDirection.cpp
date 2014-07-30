@@ -11,28 +11,12 @@
 
 using namespace std;
 
-treeScalarDiretion::treeScalarDiretion(dataManager* data,int nLeaves, int minimumNodeSize, _TREE_TYPE_ treeType,int treeClass1,int treeClass2) {
+treeScalarDiretion::treeScalarDiretion(dataManager* data,int nLeaves, int minimumNodeSize, _TREE_TYPE_ treeType,int treeClass) {
     _data = data;
     _nLeaves = nLeaves;
     _minimumNodeSize=minimumNodeSize;
     _treeType=treeType;
-    switch (_treeType) {
-        case _MART_:
-        case _LOGITBOOST_:
-            _treeClass1=treeClass1;
-            break;
-        case _AOSO_LOGITBOOST_:
-            if(_treeClass2==-1){
-                cout<<"For AOSO-LogitBoost: two classes needed to be chosen!"<<endl;
-                exit(-1);
-            }
-            _treeClass1=treeClass1;
-            _treeClass2=treeClass2;
-            break;
-        default:
-            cout << "Tree Type has not been implemented for this case: " << _treeType << endl;
-            exit(-1);
-    }
+    _treeClass=treeClass;
     
     
     if (_nLeaves < 2) {
