@@ -13,9 +13,8 @@ using namespace std;
 class directionFunction {
 public:
     directionFunction();
-    virtual void eval(double* pnt, double* direction,int iEvent=-1,bool isTrain=true)= 0;
+    virtual void eval(double* pnt, double* direction)= 0;
     virtual void buildDirection()= 0;
-    virtual void updateDirection()= 0;
     virtual ~directionFunction();
     
 public:
