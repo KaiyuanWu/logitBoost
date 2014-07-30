@@ -19,7 +19,6 @@ public:
     linearSearch(dataManager*  data,int nLeaves,double shrinkage,int minimumNodeSize,directionFunction::_TREE_TYPE_ treeType);
     virtual ~linearSearch();
     
-    
     double minimization(int iRound=0);
     //parameter for training
     int _nLeaves;
@@ -27,7 +26,7 @@ public:
     double _shrinkage;
     directionFunction::_TREE_TYPE_ _treeType;
     
-    directionFunction* _df;
+    directionFunction** _df;
     dataManager*  _data;
     void updateDirection();
     

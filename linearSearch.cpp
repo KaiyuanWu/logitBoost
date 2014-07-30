@@ -19,11 +19,15 @@ linearSearch::linearSearch(dataManager*  data,int nLeaves,double shrinkage,int m
     else
         _minimumNodeSize = _data->_nTrainEvents * 0.01 * minimumNodeSize;    
     switch(_treeType){
-        case _SCALE_TREE_:
-            _df=new treeScalarDiretion(data,_nLeaves);
+        case directionFunction::_MART_:
+        case directionFunction::_LOGITBOOST_:
+        case directionFunction::_ABC_LOGITBOOST_:
+            
             break;
-        case _VECTOR_TREE_:
-            _df=new treeVectorDiretion(data,_nLeaves);
+        case directionFunction::_AOSO_LOGITBOOST_:
+        case directionFunction::_SLOGITBOOST_:
+            
+            break;
         default:
             cout<<"Has not been implemented!"<<endl;
             exit(-1);
