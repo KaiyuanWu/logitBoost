@@ -59,6 +59,10 @@ private:
         bool printInfo(const char* indent,bool last);
         //select best working class
         void calculateF();
+        double leftSumG, leftSumH;
+        double rightSumG, rightSumH;
+        double leftSumG1, leftSumH1;
+        double rightSumG1, rightSumH1;
     };
     bitArray* _indexMask;
     //recursively sort the projected data

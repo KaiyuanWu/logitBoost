@@ -11,11 +11,6 @@
 
 using namespace std;
 
-double leftSumG, leftSumH;
-double rightSumG,rightSumH;
-double leftSumG1,leftSumH1;
-double rightSumG1,rightSumH1;
-
 treeScalarDiretion::treeScalarDiretion(dataManager* data,int nLeaves, int minimumNodeSize, _TREE_TYPE_ treeType,int treeClass1,int treeClass2) {
     _data = data;
     _nLeaves = nLeaves;

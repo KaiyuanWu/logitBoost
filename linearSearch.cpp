@@ -8,14 +8,19 @@
 #include "linearSearch.h"
 #include "treeScalarDirection.h"
 #include "treeVectorDirection.h"
-linearSearch::linearSearch(dataManager*  data,int nLeaves,double shrinkage,int minimumNodeSize,_TREE_TYPE_ treeType,directionFunction::_GAIN_TYPE_ gainType){
+linearSearch::linearSearch(dataManager*  data,int nLeaves,double shrinkage,int minimumNodeSize,directionFunction::_TREE_TYPE_ treeType){
     _data=data;
     _nLeaves=nLeaves;
     _treeType=treeType;
-    _gainType=gainType;
+    _shrinkage=shrinkage;
+    
+    if (minimumNodeSize == 0)
+        _minimumNodeSize = 1;
+    else
+        _minimumNodeSize = _data->_nTrainEvents * 0.01 * minimumNodeSize;    
     switch(_treeType){
         case _SCALE_TREE_:
-            _df=new treeScaleDirection(data,_nLeaves);
+            _df=new treeScalarDiretion(data,_nLeaves);
             break;
         case _VECTOR_TREE_:
             _df=new treeVectorDiretion(data,_nLeaves);
@@ -24,11 +29,8 @@ linearSearch::linearSearch(dataManager*  data,int nLeaves,double shrinkage,int m
             exit(-1);
             break;
     }
-    if(minimumNodeSize==0)
-        _df->_minimumNodeSize=1;
-    else 
-        _df->_minimumNodeSize=_data->_nTrainEvents*0.01*minimumNodeSize;     
-    _df->_shrinkage=_shrinkage;
+ 
+
 }
 linearSearch::~linearSearch() {
     if(_df)
