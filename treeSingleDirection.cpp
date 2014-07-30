@@ -28,40 +28,9 @@ treeSingleDirection::treeSingleDirection(dataManager* data, int nLeaves) {
     _nEvents = _data->_nTrainEvents ;
     _round = 0;
 
-    _projectedX = new double[_nEvents];
-    _dataIndex  = new int*[_nDimension];
-    _dataIndex0 = new int*[_nDimension];
-    _dataReverseIndex  = new int*[_nDimension];
-    _dataReverseIndex0 = new int*[_nDimension];
-    _dataIndexTemp = new int[_nEvents];
-    classN=new int[_nClass];
-    for (int iDimension = 0; iDimension < _nDimension; iDimension++) {   
-        _dataIndex[iDimension]  = new int[_nEvents];
-        _dataIndex0[iDimension] = new int[_nEvents];
-        _dataReverseIndex[iDimension]  = new int[_nEvents];
-        _dataReverseIndex0[iDimension] = new int[_nEvents];
-    }
-    
     _rootNode      = new NODE(_data, this,  0, _nEvents - 1,1.0e300);
     _rootNode->_isInternal = true;
     _indexMask     = new bitArray(_nEvents)   ;
-    for (int iDimension = 0; iDimension < _nDimension; iDimension++) {
-        for (int iEvent = 0; iEvent < _nEvents; iEvent++) {
-            _projectedX[iEvent] = _data->_trainX[iEvent * _nDimension + iDimension];
-            _dataIndex0[iDimension][iEvent] = iEvent;
-        }
-        sort(0, _nEvents - 1, iDimension, true);
-        //store reverse data index table
-        for (int iEvent = 0; iEvent < _nEvents; iEvent++)
-            _dataReverseIndex0[iDimension][_dataIndex0[iDimension][iEvent]] = iEvent;
-    }
-    //print sort result
-//    for (int iDimension = 0; iDimension < _nDimension; iDimension++) {
-//        for (int iEvent = 0; iEvent < _nEvents; iEvent++) {
-//            cout<<_data->_trainX[_dataIndex0[iDimension][iEvent] * _nDimension + iDimension]<<", ";
-//        }
-//        cout<<endl;
-//    }
     
     _zMax = 4.   ;
     
@@ -141,24 +110,6 @@ double treeSingleDirection::evalp(double* s,int& iClass,bool printPurity) {
     return n->_f    ;
 }
 
-void treeSingleDirection::swap(int i, int j, int iDimension, bool atInit) {
-    if (i == j)
-        return;
-    double temp = _projectedX[i];
-    _projectedX[i] = _projectedX[j];
-    _projectedX[j] = temp;
-    if (atInit) {
-        int tempIndex = _dataIndex0[iDimension][i];
-        _dataIndex0[iDimension][i] = _dataIndex0[iDimension][j];
-        _dataIndex0[iDimension][j] = tempIndex;
-    } else {
-        int tempIndex = _dataIndex[iDimension][i];
-        _dataIndex[iDimension][i] = _dataIndex[iDimension][j];
-        _dataIndex[iDimension][j] = tempIndex;
-    }
-}
-//initialization of a given node
-
 void treeSingleDirection::initNode() {
     NODE* n = _rootNode;
     //calculate the gain
@@ -223,39 +174,39 @@ void treeSingleDirection::NODE::splitNode() {
         
         splitPoint = _leftPoint;
         //get rid of the same value elements
-        double postX = _data->_trainX[_tree->_dataIndex[iDimension][_leftPoint + 1] * _tree->_nDimension + iDimension];
+        double postX = _data->_trainX[_data->_dataIndex[iDimension][_leftPoint + 1] * _tree->_nDimension + iDimension];
         double cVal  = 1.e300   ;
         double leftV,rightV     ;
         for (splitPoint = _leftPoint; splitPoint < _leftPoint + shift; splitPoint++) {
             for (int iClass = 0; iClass < _tree->_nClass; iClass++) {
                 double g,h;
-                g=_data->_lossGradient[_tree->_dataIndex[iDimension][splitPoint]*_tree->_nClass+iClass];
-                h=_data->_lossHessian[_tree->_dataIndex[iDimension][splitPoint]*_tree->_nClass+iClass];
+                g=_data->_lossGradient[_data->_dataIndex[iDimension][splitPoint]*_tree->_nClass+iClass];
+                h=_data->_lossHessian[_data->_dataIndex[iDimension][splitPoint]*_tree->_nClass+iClass];
                 
                 leftSumG[iClass]  += g; leftSumH[iClass]  += h;
                 rightSumG[iClass] -= g; rightSumH[iClass] -= h;
             }
-            double l=_data->_loss[_tree->_dataIndex[iDimension][splitPoint]];
+            double l=_data->_loss[_data->_dataIndex[iDimension][splitPoint]];
             leftLoss  +=l; 
             rightLoss -=l;
         }
         for (splitPoint = _leftPoint + shift; splitPoint <=_rightPoint-shift; splitPoint++) {
-            double x = _data->_trainX[_tree->_dataIndex[iDimension][splitPoint] * _tree->_nDimension + iDimension];
+            double x = _data->_trainX[_data->_dataIndex[iDimension][splitPoint] * _tree->_nDimension + iDimension];
 //            cout<<"Cut at "<<splitPoint<<": ";
             for (int iClass = 0; iClass < _tree->_nClass; iClass++) {
                 double  g, h;
-                g=_data->_lossGradient[_tree->_dataIndex[iDimension][splitPoint]*_tree->_nClass+iClass];
-                h=_data->_lossHessian[_tree->_dataIndex[iDimension][splitPoint]*_tree->_nClass+iClass];
+                g=_data->_lossGradient[_data->_dataIndex[iDimension][splitPoint]*_tree->_nClass+iClass];
+                h=_data->_lossHessian[_data->_dataIndex[iDimension][splitPoint]*_tree->_nClass+iClass];
                 leftSumG[iClass]  += g; leftSumH[iClass]  += h;
                 rightSumG[iClass] -= g; rightSumH[iClass] -= h;
 //                cout<<"["<<g<<", "<<h<<"] ("<<leftSumH[iClass]<<", "<<rightSumH[iClass]<<"), ";
             }
 //            cout<<endl;
-            double l=_data->_loss[_tree->_dataIndex[iDimension][splitPoint]];
+            double l=_data->_loss[_data->_dataIndex[iDimension][splitPoint]];
             leftLoss +=l;
             rightLoss -=l;
 //            cout<<endl;
-            postX = _data->_trainX[_tree->_dataIndex[iDimension][splitPoint + 1] * _tree->_nDimension + iDimension];
+            postX = _data->_trainX[_data->_dataIndex[iDimension][splitPoint + 1] * _tree->_nDimension + iDimension];
             if (x == postX)
                 continue;
             leftV=x;rightV=postX;
@@ -332,7 +283,7 @@ void treeSingleDirection::reArrange(NODE* node, int splitPoint) {
         if (id == iDimension)
             continue;
         for (int ip = splitPoint + 1; ip <= node->_rightPoint; ip++) {
-            if (!_indexMask->set(_dataReverseIndex[id][_dataIndex[iDimension][ip]])) {
+            if (!_indexMask->set(_data->_dataReverseIndex[id][_data->_dataIndex[iDimension][ip]])) {
                 cout << "here here " << _shrinkage << ", " << _nLeaves << endl;
                 exit(0);
             }
@@ -342,63 +293,25 @@ void treeSingleDirection::reArrange(NODE* node, int splitPoint) {
         for (int ip = node->_leftPoint; ip <= node->_rightPoint; ip++) {
             //belong to right child node
             if (_indexMask->test(ip)) {
-                _dataIndexTemp[right] = _dataIndex[id][ip];
-                _dataReverseIndex[id][_dataIndexTemp[right]] = right;
+                _data->_dataIndexTemp[right] = _data->_dataIndex[id][ip];
+                _data->_dataReverseIndex[id][_data->_dataIndexTemp[right]] = right;
                 if (right > node->_rightPoint) {
                     cout << "here here!" << endl;
                 }       
                 right++;
             } else {
-                _dataIndexTemp[left] = _dataIndex[id][ip];
-                _dataReverseIndex[id][_dataIndexTemp[left]] = left;
+                _data->_dataIndexTemp[left] = _data->_dataIndex[id][ip];
+                _data->_dataReverseIndex[id][_data->_dataIndexTemp[left]] = left;
                 left++;
             }
         }
-        memcpy(_dataIndex[id] + node->_leftPoint, _dataIndexTemp + node->_leftPoint, (node->_rightPoint - node->_leftPoint + 1) * sizeof (int));
+        memcpy(_data->_dataIndex[id] + node->_leftPoint, _data->_dataIndexTemp + node->_leftPoint, (node->_rightPoint - node->_leftPoint + 1) * sizeof (int));
     }
-}
-
-void treeSingleDirection::sort(int low, int high, int iDimension, bool atInit) {
-    if (low >= high)
-        return;
-    //copy the low,high values
-    int _low = low;
-    int _high = high;
-    int currentPoint;
-    int middlePoint = (_low + _high) / 2;
-    while (_low < _high) {
-        swap((_low + _high) / 2, _low, iDimension, atInit);
-        currentPoint = _low;
-        for (int i = _low + 1; i <= _high; i++) {
-            if (_projectedX[i] < _projectedX[_low]) {
-                currentPoint++;
-                swap(currentPoint, i, iDimension, atInit);
-            }
-        }
-        swap(_low, currentPoint, iDimension, atInit);
-        if (currentPoint <= middlePoint) _low = currentPoint + 1;
-        if (currentPoint >= middlePoint) _high = currentPoint - 1;
-    }
-    sort(low, middlePoint - 1, iDimension, atInit);
-    sort(middlePoint + 1, high, iDimension, atInit);
 }
 
 treeSingleDirection::~treeSingleDirection() {
     delete _indexMask;
-    delete[] _projectedX;
-    delete[] _dataIndexTemp;
     delete  _rootNode;
-    
-    for (int iDimension = 0; iDimension < _nDimension; iDimension++) {   
-        delete[] _dataIndex[iDimension];
-        delete[] _dataIndex0[iDimension];
-        delete[] _dataReverseIndex[iDimension];
-        delete[] _dataReverseIndex0[iDimension];
-    }
-    delete[] _dataIndex;
-    delete[] _dataIndex0;
-    delete[] _dataReverseIndex;
-    delete[] _dataReverseIndex0;
     
     delete[] leftSumG ;
     delete[] leftSumG1;
@@ -408,7 +321,6 @@ treeSingleDirection::~treeSingleDirection() {
     delete[] rightSumG1;
     delete[] rightSumH ;
     delete[] rightSumH1;
-    
 }
 
 void treeSingleDirection::updateDirection() {
@@ -472,7 +384,7 @@ void treeSingleDirection::NODE::selectBestClass(){
     _nodeGain=maxG;
     
     for(int ip=_leftPoint;ip<=_rightPoint;ip++)
-        if(_data->_trainClass[_tree->_dataIndex[_iDimension][ip]]==_class)
+        if(_data->_trainClass[_data->_dataIndex[_iDimension][ip]]==_class)
             _purity++;
     _purity/=(_rightPoint-_leftPoint+1.);
     if(maxIndex==-1){
@@ -515,8 +427,8 @@ void treeSingleDirection::eval(double* pnt, double* direction, int iEvent,bool i
 void treeSingleDirection::buildDirection() {
     _round++;
     for (int iDimension = 0; iDimension < _nDimension; iDimension++) {
-        memcpy(_dataIndex[iDimension], _dataIndex0[iDimension], _nEvents * sizeof (int));
-        memcpy(_dataReverseIndex[iDimension], _dataReverseIndex0[iDimension], _nEvents * sizeof (int));
+        memcpy(_data->_dataIndex[iDimension], _data->_dataIndex0[iDimension], _nEvents * sizeof (int));
+        memcpy(_data->_dataReverseIndex[iDimension], _data->_dataReverseIndex0[iDimension], _nEvents * sizeof (int));
     }
     initNode();
     for (int ileaf = 0; ileaf < _nLeaves - 1; ileaf++) {
