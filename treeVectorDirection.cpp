@@ -95,14 +95,14 @@ treeVectorDiretion::NODE::~NODE() {
     delete[] _nodeSumG;
     delete[] _nodeSumH;
     
-    delete[] leftSumG ;
+    delete[] leftSumG;
     delete[] leftSumG1;
-    delete[] leftSumH ;
+    delete[] leftSumH;
     delete[] leftSumH1;
     
     delete[] rightSumG;
     delete[] rightSumG1;
-    delete[] rightSumH ;
+    delete[] rightSumH;
     delete[] rightSumH1;
 }
 
