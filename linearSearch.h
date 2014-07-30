@@ -27,11 +27,23 @@ public:
     double _shrinkage;
     int _minimumNodeSize;
     
+    int _nClass;
+    int _nTrainEvents;
+    int _nTestEvents;
+    int _nDimension;
+    
     int _nDirection;
     directionFunction** _df;
     dataManager*  _data;
     void updateDirection();
+    void buildDirection();
     
+    void updateDirection1();
+    void updateDirection2();
+    
+    //variables for the "FAST abcLogitBoost"
+    int _g,_G,_baseClass;
+    double *_F;
 };
 
 #endif	/* LINEARSEARCH_H */

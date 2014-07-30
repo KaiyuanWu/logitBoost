@@ -10,6 +10,11 @@
 #include "treeVectorDirection.h"
 linearSearch::linearSearch(dataManager*  data,int nLeaves,double shrinkage,int minimumNodeSize,directionFunction::_TREE_TYPE_ treeType){
     _data=data;
+    _nClass=_data->_nClass;
+    _nDimension=_data->_nDimension;
+    _nTrainEvents=_data->_nTrainEvents;
+    _nTestEvents=_data->_nTestEvents;
+    
     _treeType=treeType;
     _nLeaves=nLeaves;
     _minimumNodeSize=minimumNodeSize;
@@ -17,21 +22,22 @@ linearSearch::linearSearch(dataManager*  data,int nLeaves,double shrinkage,int m
     switch(_treeType){
         case directionFunction::_MART_:
         case directionFunction::_LOGITBOOST_:
-            _nDirection=_data->_nClass;
+            _nDirection=_nClass;
             _df=new treeScalarDiretion*[_nDirection];
             for(int id=0;id<_nDirection;id++)
                 _df[id]=new treeScalarDiretion(data,_nLeaves,_minimumNodeSize,_treeType,id);
             break;
         case directionFunction::_ABC_LOGITBOOST_:
-            _nDirection=_data->_nClass*_data->_nClass;
+            _nDirection=_nClass*_nClass;
             _df=new treeScalarDiretion*[_nDirection];
             for(int id=0;id<_nDirection;id++)
                 _df[id]=new treeScalarDiretion(data,_nLeaves,_minimumNodeSize,_treeType,id);
             break;
-            break;
         case directionFunction::_AOSO_LOGITBOOST_:
         case directionFunction::_SLOGITBOOST_:
-            
+            _nDirection=1;
+            _df=new treeVectorDiretion[1];
+            _df[0]=new treeVectorDiretion(data,_nLeaves,_minimumNodeSize,_treeType);
             break;
         default:
             cout<<"Has not been implemented!"<<endl;
@@ -39,21 +45,150 @@ linearSearch::linearSearch(dataManager*  data,int nLeaves,double shrinkage,int m
             break;
     }
  
+    //variables for the "FAST abcLogitBoost"
+    _g=20;
+    _G=20;
+    _baseClass=0;
+    _F=new double[_nClass];
 
 }
 linearSearch::~linearSearch() {
-    if(_df)
-        delete _df;
+    for(int id=0;id<_nDirection;id++)
+        delete _df[id];
+    delete[] _df;
+    delete _F;
 }
 double linearSearch::minimization(int iRound){
     double ret=0.;
-    _df->buildDirection();
+    buildDirection();
     updateDirection();
     _data->increment(_shrinkage, _df, iRound);
     ret = _data->_trainAccuracy;
     return ret;
 }
+void linearSearch::updateDirection1() {
+    for (int iEvent = 0; iEvent < _nTrainEvents; iEvent++) {
+        for (int iClass = 0; iClass < _nClass; iClass++) {
+            double d = _df[iClass]->eval(_data->_trainX + iEvent * _nDimension);
+            _data->_trainDescendingDirection[iEvent * _nClass + iClass] = d;
+        }
+    }
+    for (int iEvent = 0; iEvent < _nTestEvents; iEvent++) {
+        for (int iClass = 0; iClass < _nClass; iClass++) {
+            double d = _df[iClass]->eval(_data->_testX + iEvent * _nDimension);
+            _data->_testDescendingDirection[iEvent * _nClass + iClass] = d;
+        }
+    }
+}
 
+void linearSearch::updateDirection2() {
+    double maxL = -1;
+    //reset baseClass and search the best base class
+    if (_g == _G) {
+        _baseClass = 0;
+        double maxF = -1.e300, sumF, sumExpF, py;
+        //search the best base classifier
+        //loop of base classifier
+        for (int iClass1 = 0; iClass1 < _nClass; iClass1++) {
+            double L = 0.;
+            for (int iEvent = 0; iEvent < _nTrainEvents; iEvent++) {
+                maxF = -1.e300;
+                memset(_F, 0, sizeof (double)*_nClass);
+                sumF = 0.;
+                for (int iClass2 = 0; iClass2 < _nClass; iClass2++) {
+                    if (iClass1 == iClass2)
+                        continue;
+                    _F[iClass2] = _data->_trainF[iEvent * _nClass + iClass2] + _shrinkage * _df[iClass1 * _nClass + iClass2]->eval(_data->_trainX + iEvent * _nDimension);
+                    sumF += _F[iClass2];
+                    if (_F[iClass2] < maxF)
+                        maxF = _F[iClass2];
+                }
+                _F[iClass1] = -sumF;
+                if (_F[iClass1] > maxF) maxF = _F[iClass1];
+                sumExpF = 0.;
+                for (int iClass2 = 0; iClass2 < _nClass; iClass2++)
+                    sumExpF += exp(_F[iClass2] - maxF);
+                py = exp(_F[_data->_trainClass[iEvent]] - maxF) / sumExpF;
+                if (py > 0)
+                    L -= log(py);
+                else
+                    L += 100;
+            }
+            if (L > maxL) {
+                maxL = L;
+                _baseClass = iClass1;
+            }
+        }
+        _g = -1;
+    }
+    for (int iEvent = 0; iEvent < _nTrainEvents; iEvent++) {
+        double sumD = 0.;
+        for (int iClass = 0; iClass < _nClass; iClass++) {
+            if (iClass == _baseClass)
+                continue;
+            double d = _df[_baseClass * _nClass + iClass]->eval(_data->_trainX + iEvent * _nDimension);
+            _data->_trainDescendingDirection[iEvent * _nClass + iClass] = d;
+            sumD += d;
+        }
+        _data->_trainDescendingDirection[iEvent * _nClass + _baseClass] = -1. * sumD;
+    }
+    for (int iEvent = 0; iEvent < _nTestEvents; iEvent++) {
+        double sumD = 0.;
+        for (int iClass = 0; iClass < _nClass; iClass++) {
+            if (iClass == _baseClass)
+                continue;
+            double d = _df[_baseClass * _nClass + iClass]->eval(_data->_testX + iEvent * _nDimension);
+            _data->_testDescendingDirection[iEvent * _nClass + iClass] = d;
+            sumD += d;
+        }
+        _data->_testDescendingDirection[iEvent * _nClass + _baseClass] = -1. * sumD;
+    }
+    _g++;
+
+}
 void linearSearch::updateDirection(){
-    
+    switch(_treeType){
+        case directionFunction::_MART_:
+        case directionFunction::_LOGITBOOST_:
+            updateDirection1();
+            break;
+        case directionFunction::_ABC_LOGITBOOST_:
+            updateDirection2();
+            break;
+        case directionFunction::_AOSO_LOGITBOOST_:
+        case directionFunction::_SLOGITBOOST_:
+            for (int iEvent = 0; iEvent < _data->_nTrainEvents; iEvent++)
+                _df[0]->eval(_data->_trainX + iEvent * _data->_nDimension, _data->_trainDescendingDirection + iEvent * _data->_nClass, iEvent, true);
+            for (int iEvent = 0; iEvent < _data->_nTestEvents; iEvent++)
+                _df[0]->eval(_data->_testX + iEvent * _data->_nDimension, _data->_testDescendingDirection + iEvent * _data->_nClass, iEvent, false);
+            break;
+        default:
+            cout<<"Has not been implemented!"<<endl;
+            exit(-1);
+            break;
+    }
+}
+void linearSearch::buildDirection(){
+    switch(_treeType){
+        case directionFunction::_MART_:
+        case directionFunction::_LOGITBOOST_:
+            for(int id=0;id<_nDirection;id++)
+                _df[id]->buildDirection();
+            break;
+        case directionFunction::_ABC_LOGITBOOST_:
+            for(int iClass1=0;iClass1<_data->_nClass;iClass1++){
+                for(int iClass2=0;iClass2<iClass1;iClass2++){
+                    _df[iClass1*_data->_nClass+iClass2]->buildDirection();
+                }
+            }
+            break;
+        case directionFunction::_AOSO_LOGITBOOST_:
+        case directionFunction::_SLOGITBOOST_:
+            _df[0]->buildDirection();
+            break;
+        default:
+            cout<<"Has not been implemented!"<<endl;
+            exit(-1);
+            break;
+    }
 }

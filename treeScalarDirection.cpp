@@ -18,7 +18,6 @@ treeScalarDiretion::treeScalarDiretion(dataManager* data,int nLeaves, int minimu
     _treeType=treeType;
     _treeClass=treeClass;
     
-    
     if (_nLeaves < 2) {
         cout << "Number of terminate nodes is " << _nLeaves << ", change it to 2!" << endl;
         _nLeaves = 2;
@@ -96,20 +95,8 @@ void treeScalarDiretion::initNode() {
     n->_nodeSumH=0;
 
     for (int iPoint = 0; iPoint < _nEvents; iPoint++) {
-        switch (_treeType) {
-            case _MART_:
-            case _LOGITBOOST_:
-                n->_nodeSumG += _data->_lossGradient[iPoint * _nClass + _treeClass1];
-                n->_nodeSumH += _data->_lossHessian[iPoint * _nClass + _treeClass1];
-                break;
-            case _AOSO_LOGITBOOST_:
-                n->_nodeSumG += _data->_lossGradient[iPoint * _nClass*_nClass + _treeClass1*_nClass+_treeClass2];
-                n->_nodeSumH += _data->_lossHessian[iPoint * _nClass*_nClass + _treeClass1*_nClass+_treeClass2];
-                break;
-            default:
-                cout<<"Tree Type has not been implemented for this case: "<<_treeType<<endl;
-                exit(-1);
-        }
+        n->_nodeSumG += _data->_lossGradient[iPoint * _nClass + _treeClass];
+        n->_nodeSumH += _data->_lossHessian[iPoint * _nClass + _treeClass];
     }
 
     n->_iDimension=0;
@@ -142,20 +129,8 @@ void treeScalarDiretion::NODE::splitNode() {
         double leftV,rightV     ;
         for (splitPoint = _leftPoint; splitPoint < _leftPoint + shift; splitPoint++) {
             double g, h;
-            switch (_treeType) {
-                case _MART_:
-                case _LOGITBOOST_:
-                    g= _data->_lossGradient[splitPoint * _nClass + _treeClass1];
-                    h= _data->_lossHessian[splitPoint * _nClass + _treeClass1];
-                    break;
-                case _AOSO_LOGITBOOST_:
-                    g= _data->_lossGradient[splitPoint * _nClass * _nClass + _treeClass1 * _nClass + _treeClass2];
-                    h= _data->_lossHessian[splitPoint * _nClass * _nClass + _treeClass1 * _nClass + _treeClass2];
-                    break;
-                default:
-                    cout << "Tree Type has not been implemented for this case: " << _treeType << endl;
-                    exit(-1);
-            }
+            g = _data->_lossGradient[splitPoint * _nClass + _treeClass];
+            h = _data->_lossHessian[splitPoint * _nClass + _treeClass];
             leftSumG += g;
             leftSumH += h;
             rightSumG -= g;
@@ -164,20 +139,8 @@ void treeScalarDiretion::NODE::splitNode() {
         for (splitPoint = _leftPoint + shift; splitPoint <=_rightPoint-shift; splitPoint++) {
             double x = _data->_trainX[_data->_dataIndex[iDimension][splitPoint] * _tree->_nDimension + iDimension];
             double g, h;
-            switch (_treeType) {
-                case _MART_:
-                case _LOGITBOOST_:
-                    g= _data->_lossGradient[splitPoint * _nClass + _treeClass1];
-                    h= _data->_lossHessian[splitPoint * _nClass + _treeClass1];
-                    break;
-                case _AOSO_LOGITBOOST_:
-                    g= _data->_lossGradient[splitPoint * _nClass * _nClass + _treeClass1 * _nClass + _treeClass2];
-                    h= _data->_lossHessian[splitPoint * _nClass * _nClass + _treeClass1 * _nClass + _treeClass2];
-                    break;
-                default:
-                    cout << "Tree Type has not been implemented for this case: " << _treeType << endl;
-                    exit(-1);
-            }
+            g = _data->_lossGradient[splitPoint * _nClass + _treeClass];
+            h = _data->_lossHessian[splitPoint * _nClass + _treeClass];
             leftSumG += g;
             leftSumH += h;
             rightSumG -= g;
