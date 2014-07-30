@@ -21,7 +21,7 @@ using namespace std;
 
 class crossValidate {
 public:
-    crossValidate(int jobID,int nFold, LossFunction::_LOSSTYPE lossType, LossFunction::_PHIFUNCTION phiFunction,double shrinkage=1.,int nLeaves=8,int minimumNodeSize=1,int nMaxIteration=1000);
+    crossValidate(int jobID,int nFold, LossFunction::_LOSSTYPE lossType,double shrinkage=1.,int nLeaves=8,int minimumNodeSize=1,int nMaxIteration=1000);
     virtual ~crossValidate();
     
 public:
@@ -77,8 +77,6 @@ private:
     linearSearch** _linearSearchMinimizer;
     
     LossFunction::_LOSSTYPE _lossType;
-    LossFunction::_PHIFUNCTION _phiFunction; 
-    
     ofstream* _outf;
 };
 

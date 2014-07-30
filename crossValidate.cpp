@@ -7,7 +7,7 @@
 #include "crossValidate.h"
 #include "string.h"
 
-crossValidate::crossValidate(int jobID,int nFold, LossFunction::_LOSSTYPE lossType, LossFunction::_PHIFUNCTION phiFunction,double shrinkage,int nLeaves,int minimumNodeSize,int nMaxIteration){
+crossValidate::crossValidate(int jobID,int nFold, LossFunction::_LOSSTYPE lossType, double shrinkage,int nLeaves,int minimumNodeSize,int nMaxIteration){
     _nFold=nFold;
     _jobID=jobID;
     _shrinkage=shrinkage;
@@ -16,7 +16,6 @@ crossValidate::crossValidate(int jobID,int nFold, LossFunction::_LOSSTYPE lossTy
         minimumNodeSize=1;
     _minimumNodeSize=minimumNodeSize;
     _lossType=lossType;
-    _phiFunction=phiFunction;
     _nMaxIteration=nMaxIteration;
     //print job info
     cout<<"jobID=          "<<jobID<<endl;
@@ -26,35 +25,14 @@ crossValidate::crossValidate(int jobID,int nFold, LossFunction::_LOSSTYPE lossTy
     cout<<"minimumNodeSize="<<minimumNodeSize<<endl;
     cout<<"nMaxIteration=  "<<nMaxIteration<<endl;
     switch(lossType){
-        case LossFunction::_ONE_VS_ALL:
+        case LossFunction::_ABCLOGIT_NEWTON_:
             cout<<"Loss Type _ONE_VS_ALL"<<endl;
             break;
-        case LossFunction::_ONE_VS_ONE:
+        case LossFunction::_S_NEWTON_:
             cout<<"Loss Type _ONE_VS_ONE"<<endl;
-            break;
-        case LossFunction::_CONSTRAIN_COMPARE_:
-            cout<<"Loss Type _CONSTRAIN_COMPARE_"<<endl;
-            break;
-        case LossFunction::_COUPLEDLOGISTIC_:
-            cout<<"Loss Type _COUPLEDLOGISTIC_"<<endl;
             break;
         default:
             cout<<"This loss type has not been implemented! Please Check!"<<endl;
-            return;
-            break;
-    }
-    switch(phiFunction){
-        case LossFunction::_EXP_:
-            cout<<"Phi Type Exp"<<endl;
-            break;
-        case LossFunction::_L2_:
-            cout<<"Phi Type _L2_"<<endl;
-            break;
-        case LossFunction::_LIKELIHOOD_:
-            cout<<"Phi Type _LIKELIHOOD"<<endl;
-            break;
-        default:
-            cout<<"This phi type has not been implemented! Please Check!"<<endl;
             return;
             break;
     }

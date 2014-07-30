@@ -21,7 +21,7 @@
 class evaluation {
 public:
     evaluation(char* fTrain, char* fTest, char* fOut, int nTrainEvents,int nTestEvents,int nClass,int nVariables,
-            LossFunction::_LOSSTYPE lossType, LossFunction::_PHIFUNCTION phiFunction,double shrinkage=1.,int nLeaves=8,int minimumNodeSize=1,int nMaxIteration=1000);
+            LossFunction::_LOSSTYPE lossType, double shrinkage=1.,int nLeaves=8,int minimumNodeSize=1,int nMaxIteration=1000);
     virtual ~evaluation();
     
     //initialization procedure
@@ -44,7 +44,6 @@ private:
     string _fTest;
     string _fOut;
     LossFunction::_LOSSTYPE _lossType;
-    LossFunction::_PHIFUNCTION _phiFunction;
     double _shrinkage;
     int _nLeaves;
     int _minimumNodeSize;

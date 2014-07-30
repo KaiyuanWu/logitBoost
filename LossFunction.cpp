@@ -96,7 +96,7 @@ double LossFunction::lossabcLogitNewton(double* f, int y, int c1,int c2, double&
     if(py>0)
         loss=-log(py);
     else
-        loss=100;
+        loss=1.e300;
     gradient=0;
     if(y==c1)
         gradient+=pc1-1;

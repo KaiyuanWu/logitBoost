@@ -8,7 +8,7 @@
 #include "evaluation.h"
 
 evaluation::evaluation(char* fTrain, char* fTest, char* fOut, int nTrainEvents,int nTestEvents,int nClass,int nVariables,
-            LossFunction::_LOSSTYPE lossType, LossFunction::_PHIFUNCTION phiFunction,double shrinkage,int nLeaves,int minimumNodeSize,int nMaxIteration){
+            LossFunction::_LOSSTYPE lossType, double shrinkage,int nLeaves,int minimumNodeSize,int nMaxIteration){
     //dataset parameters
     _fTrain=fTrain;
     _fTest=fTest;
@@ -21,7 +21,6 @@ evaluation::evaluation(char* fTrain, char* fTest, char* fOut, int nTrainEvents,i
     
     //decision tree parameters
     _lossType=lossType;
-    _phiFunction=phiFunction;
     _shrinkage=shrinkage;
     _nLeaves=nLeaves;
     _minimumNodeSize=minimumNodeSize;
@@ -42,7 +41,7 @@ void evaluation::init(){
     memset(_lossTestArray,0,sizeof(double)*_nMaxIteration);
     memset(_lossTrainArray,0,sizeof(double)*_nMaxIteration);
     
-    _data = new dataManager(_nVariables, _nClass,_lossType,_phiFunction, _nTrainEvents, _nTestEvents);
+    _data = new dataManager(_nVariables, _nClass,_lossType,_nTrainEvents, _nTestEvents);
     ifstream infTrain(_fTrain.c_str(),ifstream::in);
     if(!infTrain.good()){
         cout<<"Can not open "<<_fTrain<<endl;
