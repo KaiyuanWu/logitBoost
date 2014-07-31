@@ -182,7 +182,7 @@ void dataManager::finishAddingEvent(){
     _testLoss=0.;
     for (int iEvent = 0; iEvent < _nTrainEvents; iEvent++) {
         for (int iG = 0; iG < _nG; iG++) {
-            _loss[iEvent]=_lossFunction->loss(_trainF + iEvent*_nClass, _trainClass[iEvent], iG, g, h);
+            _loss[iEvent]=_lossFunction->loss(_trainF + iEvent*_nClass, _trainClass[iEvent], g, h,iG);
             _lossGradient[iEvent * _nClass + iG] = g;
             _lossHessian[iEvent * _nClass + iG] = h;
         }
@@ -190,10 +190,10 @@ void dataManager::finishAddingEvent(){
     }
     //exit(0);
     for (int iEvent = 0; iEvent < _nTestEvents; iEvent++)
-        _testLoss+=_lossFunction->loss(_testF + iEvent*_nClass, _testClass[iEvent], 0, g, h);
+        _testLoss+=_lossFunction->loss(_testF + iEvent*_nClass, _testClass[iEvent], g, h,1);
     
 }
-void  dataManager::increment(double shrinkage,directionFunction* df,int iRound) {
+void  dataManager::increment(double shrinkage,int iRound) {
     const int OUTPUT_INTERVAL = 1000000;
     for (int iClass = 0; iClass < _nClass; iClass++) {
         _correctNew[iClass] = 0;
@@ -228,7 +228,7 @@ void  dataManager::increment(double shrinkage,directionFunction* df,int iRound) 
        //update the gradients and hessian informations
         double g, h;
         for (int iG = 0; iG < _nG; iG++) {
-            _loss[iEvent] = _lossFunction->loss(_trainF + iEvent*_nClass, _trainClass[iEvent], iG, g, h);
+            _loss[iEvent] = _lossFunction->loss(_trainF + iEvent*_nClass, _trainClass[iEvent],  g, h,iG);
             _lossGradient[iEvent * _nClass + iG] = g;
             _lossHessian[iEvent * _nClass + iG] = h;
         }
@@ -257,7 +257,7 @@ void  dataManager::increment(double shrinkage,directionFunction* df,int iRound) 
             }
         }
         double g,h;
-        _testLoss+=_lossFunction->loss(_testF + iEvent*_nClass, _testClass[iEvent], 0, g, h);
+        _testLoss+=_lossFunction->loss(_testF + iEvent*_nClass, _testClass[iEvent], g, h,0);
         //_testLoss+=_lossFunction->_costMatrix[_testClass[iEvent]*_nClass+_maxI];
     }
     //_testLoss/=_nTestEvents;

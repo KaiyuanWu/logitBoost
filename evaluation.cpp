@@ -77,7 +77,7 @@ void evaluation::init(){
         exit(-1);
     }
     _outf->setf(ios::scientific);
-    _linearSearchMinimizer = new linearSearch(_data,_nLeaves,_shrinkage,_minimumNodeSize);
+    _linearSearchMinimizer = new linearSearch(_data,_nLeaves,_shrinkage,_minimumNodeSize,_treeType);
 }
 void evaluation::start(){
     int iIteration;

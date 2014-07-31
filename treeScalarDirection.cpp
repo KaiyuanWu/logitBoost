@@ -70,16 +70,16 @@ treeScalarDiretion::NODE::~NODE() {
     _rightChildNode = NULL;
 }
 
-double treeScalarDiretion::eval(double* s) {
+void treeScalarDiretion::eval(double* pnt, double* direction) {
     NODE* n = _rootNode;
     while (n->_isInternal) {
-        if (s[n->_iDimension] <= n->_cut) {
+        if (pnt[n->_iDimension] <= n->_cut) {
             n = n->_leftChildNode;
         } else{
             n = n->_rightChildNode;
         }
     }
-    return n->_f;
+    (*direction)=n->_f;
 }
 
 //initialization of a given node

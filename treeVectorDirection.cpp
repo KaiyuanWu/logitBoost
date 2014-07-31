@@ -397,7 +397,7 @@ void treeVectorDiretion::eval(double* pnt, double* direction) {
         default:
             cout<<"This tree type "<<_treeType<<" has not been implemented!"<<endl;
             break;
-    }
+    } 
 }
 
 void treeVectorDiretion::buildDirection() {

@@ -24,7 +24,7 @@ public:
         //_rootNode->printInfo("",true);
     }
     //tree evaluation
-    double eval(double* s);
+    void eval(double* pnt, double* direction);
     void   buildIndex(int** dataIndex=NULL,int** dataReverseIndex0=NULL);
 
 private:

@@ -137,7 +137,7 @@ void crossValidate::init(char* prefix, char* outputPrefix){
                 _data[iFold]->addValidateEvent(_dataX + iEvent*_nVariables, _classX[iEvent]);
         }
         _data[iFold]->finishAddingEvent();
-        _linearSearchMinimizer[iFold] = new linearSearch(_data[iFold],_nLeaves,_shrinkage,_minimumNodeSize);
+        _linearSearchMinimizer[iFold] = new linearSearch(_data[iFold],_nLeaves,_shrinkage,_minimumNodeSize,_treeType);
     }
 }
 

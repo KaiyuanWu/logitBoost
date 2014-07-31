@@ -64,7 +64,7 @@ public:
     //reverse index table;
     int** _dataReverseIndex0;
     //temporary array
-    int* _projectedX;
+    double* _projectedX;
     int* _dataIndexTemp;
 
     

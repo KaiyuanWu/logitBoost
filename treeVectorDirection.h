@@ -16,7 +16,7 @@ class treeVectorDiretion:public directionFunction {
 public:
     treeVectorDiretion(dataManager* data,int nLeaves, int minimumNodeSize, _TREE_TYPE_ treeType);
     virtual ~treeVectorDiretion();
-    void eval(double* pnt, double* direction,int iEvent=-1,bool isTrain=true);
+    double eval(double* pnt, double* direction);
     void buildDirection();
     //Data Manager
     dataManager* _data;

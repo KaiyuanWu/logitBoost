@@ -23,20 +23,20 @@ linearSearch::linearSearch(dataManager*  data,int nLeaves,double shrinkage,int m
         case directionFunction::_MART_:
         case directionFunction::_LOGITBOOST_:
             _nDirection=_nClass;
-            _df=new treeScalarDiretion*[_nDirection];
+            _df=new directionFunction*[_nDirection];
             for(int id=0;id<_nDirection;id++)
                 _df[id]=new treeScalarDiretion(data,_nLeaves,_minimumNodeSize,_treeType,id);
             break;
         case directionFunction::_ABC_LOGITBOOST_:
             _nDirection=_nClass*_nClass;
-            _df=new treeScalarDiretion*[_nDirection];
+            _df=new directionFunction*[_nDirection];
             for(int id=0;id<_nDirection;id++)
                 _df[id]=new treeScalarDiretion(data,_nLeaves,_minimumNodeSize,_treeType,id);
             break;
         case directionFunction::_AOSO_LOGITBOOST_:
         case directionFunction::_SLOGITBOOST_:
             _nDirection=1;
-            _df=new treeVectorDiretion[1];
+            _df=new directionFunction*[_nDirection];
             _df[0]=new treeVectorDiretion(data,_nLeaves,_minimumNodeSize,_treeType);
             break;
         default:
@@ -44,7 +44,6 @@ linearSearch::linearSearch(dataManager*  data,int nLeaves,double shrinkage,int m
             exit(-1);
             break;
     }
- 
     //variables for the "FAST abcLogitBoost"
     _g=20;
     _G=20;
@@ -61,20 +60,22 @@ double linearSearch::minimization(int iRound){
     double ret=0.;
     buildDirection();
     updateDirection();
-    _data->increment(_shrinkage, _df, iRound);
+    _data->increment(_shrinkage,  iRound);
     ret = _data->_trainAccuracy;
     return ret;
 }
 void linearSearch::updateDirection1() {
     for (int iEvent = 0; iEvent < _nTrainEvents; iEvent++) {
         for (int iClass = 0; iClass < _nClass; iClass++) {
-            double d = _df[iClass]->eval(_data->_trainX + iEvent * _nDimension);
+            double d ;
+            _df[iClass]->eval(_data->_trainX + iEvent * _nDimension,&d);
             _data->_trainDescendingDirection[iEvent * _nClass + iClass] = d;
         }
     }
     for (int iEvent = 0; iEvent < _nTestEvents; iEvent++) {
         for (int iClass = 0; iClass < _nClass; iClass++) {
-            double d = _df[iClass]->eval(_data->_testX + iEvent * _nDimension);
+            double d;
+            _df[iClass]->eval(_data->_testX + iEvent * _nDimension,&d);
             _data->_testDescendingDirection[iEvent * _nClass + iClass] = d;
         }
     }
@@ -97,12 +98,14 @@ void linearSearch::updateDirection2() {
                 for (int iClass2 = 0; iClass2 < _nClass; iClass2++) {
                     if (iClass1 == iClass2)
                         continue;
+                    double d;
+                    _df[iClass1 * _nClass + iClass2]->eval(_data->_trainX + iEvent * _nDimension,&d);
                     if(iClass1<iClass2)
                         _F[iClass2] = _data->_trainF[iEvent * _nClass + iClass2] + 
-                                _shrinkage * _df[iClass1 * _nClass + iClass2]->eval(_data->_trainX + iEvent * _nDimension);
+                                _shrinkage * d;
                     else
                         _F[iClass2] = _data->_trainF[iEvent * _nClass + iClass2] - 
-                                _shrinkage * _df[iClass1 * _nClass + iClass2]->eval(_data->_trainX + iEvent * _nDimension);
+                                _shrinkage * d;
                     sumF += _F[iClass2];
                     if (_F[iClass2] < maxF)
                         maxF = _F[iClass2];
@@ -130,7 +133,8 @@ void linearSearch::updateDirection2() {
         for (int iClass = 0; iClass < _nClass; iClass++) {
             if (iClass == _baseClass)
                 continue;
-            double d = _df[_baseClass * _nClass + iClass]->eval(_data->_trainX + iEvent * _nDimension);
+            double d;
+            _df[_baseClass * _nClass + iClass]->eval(_data->_trainX + iEvent * _nDimension,&d);
             _data->_trainDescendingDirection[iEvent * _nClass + iClass] = d;
             sumD += d;
         }
@@ -142,10 +146,9 @@ void linearSearch::updateDirection2() {
             if (iClass == _baseClass)
                 continue;
             double d;
+            _df[_baseClass * _nClass + iClass]->eval(_data->_testX + iEvent * _nDimension,&d);
             if(iClass<_baseClass)
-                d= -1.*_df[_baseClass * _nClass + iClass]->eval(_data->_testX + iEvent * _nDimension);
-            else
-                d=_df[_baseClass * _nClass + iClass]->eval(_data->_testX + iEvent * _nDimension);
+                d*= -1.;
             _data->_testDescendingDirection[iEvent * _nClass + iClass] = d;
             sumD += d;
         }
@@ -166,9 +169,9 @@ void linearSearch::updateDirection(){
         case directionFunction::_AOSO_LOGITBOOST_:
         case directionFunction::_SLOGITBOOST_:
             for (int iEvent = 0; iEvent < _data->_nTrainEvents; iEvent++)
-                _df[0]->eval(_data->_trainX + iEvent * _data->_nDimension, _data->_trainDescendingDirection + iEvent * _data->_nClass, iEvent, true);
+                _df[0]->eval(_data->_trainX + iEvent * _data->_nDimension, _data->_trainDescendingDirection + iEvent * _data->_nClass);
             for (int iEvent = 0; iEvent < _data->_nTestEvents; iEvent++)
-                _df[0]->eval(_data->_testX + iEvent * _data->_nDimension, _data->_testDescendingDirection + iEvent * _data->_nClass, iEvent, false);
+                _df[0]->eval(_data->_testX + iEvent * _data->_nDimension, _data->_testDescendingDirection + iEvent * _data->_nClass);
             break;
         default:
             cout<<"Has not been implemented!"<<endl;
