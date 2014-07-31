@@ -6,8 +6,7 @@
  */
 
 #include "linearSearch.h"
-#include "treeScalarDirection.h"
-#include "treeVectorDirection.h"
+
 linearSearch::linearSearch(dataManager*  data,int nLeaves,double shrinkage,int minimumNodeSize,directionFunction::_TREE_TYPE_ treeType){
     _data=data;
     _nClass=_data->_nClass;
@@ -19,6 +18,7 @@ linearSearch::linearSearch(dataManager*  data,int nLeaves,double shrinkage,int m
     _nLeaves=nLeaves;
     _minimumNodeSize=minimumNodeSize;
     _shrinkage=shrinkage;
+    directionFunction* tt;
     switch(_treeType){
         case directionFunction::_MART_:
         case directionFunction::_LOGITBOOST_:
@@ -37,7 +37,8 @@ linearSearch::linearSearch(dataManager*  data,int nLeaves,double shrinkage,int m
         case directionFunction::_SLOGITBOOST_:
             _nDirection=1;
             _df=new directionFunction*[_nDirection];
-            _df[0]=new treeVectorDiretion(data,_nLeaves,_minimumNodeSize,_treeType);
+            //_df[0]=new treeVectorDiretion(data,_nLeaves,_minimumNodeSize,_treeType);
+            tt=new treeVectorDirection(data,_nLeaves,_minimumNodeSize,_treeType);
             break;
         default:
             cout<<"Has not been implemented!"<<endl;

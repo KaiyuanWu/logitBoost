@@ -129,8 +129,8 @@ void treeScalarDiretion::NODE::splitNode() {
         double leftV,rightV     ;
         for (splitPoint = _leftPoint; splitPoint < _leftPoint + shift; splitPoint++) {
             double g, h;
-            g = _data->_lossGradient[splitPoint * _nClass + _treeClass];
-            h = _data->_lossHessian[splitPoint * _nClass + _treeClass];
+            g = _data->_lossGradient[splitPoint * _tree->_nClass + _tree->_treeClass];
+            h = _data->_lossHessian[splitPoint * _tree->_nClass + _tree->_treeClass];
             leftSumG += g;
             leftSumH += h;
             rightSumG -= g;
@@ -139,8 +139,8 @@ void treeScalarDiretion::NODE::splitNode() {
         for (splitPoint = _leftPoint + shift; splitPoint <=_rightPoint-shift; splitPoint++) {
             double x = _data->_trainX[_data->_dataIndex[iDimension][splitPoint] * _tree->_nDimension + iDimension];
             double g, h;
-            g = _data->_lossGradient[splitPoint * _nClass + _treeClass];
-            h = _data->_lossHessian[splitPoint * _nClass + _treeClass];
+            g = _data->_lossGradient[splitPoint * _tree->_nClass + _tree->_treeClass];
+            h = _data->_lossHessian[splitPoint * _tree->_nClass + _tree->_treeClass];
             leftSumG += g;
             leftSumH += h;
             rightSumG -= g;
@@ -271,7 +271,7 @@ bool treeScalarDiretion::NODE::printInfo(const char* indent, bool last) {
     return ret;
 }
 void treeScalarDiretion::NODE::calculateF(){
-    switch(_treeType) {
+    switch(_tree->_treeType) {
         case _LOGITBOOST_:
         case _ABC_LOGITBOOST_:
             if (_nodeSumH > 0)
@@ -283,7 +283,7 @@ void treeScalarDiretion::NODE::calculateF(){
             _nodeGain=_nodeSumG*_nodeSumG;
             break;
         default:
-            cout << "Tree Type has not been implemented for this case: " << _treeType << endl;
+            cout << "Tree Type has not been implemented for this case: " << _tree->_treeType << endl;
             exit(-1);
     }
     

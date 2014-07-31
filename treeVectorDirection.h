@@ -1,5 +1,5 @@
 /* 
- * File:   treeVectorDiretion.h
+ * File:   treeVectorDirection.h
  * Author: kaiwu
  *
  * Created on March 16, 2014, 11:22 PM
@@ -12,11 +12,11 @@
 #include "LossFunction.h"
 #include "bitArray.h"
 
-class treeVectorDiretion:public directionFunction {
+class treeVectorDirection:public directionFunction {
 public:
-    treeVectorDiretion(dataManager* data,int nLeaves, int minimumNodeSize, _TREE_TYPE_ treeType);
-    virtual ~treeVectorDiretion();
-    double eval(double* pnt, double* direction);
+    treeVectorDirection(dataManager* data,int nLeaves, int minimumNodeSize, _TREE_TYPE_ treeType);
+    virtual ~treeVectorDirection();
+    void eval(double* pnt, double* direction);
     void buildDirection();
     //Data Manager
     dataManager* _data;
@@ -26,7 +26,7 @@ public:
 private:
     class NODE{
     public:
-        NODE(dataManager* data,treeVectorDiretion* tree,int leftPoint,int rightPoint, double loss);
+        NODE(dataManager* data,treeVectorDirection* tree,int leftPoint,int rightPoint, double loss);
         ~NODE();
         int _leftPoint;
         int _rightPoint;
@@ -52,7 +52,7 @@ private:
         double _f;
         bool _ableSplit;
         dataManager* _data;
-        treeVectorDiretion* _tree;
+        treeVectorDirection* _tree;
         void bestNode(NODE*& n,double& gain);
         void splitNode();
         bool printInfo(const char* indent,bool last);
@@ -60,6 +60,7 @@ private:
         void selectBestClass();
 
         //variables for node split
+        int _nG;
         double *leftSumG, *leftSumH;
         double *rightSumG, *rightSumH;
         double *leftSumG1, *leftSumH1;

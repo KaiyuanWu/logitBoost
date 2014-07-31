@@ -28,8 +28,6 @@ public:
     int _nLeaves;
     int _minimumNodeSize;
     _TREE_TYPE_ _treeType;
-private:
-    
 };
 
 #endif	/* DIRECTIONFUNCTION_H */

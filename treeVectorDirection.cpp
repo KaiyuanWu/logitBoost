@@ -1,5 +1,5 @@
 /* 
- * File:   treeVectorDiretion.cpp
+ * File:   treeVectorDirection.cpp
  * Author: kaiwu
  * 
  * Created on March 16, 2014, 11:22 PM
@@ -7,10 +7,9 @@
 
 #include <bitset>
 #include "treeVectorDirection.h"
-#include "treeScalarDirection.h"
 
 //arrays for node splitting
-treeVectorDiretion::treeVectorDiretion(dataManager* data,int nLeaves, int minimumNodeSize, _TREE_TYPE_ treeType) {
+treeVectorDirection::treeVectorDirection(dataManager* data,int nLeaves, int minimumNodeSize, _TREE_TYPE_ treeType) {
     _data = data;
     _nLeaves = nLeaves;
     _minimumNodeSize=minimumNodeSize;
@@ -31,7 +30,7 @@ treeVectorDiretion::treeVectorDiretion(dataManager* data,int nLeaves, int minimu
     _zMax = 4.   ;
 }
 
-void treeVectorDiretion::resetRootNode() {
+void treeVectorDirection::resetRootNode() {
     if (_rootNode) {
         if (_rootNode->_leftChildNode)
             delete _rootNode->_leftChildNode;
@@ -44,7 +43,7 @@ void treeVectorDiretion::resetRootNode() {
     }
 }
 
-treeVectorDiretion::NODE::NODE(dataManager* data, treeVectorDiretion* tree, int leftPoint, int rightPoint,double loss) {
+treeVectorDirection::NODE::NODE(dataManager* data, treeVectorDirection* tree, int leftPoint, int rightPoint,double loss) {
     _additiveGain = 0.;
     _data = data;
     _tree = tree;
@@ -63,13 +62,13 @@ treeVectorDiretion::NODE::NODE(dataManager* data, treeVectorDiretion* tree, int 
     
     switch(_tree->_treeType){
         case _AOSO_LOGITBOOST_:
-            _nG=_nClass*_nClass;
+            _nG=_tree->_nClass*_tree->_nClass;
             break;
         case _SLOGITBOOST_:
-            _nG=_nClass;
+            _nG=_tree->_nClass;
             break;
         default:
-            cout<<"This type of tree: "<<_treeType<<" has not been implmented!"<<endl;
+            cout<<"This type of tree: "<<_tree->_treeType<<" has not been implmented!"<<endl;
             exit(-1);
     }
     _nodeSumG=new double[_nG];
@@ -85,7 +84,7 @@ treeVectorDiretion::NODE::NODE(dataManager* data, treeVectorDiretion* tree, int 
     rightSumH1=new double[_nG];
 }
 
-treeVectorDiretion::NODE::~NODE() {
+treeVectorDirection::NODE::~NODE() {
     if (_leftChildNode)
         delete _leftChildNode;
     _leftChildNode = NULL;
@@ -106,7 +105,7 @@ treeVectorDiretion::NODE::~NODE() {
     delete[] rightSumH1;
 }
 
-double treeVectorDiretion::evalp(double* s,int& iClass) {
+double treeVectorDirection::evalp(double* s,int& iClass) {
     NODE* n = _rootNode;
     while (n->_isInternal) {
         if (s[n->_iDimension] <= n->_cut) {
@@ -119,7 +118,7 @@ double treeVectorDiretion::evalp(double* s,int& iClass) {
     return n->_f    ;
 }
 
-void treeVectorDiretion::initNode() {
+void treeVectorDirection::initNode() {
     NODE* n = _rootNode;
     //calculate the gain
     n->_isInternal = false;
@@ -140,7 +139,7 @@ void treeVectorDiretion::initNode() {
     n->selectBestClass();
 }
 
-void treeVectorDiretion::NODE::splitNode() {
+void treeVectorDirection::NODE::splitNode() {
     int splitPoint;
     //initialization
     double maxGain   = _nodeGain;
@@ -202,7 +201,7 @@ void treeVectorDiretion::NODE::splitNode() {
             double gain=-1.;
             for(int iG=0;iG<_nG;iG++) {
                 if (leftSumH[iG] == 0.||rightSumH[iG]==0.) {
-                    cout << "Something is wrong! Hessian is 0 in [treeVectorDiretion::NODE::splitNode]" << endl;
+                    cout << "Something is wrong! Hessian is 0 in [treeVectorDirection::NODE::splitNode]" << endl;
                     exit(0);
                 }
                 double newgain=(leftSumG[iG] *leftSumG[iG]*rightSumH[iG]+rightSumG[iG]*rightSumG[iG]*leftSumH[iG])/(leftSumH[iG]*rightSumH[iG]);
@@ -260,7 +259,7 @@ void treeVectorDiretion::NODE::splitNode() {
     _ableSplit = false;
 }
 
-void treeVectorDiretion::reArrange(NODE* node, int splitPoint) {
+void treeVectorDirection::reArrange(NODE* node, int splitPoint) {
     int iDimension = node->_iDimension;
     for (int id = 0; id < _nDimension; id++) {
         _indexMask->reset(node->_leftPoint, node->_rightPoint);
@@ -294,12 +293,12 @@ void treeVectorDiretion::reArrange(NODE* node, int splitPoint) {
     }
 }
 
-treeVectorDiretion::~treeVectorDiretion() {
+treeVectorDirection::~treeVectorDirection() {
     delete _indexMask;
     delete  _rootNode;
 }
 
-bool treeVectorDiretion::NODE::printInfo(const char* indent, bool last) {
+bool treeVectorDirection::NODE::printInfo(const char* indent, bool last) {
     bool ret;
     char leftS[1024];
     char rightS[1024];  
@@ -331,12 +330,12 @@ bool treeVectorDiretion::NODE::printInfo(const char* indent, bool last) {
     }
     return ret;
 }
-void treeVectorDiretion::NODE::selectBestClass(){
+void treeVectorDirection::NODE::selectBestClass(){
     double maxG=0.;
     int maxIndex=-1;
     for(int iG=0;iG<_nG;iG++){
         if(_nodeSumH[iG]<=0.){
-            cout<<"Something is wrong! [treeVectorDiretion::NODE::selectBestClass]"<<endl;
+            cout<<"Something is wrong! [treeVectorDirection::NODE::selectBestClass]"<<endl;
             continue;
         }
         double gain=_nodeSumG[iG]*_nodeSumG[iG]/_nodeSumH[iG];
@@ -369,7 +368,7 @@ void treeVectorDiretion::NODE::selectBestClass(){
     //cout<<"Node("<<_leftPoint<<", "<<_rightPoint<<") Loss= "<<_nodeLoss<<endl;
 }
 
-void treeVectorDiretion::eval(double* pnt, double* direction) {
+void treeVectorDirection::eval(double* pnt, double* direction) {
     double f;
     int workingClass, workingClass1, workingClass2;
     f = evalp(pnt,workingClass);
@@ -400,7 +399,7 @@ void treeVectorDiretion::eval(double* pnt, double* direction) {
     } 
 }
 
-void treeVectorDiretion::buildDirection() {
+void treeVectorDirection::buildDirection() {
     _round++;
     for (int iDimension = 0; iDimension < _nDimension; iDimension++) {
         memcpy(_data->_dataIndex[iDimension], _data->_dataIndex0[iDimension], _nEvents * sizeof (int));
@@ -421,7 +420,7 @@ void treeVectorDiretion::buildDirection() {
 //    exit(0);
 }
 
-void treeVectorDiretion::NODE::bestNode(NODE*& n, double& gain) {
+void treeVectorDirection::NODE::bestNode(NODE*& n, double& gain) {
     //if this node has not been split
     if (_ableSplit)
         splitNode();
