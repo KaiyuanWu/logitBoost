@@ -36,7 +36,7 @@ public:
     int _nDirection;
     directionFunction** _df;
     dataManager*  _data;
-    void updateDirection();
+    void updateDirection(int iRound);
     void buildDirection();
     
     void updateDirection1();

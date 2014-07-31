@@ -83,6 +83,5 @@ private:
     int _nG;
 };
 
-
 #endif	/* TREEVECTORDIRECTION_H */
 

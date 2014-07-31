@@ -1,4 +1,4 @@
-/* 
+    /* 
  * File:   evaluation.cpp
  * Author: kaiwu
  * 
@@ -85,6 +85,19 @@ void evaluation::start(){
     for (iIteration = 0; iIteration < _nMaxIteration; iIteration++) {
         //call the weak learner for each fold
         _linearSearchMinimizer->minimization(iIteration);
+//        cout << "Gradient: " << endl;
+//        for (int ix = 0; ix < _data->_nTrainEvents; ix++) {
+//            cout << "[";
+//            for (int ic = 0; ic < 10; ic++) {
+//                cout << _data->_trainX[ix * _data->_nDimension + ic] << ", ";
+//            }
+//            cout << "] ";
+//            for (int ic = 0; ic < _data->_nClass; ic++) {
+//                cout << _data->_lossGradient[ix * _data->_nClass + ic] << ", ";
+//            }
+//            cout << endl;
+//        }
+//        exit(0);
         _accuracyTestArray[iIteration] = _data->_testAccuracy ;
         _accuracyTrainArray[iIteration]= _data->_trainAccuracy;
         _lossTrainArray[iIteration] = _data->_trainLoss/_nTrainEvents;

@@ -20,11 +20,12 @@ LossFunction::~LossFunction() {
 
 double LossFunction::loss(double*f,int y,double& gradient, double& hessian,int c1){
     double ret=0.;
-    int class1=c1/_nClass;
-    int class2=c1%_nClass;
+    int class1,class2;
     switch(_treeType){
         case directionFunction::_ABC_LOGITBOOST_:
         case directionFunction::_AOSO_LOGITBOOST_:
+            class1=c1/_nClass;
+            class2=c1%_nClass; 
             ret=lossabcLogitNewton(f,y,class1,class2,gradient,hessian);
             if (class1!=class2&&hessian < _MIN_HESSIAN_)
                 hessian = _MIN_HESSIAN_;
@@ -34,10 +35,12 @@ double LossFunction::loss(double*f,int y,double& gradient, double& hessian,int c
             }
             break;
         case directionFunction::_SLOGITBOOST_:
+            class1=c1;
             ret=lossSNewton(f,y,class1,gradient,hessian);
             break;
         case directionFunction::_MART_:
         case directionFunction::_LOGITBOOST_:
+            class1=c1;
             ret=lossNewton(f,y,class1,gradient,hessian);
             break;
         default:
@@ -110,6 +113,8 @@ double LossFunction::lossSNewton(double* f, int y, int c, double& gradient, doub
     hessian=_nClass*_nClass*pc*(1.-pc);
     if(hessian<_MIN_HESSIAN_)
         hessian=_MIN_HESSIAN_;
+
+//    cout << "pc= " << pc << ", py= " << py <<" y= "<<y<<", c= "<<c<< ", " << gradient<<", "<<hessian<<endl;
     return loss;
 }
 

@@ -137,8 +137,8 @@ void treeVectorDirection::initNode() {
     n->_ableSplit  = true ;
     n->_additiveGain = 0. ;
     n->_nodeLoss=0;
-    memset(n->_nodeSumG,0,_nG);
-    memset(n->_nodeSumH,0,_nG);
+    memset(n->_nodeSumG,0,_nG*sizeof(double));
+    memset(n->_nodeSumH,0,_nG*sizeof(double));
 
     for (int iPoint = 0; iPoint < _nEvents; iPoint++) {
         n->_nodeLoss+=_data->_loss[iPoint];
@@ -317,14 +317,14 @@ bool treeVectorDirection::NODE::printInfo(const char* indent, bool last) {
     if (_isInternal) {
         if(last){
             sprintf(rightS,"%s",indent);
-            printf("%s|-x%.2d<=%.6f\n",rightS,_iDimension,_cut);
+            printf("%s|-x%.2d<=%.6f f= %f (%d,%d) nodeGain=%f additiveGain=%f \n",rightS,_iDimension,_cut,_f, _leftPoint, _rightPoint,_nodeGain,_additiveGain);
             sprintf(leftS,"%s|  ",indent);
             ret = _leftChildNode->printInfo(leftS, true);
             ret = _rightChildNode->printInfo(leftS, false);
         }
         else{
             sprintf(rightS,"%s",indent);
-            printf("%s+-x%.2d<=%.6f\n",rightS,_iDimension,_cut);
+            printf("%s+-x%.2d<=%.6f f= %f (%d,%d) nodeGain=%f additiveGain= %f \n",rightS,_iDimension,_cut,_f, _leftPoint, _rightPoint,_nodeGain,_additiveGain);
             sprintf(leftS,"%s  ",indent);
             ret = _leftChildNode->printInfo(leftS, true);
             ret = _rightChildNode->printInfo(leftS, false);
@@ -332,11 +332,11 @@ bool treeVectorDirection::NODE::printInfo(const char* indent, bool last) {
     } else{
         if(!last){
             sprintf(rightS,"%s",indent);
-            printf("%s+-f= %f (%d,%d)\n",rightS, _f, _leftPoint, _rightPoint);
+            printf("%s+-f= %f (%d,%d) nodeGain=%f additiveGain=%f \n",rightS, _f, _leftPoint, _rightPoint,_nodeGain,_additiveGain);
         }
         else{
             sprintf(rightS,"%s",indent);
-            printf("%s|-f= %f (%d,%d)\n",rightS, _f, _leftPoint, _rightPoint);
+            printf("%s|-f= %f (%d,%d) nodeGain=%f additiveGain=%f \n",rightS, _f, _leftPoint, _rightPoint,_nodeGain,_additiveGain);
         }
         return true;
     }
@@ -387,7 +387,7 @@ void treeVectorDirection::eval(double* pnt, double* direction) {
     workingClass1=workingClass/_nClass;
     workingClass2=workingClass%_nClass;
     switch(_treeType){
-        case _AOSO_LOGITBOOST_:
+        case _SLOGITBOOST_:
             for (int iClass = 0.; iClass < _nClass; iClass++) {
                 if (iClass == workingClass)
                     direction[iClass] = (_nClass - 1.) * f;
@@ -395,7 +395,7 @@ void treeVectorDirection::eval(double* pnt, double* direction) {
                     direction[iClass] = -f;
             }    
             break;
-        case _SLOGITBOOST_:
+        case _AOSO_LOGITBOOST_:
             for (int iClass = 0.; iClass < _nClass; iClass++) {
                 if (iClass == workingClass1)
                     direction[iClass] =  f;
@@ -412,6 +412,16 @@ void treeVectorDirection::eval(double* pnt, double* direction) {
 }
 
 void treeVectorDirection::buildDirection() {
+    //output data information
+//    for(int ix=0;ix<_data->_nTrainEvents;ix++){
+//        cout<<"g[";
+//        for(int ic=0;ic<_data->_nClass;ic++)
+//            cout<<_data->_lossGradient[ix*_data->_nClass+ic]<<", ";
+//        cout<<"] h[";
+//        for(int ic=0;ic<_data->_nClass;ic++)
+//            cout<<_data->_lossHessian[ix*_data->_nClass+ic]<<", ";
+//        cout<<"]"<<endl;
+//    }
     _round++;
     for (int iDimension = 0; iDimension < _nDimension; iDimension++) {
         memcpy(_data->_dataIndex[iDimension], _data->_dataIndex0[iDimension], _nEvents * sizeof (int));
@@ -427,8 +437,8 @@ void treeVectorDirection::buildDirection() {
         if (node->_leftChildNode)
             node->_isInternal = true;
     }
-//    _rootNode->printInfo("",true);
-//    cout<<"+++++++++++++++++++++++++"<<endl;
+    _rootNode->printInfo("",true);
+    cout<<"++++++++++"<<_round<<"+++++++++++++++"<<endl;
 //    exit(0);
 }
 

@@ -64,7 +64,7 @@ linearSearch::~linearSearch() {
 double linearSearch::minimization(int iRound){
     double ret=0.;
     buildDirection();
-    updateDirection();
+    updateDirection(iRound);
     _data->increment(_shrinkage,  iRound);
     ret = _data->_trainAccuracy;
     return ret;
@@ -163,7 +163,7 @@ void linearSearch::updateDirection2() {
     _g++;
 
 }
-void linearSearch::updateDirection(){
+void linearSearch::updateDirection(int iRound){
     switch(_treeType){
         case directionFunction::_MART_:
         case directionFunction::_LOGITBOOST_:
@@ -184,6 +184,16 @@ void linearSearch::updateDirection(){
             exit(-1);
             break;
     }
+//    if (iRound == 1) {
+//        cout << "Direction: " << endl;
+//        for (int ix = 0; ix < _data->_nTrainEvents; ix++) {
+//            for (int ic = 0; ic < _data->_nClass; ic++) {
+//                cout << _data->_trainDescendingDirection[ix * _data->_nClass + ic] << ", ";
+//            }
+//            cout << endl;
+//        }
+//        exit(0);
+//    }
 }
 void linearSearch::buildDirection(){
     switch(_treeType){
