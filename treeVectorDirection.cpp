@@ -28,6 +28,18 @@ treeVectorDirection::treeVectorDirection(dataManager* data,int nLeaves, int mini
     _indexMask     = new bitArray(_nEvents)   ;
     
     _zMax = 4.   ;
+
+    switch(_treeType){
+        case _AOSO_LOGITBOOST_:
+            _nG=_nClass*_nClass;
+            break;
+        case _SLOGITBOOST_:
+            _nG=_nClass;
+            break;
+        default:
+            cout<<"This type of tree: "<<_treeType<<" has not been implmented!"<<endl;
+            exit(-1);
+    }
 }
 
 void treeVectorDirection::resetRootNode() {

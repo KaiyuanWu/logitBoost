@@ -65,11 +65,11 @@ LDLIBSOPTIONS=
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/allinone
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/logitBoost
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/allinone: ${OBJECTFILES}
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/logitBoost: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/allinone ${OBJECTFILES} ${LDLIBSOPTIONS}
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/logitBoost ${OBJECTFILES} ${LDLIBSOPTIONS}
 
 ${OBJECTDIR}/LossFunction.o: LossFunction.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -127,7 +127,7 @@ ${OBJECTDIR}/treeVectorDirection.o: treeVectorDirection.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/allinone
+	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/logitBoost
 
 # Subprojects
 .clean-subprojects:

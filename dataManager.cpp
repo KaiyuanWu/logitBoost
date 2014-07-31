@@ -155,28 +155,29 @@ void dataManager::finishAddingEvent(){
     if(_trainCurrentEvent<_nTrainEvents){
         cout<<"You have added "<<_trainCurrentEvent<<" training events, which is less than "<<_nTrainEvents<<endl;
         _nTrainEvents=_trainCurrentEvent;
-        for (int iDimension = 0; iDimension < _nDimension; iDimension++) {
-            for (int iEvent = 0; iEvent < _nTrainEvents; iEvent++) {
-                _projectedX[iEvent] = _trainX[iEvent * _nDimension + iDimension];
-                _dataIndex0[iDimension][iEvent] = iEvent;
-            }
-            sort(0, _nTrainEvents - 1, iDimension, true);
-            //store reverse data index table
-            for (int iEvent = 0; iEvent < _nTrainEvents; iEvent++)
-                _dataReverseIndex0[iDimension][_dataIndex0[iDimension][iEvent]] = iEvent;
-        }
-        ////print sort result
-        //    for (int iDimension = 0; iDimension < _nDimension; iDimension++) {
-        //        for (int iEvent = 0; iEvent < _nEvents; iEvent++) {
-        //            cout<<_data->_trainX[_dataIndex0[iDimension][iEvent] * _nDimension + iDimension]<<", ";
-        //        }
-        //        cout<<endl;
-        //    }
     }
     if(_testCurrentEvent<_nTestEvents){
         cout<<"You have added "<<_testCurrentEvent<<" validating events, which is less than "<<_nTestEvents<<endl;
         _nTestEvents=_testCurrentEvent;
     }
+    for (int iDimension = 0; iDimension < _nDimension; iDimension++) {
+        for (int iEvent = 0; iEvent < _nTrainEvents; iEvent++) {
+            _projectedX[iEvent] = _trainX[iEvent * _nDimension + iDimension];
+            _dataIndex0[iDimension][iEvent] = iEvent;
+        }
+        sort(0, _nTrainEvents - 1, iDimension, true);
+        //store reverse data index table
+        for (int iEvent = 0; iEvent < _nTrainEvents; iEvent++)
+            _dataReverseIndex0[iDimension][_dataIndex0[iDimension][iEvent]] = iEvent;
+    }
+//    //print sort result
+//    for (int iDimension = 0; iDimension < _nDimension; iDimension++) {
+//        for (int iEvent = 0; iEvent < _nTrainEvents; iEvent++) {
+//            cout << _trainX[_dataIndex0[iDimension][iEvent] * _nDimension + iDimension] << ", ";
+//        }
+//        cout << endl;
+//    }
+    
     double g, h;
     _trainLoss=0.;
     _testLoss=0.;

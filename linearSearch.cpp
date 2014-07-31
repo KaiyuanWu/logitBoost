@@ -133,6 +133,7 @@ void linearSearch::updateDirection2() {
         }
         _g = -1;
     }
+    
     for (int iEvent = 0; iEvent < _nTrainEvents; iEvent++) {
         double sumD = 0.;
         for (int iClass = 0; iClass < _nClass; iClass++) {
