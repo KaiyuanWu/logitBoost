@@ -23,8 +23,7 @@ dataManager::dataManager(int nDimension,int nClass, directionFunction::_TREE_TYP
     
     _lossFunction=new LossFunction(_treeType,_nDimension,_nClass);
     //_lossFunction=new costSensitiveLossFunction(phiFunction,_nDimension,_nClass);
-    
-    _MIN_HESSIAN_=1.0e-30;
+    _MIN_HESSIAN_=1.e-300;
 }
 void dataManager::allocateDataSpace() {
     if (_nTrainEvents > 0) {
@@ -97,38 +96,18 @@ void dataManager::allocateDataSpace() {
 }
 
 void dataManager::addEvent(double* event,int iclass){
-    for(int iDimension=0;iDimension<_nDimension;iDimension++){
+    for(int iDimension=0;iDimension<_nDimension;iDimension++)
         _trainX[_trainCurrentEvent*_nDimension+iDimension]=event[iDimension];
-    }
-    for(int iClass=0;iClass<_nClass;iClass++) {
-        //if (_nClass != 2) {
-            _trainF[_trainCurrentEvent * _nClass + iClass] = 0.;
-        //   continue;
-        //} 
-        
-//        if(iClass==0)
-//            _trainF[_trainCurrentEvent*_nClass+iClass]=1;
-//        else
-//            _trainF[_trainCurrentEvent*_nClass+iClass]=-1;
-    }
+    for(int iClass=0;iClass<_nClass;iClass++)
+        _trainF[_trainCurrentEvent * _nClass + iClass] = 0.;
     _trainClass[_trainCurrentEvent]=iclass;
     _trainCurrentEvent++;
 }
 void dataManager::addValidateEvent(double* event,int iclass){
     for(int iDimension=0;iDimension<_nDimension;iDimension++)
         _testX[_testCurrentEvent*_nDimension+iDimension]=event[iDimension];
-    for(int iClass=0;iClass<_nClass;iClass++) {
-        //if (_nClass != 2) {
-            _testF[_testCurrentEvent * _nClass + iClass] = 0.;
-//            continue;
-//        }
-//        if(iClass==0){
-//            _testF[_testCurrentEvent*_nClass+iClass]=1;
-//        }
-//        else{
-//            _testF[_testCurrentEvent*_nClass+iClass]=-1.;
-//        }
-    }
+    for(int iClass=0;iClass<_nClass;iClass++)
+        _testF[_testCurrentEvent * _nClass + iClass] = 0.;
     _testClass[_testCurrentEvent]=iclass;
     _testCurrentEvent++;
 }
@@ -204,13 +183,11 @@ void dataManager::finishAddingEvent(){
     _trainLoss=0.;
     _testLoss=0.;
     for (int iEvent = 0; iEvent < _nTrainEvents; iEvent++) {
-        for (int iClass = 0; iClass < _nClass; iClass++) {
-            _loss[iEvent]=_lossFunction->loss(_trainF + iEvent*_nClass, _trainClass[iEvent], iClass, g, h);
-            _lossGradient[iEvent * _nClass + iClass] = g;
-            _lossHessian[iEvent * _nClass + iClass] = h;
-            //cout<<"["<<_loss[iEvent]<<", "<<g<<", "<<h<<"], ";
+        for (int iG = 0; iG < _nG; iG++) {
+            _loss[iEvent]=_lossFunction->loss(_trainF + iEvent*_nClass, _trainClass[iEvent], iG, g, h);
+            _lossGradient[iEvent * _nClass + iG] = g;
+            _lossHessian[iEvent * _nClass + iG] = h;
         }
-        //cout<<endl;
         _trainLoss+=_loss[iEvent];
     }
     //exit(0);
@@ -251,12 +228,12 @@ void  dataManager::increment(double shrinkage,directionFunction* df,int iRound) 
             }
         }
         double g, h;
-        for (int iClass = 0; iClass < _nClass; iClass++) {
-            _loss[iEvent] = _lossFunction->loss(_trainF + iEvent*_nClass, _trainClass[iEvent], iClass, g, h);
-            _lossGradient[iEvent * _nClass + iClass] = g;
-            if(h<1.0e-20)
-                h=1.0e-20;
-            _lossHessian[iEvent * _nClass + iClass] = h;
+        for (int iG = 0; iG < _nG; iG++) {
+            _loss[iEvent] = _lossFunction->loss(_trainF + iEvent*_nClass, _trainClass[iEvent], iG, g, h);
+            _lossGradient[iEvent * _nClass + iG] = g;
+            if(h<_MIN_HESSIAN_)
+                h=_MIN_HESSIAN_;
+            _lossHessian[iEvent * _nClass + iG] = h;
         }
         _trainLoss+=_loss[iEvent];
         //_trainLoss+=_lossFunction->_costMatrix[_trainClass[iEvent]*_nClass+_maxI];

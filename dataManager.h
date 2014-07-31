@@ -66,7 +66,7 @@ public:
     //temporary array
     int* _projectedX;
     int* _dataIndexTemp;
-    
+
     
     //space for testing data
     //features of test samples
