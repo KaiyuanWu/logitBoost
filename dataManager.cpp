@@ -8,7 +8,7 @@
 #include <string.h>
 #include "dataManager.h"
 
-dataManager::dataManager(int nDimension,int nClass,LossFunction::_LOSSTYPE lossType,  int nTrainEvent,int nTestEvent){
+dataManager::dataManager(int nDimension,int nClass, directionFunction::_TREE_TYPE_ treeType, int nTrainEvent,int nTestEvent){
     _nTrainEvents=nTrainEvent;
     _nTestEvents=nTestEvent;
     _nDimension=nDimension;
@@ -17,10 +17,14 @@ dataManager::dataManager(int nDimension,int nClass,LossFunction::_LOSSTYPE lossT
     _testAccuracy=0.;
     _trainLoss=0.;
     _testLoss=0.;
+    _treeType=treeType;
+    
     allocateDataSpace();
     
-    _lossFunction=new LossFunction(lossType,phiFunction,_nDimension,_nClass);
+    _lossFunction=new LossFunction(_treeType,_nDimension,_nClass);
     //_lossFunction=new costSensitiveLossFunction(phiFunction,_nDimension,_nClass);
+    
+    _MIN_HESSIAN_=1.0e-30;
 }
 void dataManager::allocateDataSpace() {
     if (_nTrainEvents > 0) {
@@ -28,9 +32,21 @@ void dataManager::allocateDataSpace() {
         _trainX=new double[_nTrainEvents*_nDimension];
         _trainF=new double[_nTrainEvents*_nClass];
         _loss=new double[_nTrainEvents];
-        _lossGradient=new double[_nTrainEvents*_nClass];
-        _lossHessian=new double[_nTrainEvents*_nClass];
         _trainClass=new int[_nTrainEvents];
+        switch(_treeType){
+            case directionFunction::_LOGITBOOST_:
+            case directionFunction::_MART_:
+            case directionFunction::_SLOGITBOOST_:
+                _nG=_nClass;
+                break;
+            case directionFunction::_ABC_LOGITBOOST_:
+            case directionFunction::_AOSO_LOGITBOOST_:
+                _nG=_nClass*_nClass;
+                break;
+                
+        }
+        _lossGradient=new double[_nTrainEvents*_nG];
+        _lossHessian=new double[_nTrainEvents*_nG];
 
         _projectedX = new double[_nTrainEvents];
         _dataIndex = new int*[_nDimension];

@@ -20,7 +20,7 @@ using namespace std;
 //dataManager stores training data & testing data, the order information of the samples, the classifier values of the sample and the discending directions and the gradients&hessian of the samples.
 class dataManager {
 public:
-    dataManager(int nDimension,int nClass, LossFunction::_LOSSTYPE lossType, int nTrainEvent,int nTestEvent=0);
+    dataManager(int nDimension,int nClass, directionFunction::_TREE_TYPE_ treeType, int nTrainEvent,int nTestEvent=0);
     //adding training event, after adding training events, and initialize the logist p/F
     void   addEvent(double* event,int iclass)   ;
     //adding validating event, after adding validating events, and initialize the logist p/F
@@ -44,6 +44,7 @@ public:
     //classifiers values of the training samples
     double* _trainF;
     //gradient and hessian values of the training samples
+    int _nG;
     double* _lossGradient;
     double* _lossHessian;
     //loss value of each sample
@@ -99,13 +100,14 @@ private:
     int* _wrongOldTest;
     int* _wrongNewTest;
 
-    LossFunction::_LOSSTYPE _lossType;
+    directionFunction::_TREE_TYPE_ _treeType;
     LossFunction* _lossFunction;
     //costSensitiveLossFunction* _lossFunction;
     
     //recursively sort the projected data
     void sort(int low,int high,int iDimension,bool atInit=false);
     void swap(int i,int j,int iDimension,bool atInit=false);
-
+    
+    double _MIN_HESSIAN_;
 };
 #endif	/* DATAMANAGER_H */

@@ -21,7 +21,7 @@ using namespace std;
 
 class crossValidate {
 public:
-    crossValidate(int jobID,int nFold, LossFunction::_LOSSTYPE lossType,double shrinkage=1.,int nLeaves=8,int minimumNodeSize=1,int nMaxIteration=1000);
+    crossValidate(int jobID,int nFold, directionFunction::_TREE_TYPE_ treeType,double shrinkage=1.,int nLeaves=8,int minimumNodeSize=1,int nMaxIteration=1000);
     virtual ~crossValidate();
     
 public:
@@ -29,9 +29,7 @@ public:
     string _fileOutName;
     //initialization procedure
     //read data file
-    void init();
-    //read data file for the experiments of work AOSALogitBoost
-    void init2();
+    void init(char* prefix, char* outputPrefix);
     //start the program
     void start();
     void saveResult();
@@ -76,7 +74,7 @@ private:
     dataManager** _data;
     linearSearch** _linearSearchMinimizer;
     
-    LossFunction::_LOSSTYPE _lossType;
+    directionFunction::_TREE_TYPE_ _treeType;
     ofstream* _outf;
 };
 
