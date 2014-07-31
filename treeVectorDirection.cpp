@@ -230,10 +230,10 @@ void treeVectorDirection::NODE::splitNode() {
                 
                 leftLoss1=leftLoss;
                 rightLoss1=rightLoss;
-                memcpy(leftSumG1 ,leftSumG, sizeof(double)*_tree->_nClass);
-                memcpy(leftSumH1 ,leftSumH, sizeof(double)*_tree->_nClass);                
-                memcpy(rightSumG1 ,rightSumG, sizeof(double)*_tree->_nClass);
-                memcpy(rightSumH1 ,rightSumH, sizeof(double)*_tree->_nClass);
+                memcpy(leftSumG1 ,leftSumG, sizeof(double)*_nG);
+                memcpy(leftSumH1 ,leftSumH, sizeof(double)*_nG);                
+                memcpy(rightSumG1 ,rightSumG, sizeof(double)*_nG);
+                memcpy(rightSumH1 ,rightSumH, sizeof(double)*_nG);
             }
         }
     }
@@ -246,15 +246,15 @@ void treeVectorDirection::NODE::splitNode() {
         
         NODE* t = new NODE(_data, _tree, _leftPoint, maxI,leftLoss1);
         _leftChildNode = t;
-        memcpy(t->_nodeSumG ,leftSumG1, sizeof(double)*_tree->_nClass);
-        memcpy(t->_nodeSumH ,leftSumH1, sizeof(double)*_tree->_nClass);
+        memcpy(t->_nodeSumG ,leftSumG1, sizeof(double)*_nG);
+        memcpy(t->_nodeSumH ,leftSumH1, sizeof(double)*_nG);
         t->_iDimension=_iDimension;
         t->selectBestClass();
 
         t = new NODE(_data, _tree, maxI + 1, _rightPoint,rightLoss1);
         _rightChildNode = t;
-        memcpy(t->_nodeSumG ,rightSumG1, sizeof(double)*_tree->_nClass);
-        memcpy(t->_nodeSumH ,rightSumH1, sizeof(double)*_tree->_nClass);
+        memcpy(t->_nodeSumG ,rightSumG1, sizeof(double)*_nG);
+        memcpy(t->_nodeSumH ,rightSumH1, sizeof(double)*_nG);
         t->_iDimension=_iDimension;
         t->selectBestClass();
         //check the node is correctly split
