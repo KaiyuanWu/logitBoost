@@ -213,8 +213,7 @@ void treeVectorDirection::NODE::splitNode() {
             double gain=-1.;
             for(int iG=0;iG<_nG;iG++) {
                 if (leftSumH[iG] == 0.||rightSumH[iG]==0.) {
-                    cout << "Something is wrong! Hessian is 0 in [treeVectorDirection::NODE::splitNode]" << endl;
-                    exit(0);
+                    continue;
                 }
                 double newgain=(leftSumG[iG] *leftSumG[iG]*rightSumH[iG]+rightSumG[iG]*rightSumG[iG]*leftSumH[iG])/(leftSumH[iG]*rightSumH[iG]);
                 if(newgain>gain)
@@ -347,7 +346,6 @@ void treeVectorDirection::NODE::selectBestClass(){
     int maxIndex=-1;
     for(int iG=0;iG<_nG;iG++){
         if(_nodeSumH[iG]<=0.){
-            cout<<"Something is wrong! [treeVectorDirection::NODE::selectBestClass]"<<endl;
             continue;
         }
         double gain=_nodeSumG[iG]*_nodeSumG[iG]/_nodeSumH[iG];
@@ -412,15 +410,19 @@ void treeVectorDirection::eval(double* pnt, double* direction) {
 }
 
 void treeVectorDirection::buildDirection() {
-    //output data information
-//    for(int ix=0;ix<_data->_nTrainEvents;ix++){
-//        cout<<"g[";
-//        for(int ic=0;ic<_data->_nClass;ic++)
-//            cout<<_data->_lossGradient[ix*_data->_nClass+ic]<<", ";
-//        cout<<"] h[";
-//        for(int ic=0;ic<_data->_nClass;ic++)
-//            cout<<_data->_lossHessian[ix*_data->_nClass+ic]<<", ";
-//        cout<<"]"<<endl;
+//    //output data information
+//    if (_round == 1) {
+//        cout << "------------- iRound= " << _round << " ----------------" << endl;
+//        for (int ix = 0; ix < _data->_nTrainEvents; ix++) {
+//            cout << "g[";
+//            for (int ic = 0; ic < _nG; ic++)
+//                cout << _data->_lossGradient[ix * _nG + ic] << ", ";
+//            cout << "] h[";
+//            for (int ic = 0; ic < _nG; ic++)
+//                cout << _data->_lossHessian[ix * _nG + ic] << ", ";
+//            cout << "]" << endl;
+//        }
+//        exit(0);
 //    }
     _round++;
     for (int iDimension = 0; iDimension < _nDimension; iDimension++) {
@@ -429,7 +431,7 @@ void treeVectorDirection::buildDirection() {
     }
     initNode();
     for (int ileaf = 0; ileaf < _nLeaves - 1; ileaf++) {
-        NODE* node = NULL    ;
+        NODE* node = NULL;
         double bestGain = -1.;
         _rootNode->bestNode(node, bestGain);
         if (bestGain == -1.)
@@ -438,7 +440,7 @@ void treeVectorDirection::buildDirection() {
             node->_isInternal = true;
     }
     _rootNode->printInfo("",true);
-    cout<<"++++++++++"<<_round<<"+++++++++++++++"<<endl;
+    cout<<"++++++++++ "<<_round<<" +++++++++++++++"<<endl;
 //    exit(0);
 }
 

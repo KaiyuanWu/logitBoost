@@ -184,8 +184,8 @@ void dataManager::finishAddingEvent(){
     for (int iEvent = 0; iEvent < _nTrainEvents; iEvent++) {
         for (int iG = 0; iG < _nG; iG++) {
             _loss[iEvent]=_lossFunction->loss(_trainF + iEvent*_nClass, _trainClass[iEvent], g, h,iG);
-            _lossGradient[iEvent * _nClass + iG] = g;
-            _lossHessian[iEvent * _nClass + iG] = h;
+            _lossGradient[iEvent * _nG + iG] = g;
+            _lossHessian[iEvent * _nG + iG] = h;
         }
         _trainLoss+=_loss[iEvent];
     }
@@ -195,6 +195,14 @@ void dataManager::finishAddingEvent(){
     
 }
 void  dataManager::increment(double shrinkage,int iRound) {
+//    //test the direction
+//    for(int ix=0;ix<_nTrainEvents;ix++){
+//        for(int ic=0;ic<_nClass;ic++)
+//            cout<<_trainDescendingDirection[ix*_nClass+ic]<<", ";
+//        cout<<endl;
+//    }
+//    exit(0);
+    
     const int OUTPUT_INTERVAL = 1000000;
     for (int iClass = 0; iClass < _nClass; iClass++) {
         _correctNew[iClass] = 0;
@@ -230,8 +238,8 @@ void  dataManager::increment(double shrinkage,int iRound) {
         double g, h;
         for (int iG = 0; iG < _nG; iG++) {
             _loss[iEvent] = _lossFunction->loss(_trainF + iEvent*_nClass, _trainClass[iEvent],  g, h,iG);
-            _lossGradient[iEvent * _nClass + iG] = g;
-            _lossHessian[iEvent * _nClass + iG] = h;
+            _lossGradient[iEvent * _nG + iG] = g;
+            _lossHessian[iEvent * _nG + iG] = h;
         }
         _trainLoss+=_loss[iEvent];
         //_trainLoss+=_lossFunction->_costMatrix[_trainClass[iEvent]*_nClass+_maxI];
