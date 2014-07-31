@@ -10,8 +10,8 @@
 
 #include "dataManager.h"
 #include "directionFunction.h"
-#include "treeScalarDirection.h"
-#include "treeVectorDirection.h"
+
+
 //linearSearch class will encapsulate the minimization
 //it will store all the training parameters
 //it will organize the train iteration

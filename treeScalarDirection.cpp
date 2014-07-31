@@ -1,5 +1,5 @@
 /*
- * File:   treeScalarDiretion.cpp
+ * File:   treeScalarDirection.cpp
  * Author: kaiwu
  *
  * Created on March 16, 2014, 11:22 PM
@@ -11,7 +11,7 @@
 
 using namespace std;
 
-treeScalarDiretion::treeScalarDiretion(dataManager* data,int nLeaves, int minimumNodeSize, _TREE_TYPE_ treeType,int treeClass) {
+treeScalarDirection::treeScalarDirection(dataManager* data,int nLeaves, int minimumNodeSize, _TREE_TYPE_ treeType,int treeClass) {
     _data = data;
     _nLeaves = nLeaves;
     _minimumNodeSize=minimumNodeSize;
@@ -32,7 +32,7 @@ treeScalarDiretion::treeScalarDiretion(dataManager* data,int nLeaves, int minimu
     _indexMask     = new bitArray(_nEvents)   ;
     _zMax = 4.   ;
 }
-void treeScalarDiretion::resetRootNode() {
+void treeScalarDirection::resetRootNode() {
     if (_rootNode) {
         if (_rootNode->_leftChildNode)
             delete _rootNode->_leftChildNode;
@@ -45,7 +45,7 @@ void treeScalarDiretion::resetRootNode() {
     }
 }
 
-treeScalarDiretion::NODE::NODE(dataManager* data, treeScalarDiretion* tree, int leftPoint, int rightPoint) {
+treeScalarDirection::NODE::NODE(dataManager* data, treeScalarDirection* tree, int leftPoint, int rightPoint) {
     _additiveGain = 0.;
     _data = data;
     _tree = tree;
@@ -61,7 +61,7 @@ treeScalarDiretion::NODE::NODE(dataManager* data, treeScalarDiretion* tree, int 
     _isInternal = false;
 }
 
-treeScalarDiretion::NODE::~NODE() {
+treeScalarDirection::NODE::~NODE() {
     if (_leftChildNode)
         delete _leftChildNode;
     _leftChildNode = NULL;
@@ -70,7 +70,7 @@ treeScalarDiretion::NODE::~NODE() {
     _rightChildNode = NULL;
 }
 
-void treeScalarDiretion::eval(double* pnt, double* direction) {
+void treeScalarDirection::eval(double* pnt, double* direction) {
     NODE* n = _rootNode;
     while (n->_isInternal) {
         if (pnt[n->_iDimension] <= n->_cut) {
@@ -84,7 +84,7 @@ void treeScalarDiretion::eval(double* pnt, double* direction) {
 
 //initialization of a given node
 
-void treeScalarDiretion::initNode() {
+void treeScalarDirection::initNode() {
     NODE* n = _rootNode;
     //calculate the gain
     n->_isInternal = false;
@@ -103,7 +103,7 @@ void treeScalarDiretion::initNode() {
     n->calculateF();
 }
 
-void treeScalarDiretion::NODE::splitNode() {
+void treeScalarDirection::NODE::splitNode() {
     int splitPoint;
     //initialization
     double maxGain   = _nodeGain;
@@ -199,7 +199,7 @@ void treeScalarDiretion::NODE::splitNode() {
     _ableSplit = false;
 }
 
-void treeScalarDiretion::reArrange(NODE* node, int splitPoint) {
+void treeScalarDirection::reArrange(NODE* node, int splitPoint) {
     int iDimension = node->_iDimension;
     for (int id = 0; id < _nDimension; id++) {
         _indexMask->reset(node->_leftPoint, node->_rightPoint);
@@ -233,12 +233,12 @@ void treeScalarDiretion::reArrange(NODE* node, int splitPoint) {
     }
 }
 
-treeScalarDiretion::~treeScalarDiretion() {
+treeScalarDirection::~treeScalarDirection() {
     delete _indexMask;
     delete  _rootNode;
 }
 
-bool treeScalarDiretion::NODE::printInfo(const char* indent, bool last) {
+bool treeScalarDirection::NODE::printInfo(const char* indent, bool last) {
     bool ret;
     char leftS[1024];
     char rightS[1024];
@@ -270,7 +270,7 @@ bool treeScalarDiretion::NODE::printInfo(const char* indent, bool last) {
     }
     return ret;
 }
-void treeScalarDiretion::NODE::calculateF(){
+void treeScalarDirection::NODE::calculateF(){
     switch(_tree->_treeType) {
         case _LOGITBOOST_:
         case _ABC_LOGITBOOST_:
@@ -303,7 +303,7 @@ void treeScalarDiretion::NODE::calculateF(){
     }
 }
 
-void treeScalarDiretion::buildDirection() {
+void treeScalarDirection::buildDirection() {
     _round++;
     for (int iDimension = 0; iDimension < _nDimension; iDimension++) {
         memcpy(_data->_dataIndex[iDimension], _data->_dataIndex0[iDimension], _nEvents * sizeof (int));
@@ -321,7 +321,7 @@ void treeScalarDiretion::buildDirection() {
     }
 }
 
-void treeScalarDiretion::NODE::bestNode(NODE*& n, double& gain) {
+void treeScalarDirection::NODE::bestNode(NODE*& n, double& gain) {
     //if this node has not been split
     if (_ableSplit)
         splitNode();

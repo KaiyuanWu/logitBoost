@@ -1,0 +1,9 @@
+SRC:=$(wildcard *.cpp)
+OBJ:=$(patsubst %.cpp,%.o,$(SRC))
+CXX:=g++
+main:$(OBJ)
+	$(CXX)  -o main $(OBJ) 
+.cpp.o:$<
+	$(CXX)  -c $< -o $@
+clean:
+	rm -fr $(OBJ)	main

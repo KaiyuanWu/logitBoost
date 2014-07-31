@@ -6,6 +6,9 @@
  */
 
 #include "linearSearch.h"
+#include "treeVectorDirection.h"
+#include "treeScalarDirection.h"
+
 
 linearSearch::linearSearch(dataManager*  data,int nLeaves,double shrinkage,int minimumNodeSize,directionFunction::_TREE_TYPE_ treeType){
     _data=data;
@@ -18,27 +21,28 @@ linearSearch::linearSearch(dataManager*  data,int nLeaves,double shrinkage,int m
     _nLeaves=nLeaves;
     _minimumNodeSize=minimumNodeSize;
     _shrinkage=shrinkage;
-    directionFunction* tt;
+    treeVectorDirection* t;
+    //treeVectorDirection* tt;
     switch(_treeType){
         case directionFunction::_MART_:
         case directionFunction::_LOGITBOOST_:
             _nDirection=_nClass;
             _df=new directionFunction*[_nDirection];
             for(int id=0;id<_nDirection;id++)
-                _df[id]=new treeScalarDiretion(data,_nLeaves,_minimumNodeSize,_treeType,id);
+                _df[id]=new treeScalarDirection(data,_nLeaves,_minimumNodeSize,_treeType,id);
             break;
         case directionFunction::_ABC_LOGITBOOST_:
             _nDirection=_nClass*_nClass;
             _df=new directionFunction*[_nDirection];
             for(int id=0;id<_nDirection;id++)
-                _df[id]=new treeScalarDiretion(data,_nLeaves,_minimumNodeSize,_treeType,id);
+                _df[id]=new treeScalarDirection(data,_nLeaves,_minimumNodeSize,_treeType,id);
             break;
         case directionFunction::_AOSO_LOGITBOOST_:
         case directionFunction::_SLOGITBOOST_:
             _nDirection=1;
             _df=new directionFunction*[_nDirection];
-            //_df[0]=new treeVectorDiretion(data,_nLeaves,_minimumNodeSize,_treeType);
-            tt=new treeVectorDirection(data,_nLeaves,_minimumNodeSize,_treeType);
+            _df[0]=new treeVectorDirection(data,_nLeaves,_minimumNodeSize,_treeType);
+            //tt=new treeVectorDirection(data,_nLeaves,_minimumNodeSize,_treeType);
             break;
         default:
             cout<<"Has not been implemented!"<<endl;

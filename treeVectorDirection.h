@@ -4,8 +4,8 @@
  *
  * Created on March 16, 2014, 11:22 PM
  */
-#ifndef TREESINGLEDIRECTION_H
-#define	TREESINGLEDIRECTION_H
+#ifndef TREEVECTORDIRECTION_H
+#define	TREEVECTORDIRECTION_H
 #include <string.h>
 #include "directionFunction.h"
 #include "dataManager.h"
@@ -84,5 +84,5 @@ private:
 };
 
 
-#endif	/* TREESINGLEDIRECTION_H */
+#endif	/* TREEVECTORDIRECTION_H */
 

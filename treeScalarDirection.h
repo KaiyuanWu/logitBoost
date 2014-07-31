@@ -1,21 +1,21 @@
 /* 
- * File:   treeScalarDiretion.h
+ * File:   treeScalarDirection.h
  * Author: kaiwu
  *
  * Created on March 16, 2014, 11:22 PM
  */
-#ifndef TREESINGLEDIRECTION_H
-#define	TREESINGLEDIRECTION_H
+#ifndef TREESCALARDIRECTION_H
+#define	TREESCALARDIRECTION_H
 #include <string.h>
 #include "directionFunction.h"
 #include "dataManager.h"
 #include "LossFunction.h"
 #include "bitArray.h"
 
-class treeScalarDiretion:public directionFunction {
+class treeScalarDirection:public directionFunction {
 public:
-    treeScalarDiretion(dataManager* data,int nLeaves, int minimumNodeSize, _TREE_TYPE_ treeType,int treeClass);
-    virtual ~treeScalarDiretion();
+    treeScalarDirection(dataManager* data,int nLeaves, int minimumNodeSize, _TREE_TYPE_ treeType,int treeClass);
+    virtual ~treeScalarDirection();
     void buildDirection();
     //Data Manager
     dataManager* _data;
@@ -30,7 +30,7 @@ public:
 private:
     class NODE{
     public:
-        NODE(dataManager* data,treeScalarDiretion* tree,int leftPoint,int rightPoint);
+        NODE(dataManager* data,treeScalarDirection* tree,int leftPoint,int rightPoint);
         ~NODE();
         int _leftPoint;
         int _rightPoint;
@@ -52,7 +52,7 @@ private:
         double _f;
         bool _ableSplit;
         dataManager* _data;
-        treeScalarDiretion* _tree;
+        treeScalarDirection* _tree;
         void bestNode(NODE*& n,double& gain);
         void splitNode();
         bool printInfo(const char* indent,bool last);
@@ -76,5 +76,5 @@ private:
 };
 
 
-#endif	/* TREESINGLEDIRECTION_H */
+#endif	/* TREESCALARDIRECTION_H */
 
