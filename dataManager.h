@@ -107,7 +107,5 @@ private:
     //recursively sort the projected data
     void sort(int low,int high,int iDimension,bool atInit=false);
     void swap(int i,int j,int iDimension,bool atInit=false);
-    
-    double _MIN_HESSIAN_;
 };
 #endif	/* DATAMANAGER_H */

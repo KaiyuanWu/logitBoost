@@ -23,7 +23,6 @@ dataManager::dataManager(int nDimension,int nClass, directionFunction::_TREE_TYP
     
     _lossFunction=new LossFunction(_treeType,_nDimension,_nClass);
     //_lossFunction=new costSensitiveLossFunction(phiFunction,_nDimension,_nClass);
-    _MIN_HESSIAN_=1.e-300;
 }
 void dataManager::allocateDataSpace() {
     if (_nTrainEvents > 0) {
@@ -90,7 +89,6 @@ void dataManager::allocateDataSpace() {
         _wrongOldTest[iClass]=0;
         _wrongNewTest[iClass]=0;
     }
-    
     _trainCurrentEvent=0;
     _testCurrentEvent=0;
 }
@@ -227,12 +225,11 @@ void  dataManager::increment(double shrinkage,directionFunction* df,int iRound) 
                     _wrongNew[iClass]++;
             }
         }
+       //update the gradients and hessian informations
         double g, h;
         for (int iG = 0; iG < _nG; iG++) {
             _loss[iEvent] = _lossFunction->loss(_trainF + iEvent*_nClass, _trainClass[iEvent], iG, g, h);
             _lossGradient[iEvent * _nClass + iG] = g;
-            if(h<_MIN_HESSIAN_)
-                h=_MIN_HESSIAN_;
             _lossHessian[iEvent * _nClass + iG] = h;
         }
         _trainLoss+=_loss[iEvent];
