@@ -241,18 +241,18 @@ treeScalarDirection::~treeScalarDirection() {
 bool treeScalarDirection::NODE::printInfo(const char* indent, bool last) {
     bool ret;
     char leftS[1024];
-    char rightS[1024];
+    char rightS[1024];  
     if (_isInternal) {
         if(last){
             sprintf(rightS,"%s",indent);
-            printf("%s|-x%.2d<=%.6f\n",rightS,_iDimension,_cut);
+            printf("%s|-x%.2d<=%.6f f= %f (%d,%d) nodeGain=%f additiveGain=%f \n",rightS,_iDimension,_cut,_f, _leftPoint, _rightPoint,_nodeGain,_additiveGain);
             sprintf(leftS,"%s|  ",indent);
             ret = _leftChildNode->printInfo(leftS, true);
             ret = _rightChildNode->printInfo(leftS, false);
         }
         else{
             sprintf(rightS,"%s",indent);
-            printf("%s+-x%.2d<=%.6f\n",rightS,_iDimension,_cut);
+            printf("%s+-x%.2d<=%.6f f= %f (%d,%d) nodeGain=%f additiveGain= %f \n",rightS,_iDimension,_cut,_f, _leftPoint, _rightPoint,_nodeGain,_additiveGain);
             sprintf(leftS,"%s  ",indent);
             ret = _leftChildNode->printInfo(leftS, true);
             ret = _rightChildNode->printInfo(leftS, false);
@@ -260,11 +260,11 @@ bool treeScalarDirection::NODE::printInfo(const char* indent, bool last) {
     } else{
         if(!last){
             sprintf(rightS,"%s",indent);
-            printf("%s+-f= %f (%d,%d) \n",rightS, _f, _leftPoint, _rightPoint);
+            printf("%s+-f= %f (%d,%d) nodeGain=%f additiveGain=%f \n",rightS, _f, _leftPoint, _rightPoint,_nodeGain,_additiveGain);
         }
         else{
             sprintf(rightS,"%s",indent);
-            printf("%s|-f= %f (%d,%d) \n",rightS, _f, _leftPoint, _rightPoint);
+            printf("%s|-f= %f (%d,%d) nodeGain=%f additiveGain=%f \n",rightS, _f, _leftPoint, _rightPoint,_nodeGain,_additiveGain);
         }
         return true;
     }
@@ -304,6 +304,11 @@ void treeScalarDirection::NODE::calculateF(){
 }
 
 void treeScalarDirection::buildDirection() {
+    for (int ix = 0; ix < _data->_nTrainEvents; ix++) {
+        cout << _data->_lossGradient[_treeClass]<< ", "<<_data->_lossHessian[_treeClass]<<endl;
+    }
+    exit(0);
+    
     _round++;
     for (int iDimension = 0; iDimension < _nDimension; iDimension++) {
         memcpy(_data->_dataIndex[iDimension], _data->_dataIndex0[iDimension], _nEvents * sizeof (int));
@@ -319,6 +324,8 @@ void treeScalarDirection::buildDirection() {
         if (node->_leftChildNode)
             node->_isInternal = true;
     }
+    _rootNode->printInfo("",true);
+    cout<<"++++++++++ "<<_round<<" +++++++++++++++"<<endl;
 }
 
 void treeScalarDirection::NODE::bestNode(NODE*& n, double& gain) {

@@ -424,6 +424,7 @@ void treeVectorDirection::buildDirection() {
 //        }
 //        exit(0);
 //    }
+    
     _round++;
     for (int iDimension = 0; iDimension < _nDimension; iDimension++) {
         memcpy(_data->_dataIndex[iDimension], _data->_dataIndex0[iDimension], _nEvents * sizeof (int));
