@@ -30,7 +30,7 @@ void test1(int jobID,int fold,int nLeaves, int minimumNodeSize, int nMaxIteratio
     sprintf(fTest,"%s/datasets/splitData/%sT_%d.dat",prefix,datasetNames[jobID],fold);
     sprintf(fOut,"%s/output/logitBoost_Fold%dDataset%snLeaves%dminimumNodeSize%dMaxiteration%d.dat",prefix,fold,datasetNames[jobID],nLeaves,minimumNodeSize,nMaxIteration);
     
-    directionFunction::_TREE_TYPE_ treeType=directionFunction::_MART_;
+    directionFunction::_TREE_TYPE_ treeType=directionFunction::_ABC_LOGITBOOST_;
     double shrinkage=0.1;
     
     int nTrainEventsA[]={

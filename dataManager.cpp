@@ -195,13 +195,13 @@ void dataManager::finishAddingEvent(){
     
 }
 void  dataManager::increment(double shrinkage,int iRound) {
-    //test the direction
-    for(int ix=0;ix<_nTrainEvents;ix++){
-        for(int ic=0;ic<_nClass;ic++)
-            cout<<_trainDescendingDirection[ix*_nClass+ic]<<", ";
-        cout<<endl;
-    }
-    exit(0);
+//    //test the direction
+//    for(int ix=0;ix<_nTrainEvents;ix++){
+//        for(int ic=0;ic<_nClass;ic++)
+//            cout<<_trainDescendingDirection[ix*_nClass+ic]<<", ";
+//        cout<<endl;
+//    }
+//    exit(0);
     
     const int OUTPUT_INTERVAL = 1000000;
     for (int iClass = 0; iClass < _nClass; iClass++) {

@@ -31,6 +31,19 @@ treeScalarDirection::treeScalarDirection(dataManager* data,int nLeaves, int mini
     _rootNode->_isInternal = true;
     _indexMask     = new bitArray(_nEvents)   ;
     _zMax = 4.   ;
+
+    switch (_treeType) {
+        case _MART_:
+        case _LOGITBOOST_:
+            _nG = _nClass;
+            break;
+        case _ABC_LOGITBOOST_:
+            _nG = _nClass*_nClass;
+            break;
+        default:
+            cout << "This type of tree: " << _treeType << " has not been implmented!" << endl;
+            exit(-1);
+    }
 }
 void treeScalarDirection::resetRootNode() {
     if (_rootNode) {
@@ -95,8 +108,8 @@ void treeScalarDirection::initNode() {
     n->_nodeSumH=0;
 
     for (int iPoint = 0; iPoint < _nEvents; iPoint++) {
-        n->_nodeSumG += _data->_lossGradient[iPoint * _nClass + _treeClass];
-        n->_nodeSumH += _data->_lossHessian[iPoint * _nClass + _treeClass];
+        n->_nodeSumG += _data->_lossGradient[iPoint * _nG + _treeClass];
+        n->_nodeSumH += _data->_lossHessian[iPoint * _nG + _treeClass];
     }
 
     n->_iDimension=0;
@@ -111,11 +124,7 @@ void treeScalarDirection::NODE::splitNode() {
     int maxI         = -1;
     int    iDimension;
     double bestC = 0.;
-    double bestLeftV,bestRightV;
-
-
     int shift=_tree->_minimumNodeSize;
-
     for (iDimension = 0; iDimension < _tree->_nDimension; iDimension++) {
         leftSumG= 0.;
         leftSumH= 0.;
@@ -126,11 +135,10 @@ void treeScalarDirection::NODE::splitNode() {
         //get rid of the same value elements
         double postX = _data->_trainX[_data->_dataIndex[iDimension][_leftPoint + 1] * _tree->_nDimension + iDimension];
         double cVal  = 1.e300   ;
-        double leftV,rightV     ;
         for (splitPoint = _leftPoint; splitPoint < _leftPoint + shift; splitPoint++) {
             double g, h;
-            g = _data->_lossGradient[splitPoint * _tree->_nClass + _tree->_treeClass];
-            h = _data->_lossHessian[splitPoint * _tree->_nClass + _tree->_treeClass];
+            g = _data->_lossGradient[_data->_dataIndex[iDimension][splitPoint]  * _tree->_nG + _tree->_treeClass];
+            h = _data->_lossHessian[_data->_dataIndex[iDimension][splitPoint]  * _tree->_nG + _tree->_treeClass];
             leftSumG += g;
             leftSumH += h;
             rightSumG -= g;
@@ -139,8 +147,8 @@ void treeScalarDirection::NODE::splitNode() {
         for (splitPoint = _leftPoint + shift; splitPoint <=_rightPoint-shift; splitPoint++) {
             double x = _data->_trainX[_data->_dataIndex[iDimension][splitPoint] * _tree->_nDimension + iDimension];
             double g, h;
-            g = _data->_lossGradient[splitPoint * _tree->_nClass + _tree->_treeClass];
-            h = _data->_lossHessian[splitPoint * _tree->_nClass + _tree->_treeClass];
+            g = _data->_lossGradient[_data->_dataIndex[iDimension][splitPoint]  * _tree->_nG + _tree->_treeClass];
+            h = _data->_lossHessian[_data->_dataIndex[iDimension][splitPoint]  * _tree->_nG + _tree->_treeClass];
             leftSumG += g;
             leftSumH += h;
             rightSumG -= g;
@@ -148,22 +156,30 @@ void treeScalarDirection::NODE::splitNode() {
             postX = _data->_trainX[_data->_dataIndex[iDimension][splitPoint + 1] * _tree->_nDimension + iDimension];
             if (x == postX)
                 continue;
-            leftV=x;rightV=postX;
             postX = x                   ;
             cVal  = 0.5 * (x + postX)   ;
             double gain=-1.;
 
             double newgain=0.;
-            if(leftSumH>0)
-                newgain+= leftSumG * leftSumG/leftSumH;
-            if(rightSumH>0)
-                newgain+= rightSumG*rightSumG/rightSumH;
+            switch (_tree->_treeType) {
+                case _LOGITBOOST_:
+                case _ABC_LOGITBOOST_:
+                    if (leftSumH > 0)
+                        newgain += leftSumG * leftSumG / leftSumH;
+                    if (rightSumH > 0)
+                        newgain += rightSumG * rightSumG / rightSumH;
+                    break;
+                case _MART_:
+                    newgain+= leftSumG * leftSumG+rightSumG * rightSumG;
+                    break;
+                default:
+                    cout << "Tree Type has not been implemented for this case: " << _tree->_treeType << endl;
+                    exit(-1);
+            }
             if (newgain > gain)
                 gain = newgain;
             if (gain >= maxGain) {
                 bestC     = cVal ;
-                bestLeftV = leftV;
-                bestRightV=rightV;
                 maxGain   = gain;
                 maxI      = splitPoint;
                 maxDimension = iDimension;
@@ -245,14 +261,14 @@ bool treeScalarDirection::NODE::printInfo(const char* indent, bool last) {
     if (_isInternal) {
         if(last){
             sprintf(rightS,"%s",indent);
-            printf("%s|-x%.2d<=%.6f f= %f (%d,%d) nodeGain=%f additiveGain=%f \n",rightS,_iDimension,_cut,_f, _leftPoint, _rightPoint,_nodeGain,_additiveGain);
+            printf("%s|-x%.2d<=%.6f f= %f (%d,%d) nodeGain=%f additiveGain=%f G=%f H=%f \n",rightS,_iDimension,_cut,_f, _leftPoint, _rightPoint,_nodeGain,_additiveGain,_nodeSumG,_nodeSumH);
             sprintf(leftS,"%s|  ",indent);
             ret = _leftChildNode->printInfo(leftS, true);
             ret = _rightChildNode->printInfo(leftS, false);
         }
         else{
             sprintf(rightS,"%s",indent);
-            printf("%s+-x%.2d<=%.6f f= %f (%d,%d) nodeGain=%f additiveGain= %f \n",rightS,_iDimension,_cut,_f, _leftPoint, _rightPoint,_nodeGain,_additiveGain);
+            printf("%s+-x%.2d<=%.6f f= %f (%d,%d) nodeGain=%f additiveGain= %f G=%f H=%f \n",rightS,_iDimension,_cut,_f, _leftPoint, _rightPoint,_nodeGain,_additiveGain,_nodeSumG,_nodeSumH);
             sprintf(leftS,"%s  ",indent);
             ret = _leftChildNode->printInfo(leftS, true);
             ret = _rightChildNode->printInfo(leftS, false);
@@ -260,11 +276,11 @@ bool treeScalarDirection::NODE::printInfo(const char* indent, bool last) {
     } else{
         if(!last){
             sprintf(rightS,"%s",indent);
-            printf("%s+-f= %f (%d,%d) nodeGain=%f additiveGain=%f \n",rightS, _f, _leftPoint, _rightPoint,_nodeGain,_additiveGain);
+            printf("%s+-f= %f (%d,%d) nodeGain=%f additiveGain=%f G=%f H=%f \n",rightS, _f, _leftPoint, _rightPoint,_nodeGain,_additiveGain,_nodeSumG,_nodeSumH);
         }
         else{
             sprintf(rightS,"%s",indent);
-            printf("%s|-f= %f (%d,%d) nodeGain=%f additiveGain=%f \n",rightS, _f, _leftPoint, _rightPoint,_nodeGain,_additiveGain);
+            printf("%s|-f= %f (%d,%d) nodeGain=%f additiveGain=%f G=%f H=%f \n",rightS, _f, _leftPoint, _rightPoint,_nodeGain,_additiveGain,_nodeSumG,_nodeSumH);
         }
         return true;
     }
@@ -304,11 +320,9 @@ void treeScalarDirection::NODE::calculateF(){
 }
 
 void treeScalarDirection::buildDirection() {
-    for (int ix = 0; ix < _data->_nTrainEvents; ix++) {
-        cout << _data->_lossGradient[_treeClass]<< ", "<<_data->_lossHessian[_treeClass]<<endl;
-    }
-    exit(0);
-    
+//    for (int ix = 0; ix < _data->_nTrainEvents; ix++) {
+//        cout << _data->_lossGradient[ix*_nG+_treeClass]<< ", "<<_data->_lossHessian[ix*_nG+_treeClass]<<endl;
+//    }
     _round++;
     for (int iDimension = 0; iDimension < _nDimension; iDimension++) {
         memcpy(_data->_dataIndex[iDimension], _data->_dataIndex0[iDimension], _nEvents * sizeof (int));
@@ -326,6 +340,7 @@ void treeScalarDirection::buildDirection() {
     }
     _rootNode->printInfo("",true);
     cout<<"++++++++++ "<<_round<<" +++++++++++++++"<<endl;
+//    exit(0);
 }
 
 void treeScalarDirection::NODE::bestNode(NODE*& n, double& gain) {

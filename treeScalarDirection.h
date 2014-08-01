@@ -73,6 +73,8 @@ private:
     NODE* _rootNode;
     //initialize root nodes
     void initNode();
+    
+    int _nG;
 };
 
 
