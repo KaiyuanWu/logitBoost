@@ -105,12 +105,11 @@ void linearSearch::updateDirection2() {
                         continue;
                     double d;
                     _df[iClass1 * _nClass + iClass2]->eval(_data->_trainX + iEvent * _nDimension,&d);
-                    if(iClass1<iClass2)
-                        _F[iClass2] = _data->_trainF[iEvent * _nClass + iClass2] + 
-                                _shrinkage * d;
-                    else
-                        _F[iClass2] = _data->_trainF[iEvent * _nClass + iClass2] - 
-                                _shrinkage * d;
+//                    if(iClass1<iClass2)
+                        _F[iClass2] = _data->_trainF[iEvent * _nClass + iClass2] + _shrinkage * d;
+//                    else
+//                        _F[iClass2] = _data->_trainF[iEvent * _nClass + iClass2] - 
+//                                _shrinkage * d;
                     sumF += _F[iClass2];
                     if (_F[iClass2] < maxF)
                         maxF = _F[iClass2];
@@ -133,7 +132,7 @@ void linearSearch::updateDirection2() {
         }
         _g = -1;
     }
-    
+    cout<<"Base Class= "<<_baseClass<<endl;
     for (int iEvent = 0; iEvent < _nTrainEvents; iEvent++) {
         double sumD = 0.;
         for (int iClass = 0; iClass < _nClass; iClass++) {
@@ -153,15 +152,14 @@ void linearSearch::updateDirection2() {
                 continue;
             double d;
             _df[_baseClass * _nClass + iClass]->eval(_data->_testX + iEvent * _nDimension,&d);
-            if(iClass<_baseClass)
-                d*= -1.;
+//            if(iClass<_baseClass)
+//                d*= -1.;
             _data->_testDescendingDirection[iEvent * _nClass + iClass] = d;
             sumD += d;
         }
         _data->_testDescendingDirection[iEvent * _nClass + _baseClass] = -1. * sumD;
     }
     _g++;
-
 }
 void linearSearch::updateDirection(int iRound){
     switch(_treeType){
@@ -204,7 +202,12 @@ void linearSearch::buildDirection(){
             break;
         case directionFunction::_ABC_LOGITBOOST_:
             for(int iClass1=0;iClass1<_data->_nClass;iClass1++){
-                for(int iClass2=0;iClass2<iClass1;iClass2++){
+                if(_g<_G&&iClass1!=_baseClass){
+                    continue;
+                }
+                for(int iClass2=0;iClass2<_data->_nClass;iClass2++){
+                    if(iClass2==iClass1)
+                        continue;
                     _df[iClass1*_data->_nClass+iClass2]->buildDirection();
                 }
             }

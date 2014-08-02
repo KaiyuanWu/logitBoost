@@ -23,7 +23,7 @@ double LossFunction::loss(double*f,int y,double& gradient, double& hessian,int c
     int class1,class2;
     switch(_treeType){
         case directionFunction::_ABC_LOGITBOOST_:
-        case directionFunction::_AOSO_LOGITBOOST_:
+        case directionFunction::_AOSO_LOGITBOOST_:  
             class1=c1/_nClass;
             class2=c1%_nClass; 
             ret=lossabcLogitNewton(f,y,class1,class2,gradient,hessian);
@@ -152,7 +152,7 @@ double LossFunction::lossabcLogitNewton(double* f, int y, int c1,int c2, double&
         gradient-=(pc2-1);
     else
         gradient-=pc2;
-    gradient*=-1;
+//    gradient*=-1;
     hessian=pc1*(1.-pc1)+pc2*(1.-pc2)+2.*pc1*pc2;
     if(hessian<_MIN_HESSIAN_)
         hessian=_MIN_HESSIAN_;

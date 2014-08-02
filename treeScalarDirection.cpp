@@ -320,8 +320,10 @@ void treeScalarDirection::NODE::calculateF(){
 }
 
 void treeScalarDirection::buildDirection() {
-//    for (int ix = 0; ix < _data->_nTrainEvents; ix++) {
-//        cout << _data->_lossGradient[ix*_nG+_treeClass]<< ", "<<_data->_lossHessian[ix*_nG+_treeClass]<<endl;
+//    if (_treeClass == 5) {
+//        for (int ix = 0; ix < _data->_nTrainEvents; ix++) {
+//            cout << _data->_lossGradient[ix * _nG + _treeClass] << ", " << _data->_lossHessian[ix * _nG + _treeClass] << endl;
+//        }
 //    }
     _round++;
     for (int iDimension = 0; iDimension < _nDimension; iDimension++) {
@@ -339,8 +341,12 @@ void treeScalarDirection::buildDirection() {
             node->_isInternal = true;
     }
     _rootNode->printInfo("",true);
-    cout<<"++++++++++ "<<_round<<" +++++++++++++++"<<endl;
-//    exit(0);
+    cout<<"++++++++++ "<<_round<<" treeClass= "<<_treeClass<<" +++++++++++++++"<<endl;
+//    if (_treeClass == 5) {
+//        cout<<_rootNode->_nodeSumG<<", "<<_rootNode->_nodeSumH<<endl;
+//        exit(0);
+//    }
+    //    exit(0);
 }
 
 void treeScalarDirection::NODE::bestNode(NODE*& n, double& gain) {
