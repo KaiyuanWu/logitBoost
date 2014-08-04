@@ -73,7 +73,7 @@ private:
     bool init();
     void buildTree(char* tree,struct _NODE_* root);
     struct _NODE_** _bootedTrees;
-    
+    int _nTrees;
     
 };
 

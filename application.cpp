@@ -20,6 +20,10 @@ application::application(const application& orig) {
 }
 
 application::~application() {
+    for(int iTree=0;iTree<_nTrees;iTree++){
+        delete _bootedTrees[iTree];
+    }
+    delete[] _bootedTrees;
 }
 void application::eval(double* pnt, double* direction){
     switch(_treeType) {
@@ -149,7 +153,24 @@ bool application::init(){
     (*_fileDB)>>_nVariable;
     (*_fileDB)>>_nMaximumIteration;
     (*_fileDB)>>_ZMAX;
-    _bootedTrees=new struct _NODE_*[_nMaximumIteration];
+    
+    switch(_treeType) {
+        case directionFunction::_ABC_LOGITBOOST_:
+            _nTrees=_nMaximumIteration*(_nClass-1);
+            break;
+        case directionFunction::_MART_:
+        case directionFunction::_LOGITBOOST_:
+            _nTrees=_nMaximumIteration*_nClass;
+            break;
+        case directionFunction::_AOSO_LOGITBOOST_:
+        case directionFunction::_SLOGITBOOST_:
+            _nTrees=_nMaximumIteration;
+            break;
+        default:
+            cout << "This tree type " << _treeType << " has not been implemented!" << endl;
+            break;
+    }
+    _bootedTrees=new struct _NODE_*[_nTrees];
     
     return ret;
 }
