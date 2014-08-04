@@ -25,32 +25,38 @@ application::~application() {
     }
     delete[] _bootedTrees;
 }
-void application::eval(double* pnt, double* direction){
+void application::eval(double* pnt, double* f){
+    for(int iClass=0;iClass<_nClass;iClass++)
+        f[iClass]=0.;
     switch(_treeType) {
         case directionFunction::_ABC_LOGITBOOST_:
         case directionFunction::_MART_:
         case directionFunction::_LOGITBOOST_:
-            evalS(pnt, direction);
+            for(int iIteration=0;iIteration<_nMaximumIteration;iIteration++){
+                evalS(pnt, iIteration);
+                for(int iClass=0;iClass<_nClass;iClass++)
+                    f[iClass]+=_shrinkage*_direction[iClass];
+            }
             break;
         case directionFunction::_AOSO_LOGITBOOST_:
         case directionFunction::_SLOGITBOOST_:
-            evalV(pnt, direction);
+            for(int iIteration=0;iIteration<_nMaximumIteration;iIteration++){
+                evalV(pnt, iIteration);
+                for(int iClass=0;iClass<_nClass;iClass++)
+                    f[iClass]+=_shrinkage*_direction[iClass];
+            }
             break;
         default:
             cout << "This tree type " << _treeType << " has not been implemented!" << endl;
             break;
     }
 }
-void application::evalS(double* pnt, double* direction){
-    for(int iClass=0;iClass<_nClass;iClass++)
-        direction[iClass]=0.;
-    
-}
-void application::evalV(double* pnt, double* direction){
-    for(int iClass=0;iClass<_nClass;iClass++)
-        direction[iClass]=0.;
-    for(int iIteration=0;iIteration<_nMaximumIteration;iIteration++){
-        struct _NODE_ *n=_bootedTrees[iIteration];
+void application::evalS(double* pnt,int iIteration){
+    for (int iClass = 0; iClass < _nClass; iClass++)
+        _direction[iClass] = 0.;
+    struct _NODE_ *n;
+    for (int iTree = 0; iTree < _nTrees; iTree++) {
+        n = _bootedTrees[iIteration * _nTrees + iTree];
         while (n->_isInternal) {
             if (pnt[n->_iDimension] <= n->_cut) {
                 n = n->_leftChildNode;
@@ -58,36 +64,56 @@ void application::evalV(double* pnt, double* direction){
                 n = n->_rightChildNode;
             }
         }
-        double f;
-        int workingClass,workingClass1, workingClass2;
-        f = n->_f;
-        workingClass=n->_class;
-        workingClass1 = workingClass / _nClass;
-        workingClass2 = workingClass % _nClass;
-        switch (_treeType) {
-            case directionFunction::_SLOGITBOOST_:
-                for (int iClass = 0.; iClass < _nClass; iClass++) {
-                    if (iClass == workingClass)
-                        direction[iClass] = (_nClass - 1.) * f;
-                    else
-                        direction[iClass] = -f;
-                }
-                break;
-            case directionFunction::_AOSO_LOGITBOOST_:
-                for (int iClass = 0.; iClass < _nClass; iClass++) {
-                    if (iClass == workingClass1)
-                        direction[iClass] = f;
-                    else if (iClass == workingClass2)
-                        direction[iClass] = -f;
-                    else
-                        direction[iClass] = 0;
-                }
-                break;
-            default:
-                cout << "This tree type " << _treeType << " has not been implemented!" << endl;
-                break;
-        } 
+        _direction[n->_class]=n->_f;
     }
+    if(_treeType==directionFunction::_ABC_LOGITBOOST_){
+        for(int iClass=0;iClass<_nClass;iClass++){
+            if(iClass!=_baseClass[iIteration]){
+                _direction[_baseClass[iIteration]]-=_direction[iClass];
+            }
+        }
+    }
+}
+void application::evalV(double* pnt,int iIteration) {
+    for (int iClass = 0; iClass < _nClass; iClass++)
+        _direction[iClass] = 0.;
+    struct _NODE_ *n = _bootedTrees[iIteration];
+    while (n->_isInternal) {
+        if (pnt[n->_iDimension] <= n->_cut) {
+            n = n->_leftChildNode;
+        } else {
+            n = n->_rightChildNode;
+        }
+    }
+    double f;
+    int workingClass, workingClass1, workingClass2;
+    f = n->_f;
+    workingClass = n->_class;
+    workingClass1 = workingClass / _nClass;
+    workingClass2 = workingClass % _nClass;
+    switch (_treeType) {
+        case directionFunction::_SLOGITBOOST_:
+            for (int iClass = 0.; iClass < _nClass; iClass++) {
+                if (iClass == workingClass)
+                    _direction[iClass] = (_nClass - 1.) * f;
+                else
+                    _direction[iClass] = -f;
+            }
+            break;
+        case directionFunction::_AOSO_LOGITBOOST_:
+            for (int iClass = 0.; iClass < _nClass; iClass++) {
+                if (iClass == workingClass1)
+                    _direction[iClass] = f;
+                else if (iClass == workingClass2)
+                    _direction[iClass] = -f;
+                else
+                    _direction[iClass] = 0;
+            }
+            break;
+        default:
+            cout << "This tree type " << _treeType << " has not been implemented!" << endl;
+            break;
+    } 
 }
 void application::buildTree(char* tree, struct _NODE_* root){
     char op;
@@ -152,26 +178,25 @@ bool application::init(){
     (*_fileDB)>>_nClass;
     (*_fileDB)>>_nVariable;
     (*_fileDB)>>_nMaximumIteration;
-    (*_fileDB)>>_ZMAX;
+    (*_fileDB)>>_shrinkage;
     
     switch(_treeType) {
         case directionFunction::_ABC_LOGITBOOST_:
-            _nTrees=_nMaximumIteration*(_nClass-1);
+            _nTrees=_nClass-1;
             break;
         case directionFunction::_MART_:
         case directionFunction::_LOGITBOOST_:
-            _nTrees=_nMaximumIteration*_nClass;
+            _nTrees=_nClass;
             break;
         case directionFunction::_AOSO_LOGITBOOST_:
         case directionFunction::_SLOGITBOOST_:
-            _nTrees=_nMaximumIteration;
+            _nTrees=1;
             break;
         default:
             cout << "This tree type " << _treeType << " has not been implemented!" << endl;
             break;
     }
-    _bootedTrees=new struct _NODE_*[_nTrees];
+    _bootedTrees=new struct _NODE_*[_nTrees*_nMaximumIteration];
     
     return ret;
 }
-

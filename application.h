@@ -59,8 +59,8 @@ public:
     application(char* fileDBName);
     application(const application& orig);
     void eval(double* pnt, double* f);
-    void evalV(double* pnt, double* f);
-    void evalS(double* pnt,double* f);
+    void evalV(double* pnt,int iIteration);
+    void evalS(double* pnt,int iIteration);
     virtual ~application();
 private:
     string _fileDBName;
@@ -68,12 +68,14 @@ private:
     int _nClass;
     int _nVariable;
     int _nMaximumIteration;
-    double _ZMAX;
+    double _shrinkage;
     directionFunction::_TREE_TYPE_ _treeType;
     bool init();
     void buildTree(char* tree,struct _NODE_* root);
     struct _NODE_** _bootedTrees;
     int _nTrees;
+    int* _baseClass;
+    double* _direction;
     
 };
 
