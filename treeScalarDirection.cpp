@@ -73,7 +73,21 @@ treeScalarDirection::NODE::NODE(dataManager* data, treeScalarDirection* tree, in
     _rightChildNode = NULL;
     _isInternal = false;
 }
+void treeScalarDirection::NODE::saveNode(ofstream& outf){
+    outf<<_iDimension<<" "<<_cut<<" "<<_f<<" "<<_isInternal;
+    if(_isInternal){
+        outf<<"( ";
+        _leftChildNode->saveNode(outf);
+        outf<<") + ( ";
+        _rightChildNode->saveNode(outf);
+        outf<<" )";
+    }
+}
 
+void treeScalarDirection::saveTree(ofstream& fileDB){
+    fileDB<<_treeType<<" "<<_treeClass<<endl;
+    _rootNode->saveNode(fileDB);
+}
 treeScalarDirection::NODE::~NODE() {
     if (_leftChildNode)
         delete _leftChildNode;
@@ -340,13 +354,17 @@ void treeScalarDirection::buildDirection() {
         if (node->_leftChildNode)
             node->_isInternal = true;
     }
-    _rootNode->printInfo("",true);
-    cout<<"++++++++++ "<<_round<<" treeClass= "<<_treeClass<<" +++++++++++++++"<<endl;
+//    _rootNode->printInfo("",true);
+//    saveTree("test.dat");
+//    cout<<endl;
+//    cout<<"++++++++++ "<<_round<<" treeClass= "<<_treeClass<<" +++++++++++++++"<<endl;
+//
+//    exit(0);
 //    if (_treeClass == 5) {
 //        cout<<_rootNode->_nodeSumG<<", "<<_rootNode->_nodeSumH<<endl;
 //        exit(0);
 //    }
-    //    exit(0);
+//    exit(0);
 }
 
 void treeScalarDirection::NODE::bestNode(NODE*& n, double& gain) {

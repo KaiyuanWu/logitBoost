@@ -222,3 +222,28 @@ void linearSearch::buildDirection(){
             break;
     }
 }
+void linearSearch::saveDirection(ofstream& fileDB){
+    switch(_treeType){
+        case directionFunction::_MART_:
+        case directionFunction::_LOGITBOOST_:
+            for(int id=0;id<_nDirection;id++)
+                _df[id]->saveTree(fileDB);
+            break;
+        case directionFunction::_ABC_LOGITBOOST_:
+            fileDB<<_baseClass<<" ";
+            for(int iClass1=0;iClass1<_data->_nClass;iClass1++){
+                if(iClass1==_baseClass)
+                    continue;
+                _df[_baseClass*_data->_nClass+iClass1]->saveTree(fileDB);
+            }
+            break;
+        case directionFunction::_AOSO_LOGITBOOST_:
+        case directionFunction::_SLOGITBOOST_:
+            _df[0]->saveTree(fileDB);
+            break;
+        default:
+            cout<<"Has not been implemented!"<<endl;
+            exit(-1);
+            break;
+    }
+}

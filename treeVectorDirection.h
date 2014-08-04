@@ -18,6 +18,7 @@ public:
     virtual ~treeVectorDirection();
     void eval(double* pnt, double* direction);
     void buildDirection();
+    void saveTree(ofstream& fileDB);
     //Data Manager
     dataManager* _data;
     void printInfo(){
@@ -55,6 +56,7 @@ private:
         treeVectorDirection* _tree;
         void bestNode(NODE*& n,double& gain);
         void splitNode();
+        void saveNode(ofstream& fileDB);
         bool printInfo(const char* indent,bool last);
         //select best working class
         void selectBestClass();

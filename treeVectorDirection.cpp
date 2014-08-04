@@ -41,7 +41,20 @@ treeVectorDirection::treeVectorDirection(dataManager* data,int nLeaves, int mini
             exit(-1);
     }
 }
-
+void treeVectorDirection::NODE::saveNode(ofstream& fileDB){
+    fileDB<<_iDimension<<" "<<_cut<<" "<<_f<<" "<<_class<<" "<<_isInternal;
+    if(_isInternal){
+        fileDB<<"( ";
+        _leftChildNode->saveNode(fileDB);
+        fileDB<<") + ( ";
+        _rightChildNode->saveNode(fileDB);
+        fileDB<<" )";
+    }
+}
+void treeVectorDirection::saveTree(ofstream& fileDB){
+    fileDB<<_treeType<<endl;
+    _rootNode->saveNode(fileDB);
+}
 void treeVectorDirection::resetRootNode() {
     if (_rootNode) {
         if (_rootNode->_leftChildNode)

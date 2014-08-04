@@ -11,15 +11,13 @@
             <file>file:/Users/kaiwu/Documents/MulticlassLossFunctionComparision/files/src/AllInOne/evaluation.h</file>
             <file>file:/Users/kaiwu/Documents/MulticlassLossFunctionComparision/files/src/AllInOne/evaluation.cpp</file>
             <file>file:/Users/kaiwu/Documents/MulticlassLossFunctionComparision/files/src/AllInOne/linearSearch.h</file>
-            <file>file:/Users/kaiwu/Documents/MulticlassLossFunctionComparision/files/src/AllInOne/linearSearch.cpp</file>
-            <file>file:/Users/kaiwu/Documents/MulticlassLossFunctionComparision/files/src/AllInOne/directionFunction.h</file>
+            <file>file:/Users/kaiwu/Documents/MulticlassLossFunctionComparision/files/src/AllInOne/treeVectorDirection.h</file>
             <file>file:/Users/kaiwu/Documents/MulticlassLossFunctionComparision/files/src/AllInOne/main.cpp</file>
+            <file>file:/Users/kaiwu/Documents/MulticlassLossFunctionComparision/files/src/AllInOne/directionFunction.h</file>
             <file>file:/Users/kaiwu/Documents/MulticlassLossFunctionComparision/files/src/AllInOne/LossFunction.h</file>
             <file>file:/Users/kaiwu/Documents/MulticlassLossFunctionComparision/files/src/AllInOne/LossFunction.cpp</file>
-            <file>file:/Users/kaiwu/Documents/MulticlassLossFunctionComparision/files/src/AllInOne/treeVectorDirection.cpp</file>
-            <file>file:/Users/kaiwu/Documents/MulticlassLossFunctionComparision/files/src/AllInOne/dataManager.cpp</file>
             <file>file:/Users/kaiwu/Documents/MulticlassLossFunctionComparision/files/src/AllInOne/treeScalarDirection.cpp</file>
-            <file>file:/Users/kaiwu/Documents/MulticlassLossFunctionComparision/files/src/AllInOne/treeVectorDirection.h</file>
+            <file>file:/Users/kaiwu/Documents/MulticlassLossFunctionComparision/files/src/AllInOne/dataManager.cpp</file>
         </group>
     </open-files>
 </project-private>

@@ -36,6 +36,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/LossFunction.o \
+	${OBJECTDIR}/application.o \
 	${OBJECTDIR}/bitArray.o \
 	${OBJECTDIR}/crossValidate.o \
 	${OBJECTDIR}/dataManager.o \
@@ -75,6 +76,11 @@ ${OBJECTDIR}/LossFunction.o: LossFunction.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/LossFunction.o LossFunction.cpp
+
+${OBJECTDIR}/application.o: application.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/application.o application.cpp
 
 ${OBJECTDIR}/bitArray.o: bitArray.cpp 
 	${MKDIR} -p ${OBJECTDIR}

@@ -38,6 +38,7 @@ public:
     dataManager*  _data;
     void updateDirection(int iRound);
     void buildDirection();
+    void saveDirection(ofstream& fileDB);
     
     void updateDirection1();
     void updateDirection2();

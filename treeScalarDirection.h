@@ -26,7 +26,7 @@ public:
     //tree evaluation
     void eval(double* pnt, double* direction);
     void   buildIndex(int** dataIndex=NULL,int** dataReverseIndex0=NULL);
-
+    void saveTree(ofstream& fileDB);
 private:
     class NODE{
     public:
@@ -56,6 +56,7 @@ private:
         void bestNode(NODE*& n,double& gain);
         void splitNode();
         bool printInfo(const char* indent,bool last);
+        void saveNode(ofstream& outf);
         //select best working class
         void calculateF();
         double leftSumG, leftSumH;
