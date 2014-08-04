@@ -29,11 +29,12 @@ train::train(char* fTrain, char* fTest, char* fOut, int nTrainEvents,int nTestEv
     _minimumNodeSize=minimumNodeSize;
     _nMaxIteration=nMaxIteration;
 }
-train::train(char* fTrain, char* fOut,
+train::train(char* fTrain, 
             directionFunction::_TREE_TYPE_ treeType, double shrinkage,int nLeaves,int minimumNodeSize,int nMaxIteration){
     _fTrain=fTrain;
-    _fOut=fOut;
-   
+    _fOut=_fTrain+".out";
+    _fParam=_fTrain+".model";
+    
     _nTestEvents=0;
     getDataInformation(fTrain,_nTrainEvents,_nClass,_nVariables);
     
@@ -52,7 +53,6 @@ void train::init(){
     _accuracyTestArray=new double[_nMaxIteration];
     _lossTestArray=new double[_nMaxIteration];
     _lossTrainArray=new double[_nMaxIteration];
-    
     
     memset(_accuracyTrainArray,0,sizeof(double)*_nMaxIteration);
     memset(_accuracyTestArray,0,sizeof(double)*_nMaxIteration);
@@ -96,6 +96,12 @@ void train::init(){
         exit(-1);
     }
     _outf->setf(ios::scientific);
+    _paramf=new ofstream(_fParam.c_str(),ofstream::out);
+    if(!_paramf){
+        cout<<"Can not open "<<_fParam<<endl;
+        exit(-1);
+    }
+    (*_paramf)<<_treeType<<" "<<_nClass<<" "<<_data->_nDimension<<" "<<_nMaxIteration<<" "<<_shrinkage;
     _linearSearchMinimizer = new linearSearch(_data,_nLeaves,_shrinkage,_minimumNodeSize,_treeType);
 }
 void train::getDataInformation(char* fileInName,int& nEvent,int& nClass,int& nVariable){
@@ -152,6 +158,7 @@ void train::start(){
     for (iIteration = 0; iIteration < _nMaxIteration; iIteration++) {
         //call the weak learner for each fold
         _linearSearchMinimizer->minimization(iIteration);
+        _linearSearchMinimizer->saveDirection(*_paramf);
 //        cout << "Gradient: " << endl;
 //        for (int ix = 0; ix < _data->_nTrainEvents; ix++) {
 //            cout << "[";

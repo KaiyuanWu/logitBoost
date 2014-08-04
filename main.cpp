@@ -64,13 +64,20 @@ void test1(int jobID,int fold,int nLeaves, int minimumNodeSize, int nMaxIteratio
 int main(int argc, char** argv) {
     //srand((unsigned)time(NULL));
     //job(argc,argv);
-    int jobID=atoi(argv[1]);
-    int iFold=atoi(argv[2]);
-    int nLeaves=atoi(argv[3]);
-    int minimumSize=atoi(argv[4]);
-    int maxIterations=atoi(argv[5]);
-    char* prefix=argv[6];
-    test1(jobID,iFold,nLeaves,minimumSize,maxIterations,prefix);
-    //testMnist();
+    
+//    int jobID=atoi(argv[1]);
+//    int iFold=atoi(argv[2]);
+//    int nLeaves=atoi(argv[3]);
+//    int minimumSize=atoi(argv[4]);
+//    int maxIterations=atoi(argv[5]);
+//    char* prefix=argv[6];
+//    test1(jobID,iFold,nLeaves,minimumSize,maxIterations,prefix);
+    
+    char* prefix=argv[1];
+    int nLeaves=atoi(argv[2]);
+    int minimumNodeSize=atoi(argv[3]);
+    int maxIterations=atoi(argv[4]);
+    
+    train t(prefix,directionFunction::_SLOGITBOOST_,0.1,nLeaves,minimumNodeSize,maxIterations);
     return 0;
 }

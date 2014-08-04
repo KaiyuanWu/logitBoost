@@ -42,7 +42,7 @@ treeVectorDirection::treeVectorDirection(dataManager* data,int nLeaves, int mini
     }
 }
 void treeVectorDirection::NODE::saveNode(ofstream& fileDB){
-    fileDB<<_iDimension<<" "<<_cut<<" "<<_f<<" "<<_isInternal<<_class<<" ";
+    fileDB<<_iDimension<<" "<<_cut<<" "<<_f<<" "<<_isInternal<<" "<<_class<<" ";
     if(_isInternal){
         fileDB<<"( ";
         _leftChildNode->saveNode(fileDB);

@@ -117,7 +117,7 @@ void application::evalV(double* pnt,int iIteration) {
 }
 void application::buildTree(char* tree, struct _NODE_* root){
     char op;
-    int  iDimension;
+    int  iDimension,iclass;
     float cut,f;
     bool internal;
     struct _NODE_* curNode;
@@ -127,11 +127,12 @@ void application::buildTree(char* tree, struct _NODE_* root){
     curNode=root;
     stringstream ss;
     ss.str(tree);
-    ss >> iDimension >> cut>>f>>internal;
+    ss >> iDimension >> cut>>f>>internal>>iclass;
     root->_cut = cut;
     root->_iDimension = iDimension;
     root->_f = f;
     root->_isInternal=internal;
+    root->_class=iclass;
     while(ss.good()){
         ss>>op;
         switch(op){
@@ -157,11 +158,12 @@ void application::buildTree(char* tree, struct _NODE_* root){
                 break;
         }
         if(op=='(') {
-            ss >> iDimension >> cut>>f>>internal;
+            ss >> iDimension >> cut>>f>>internal>>iclass;
             curNode->_cut = cut;
             curNode->_iDimension = iDimension;
             curNode->_f = f;
             curNode->_isInternal=internal;
+            curNode->_class=iclass;
         }
     }
 }
@@ -175,10 +177,7 @@ bool application::init(){
     int k;
     (*_fileDB)>>k;
     _treeType=directionFunction::_TREE_TYPE_(k);
-    (*_fileDB)>>_nClass;
-    (*_fileDB)>>_nVariable;
-    (*_fileDB)>>_nMaximumIteration;
-    (*_fileDB)>>_shrinkage;
+    (*_fileDB)>>_nClass>>_nVariable>>_nMaximumIteration>>_shrinkage;
     
     switch(_treeType) {
         case directionFunction::_ABC_LOGITBOOST_:

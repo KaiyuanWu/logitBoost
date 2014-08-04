@@ -22,7 +22,7 @@ class train {
 public:
     train(char* fTrain, char* fTest, char* fOut, int nTrainEvents,int nTestEvents,int nClass,int nVariables,
             directionFunction::_TREE_TYPE_ treeType, double shrinkage=1.,int nLeaves=8,int minimumNodeSize=1,int nMaxIteration=1000);
-    train(char* fTrain, char* fOut,
+    train(char* fTrain,
             directionFunction::_TREE_TYPE_ treeType, double shrinkage=1.,int nLeaves=8,int minimumNodeSize=1,int nMaxIteration=1000);
     virtual ~train();
     
@@ -45,6 +45,7 @@ private:
     string _fTrain;
     string _fTest;
     string _fOut;
+    string _fParam;
     directionFunction::_TREE_TYPE_  _treeType;
     double _shrinkage;
     int _nLeaves;
@@ -62,6 +63,7 @@ private:
     linearSearch* _linearSearchMinimizer;
     void getDataInformation(char* fileInName,int& nEvent,int& nClass,int& nVariable);
     ofstream* _outf;
+    ofstream* _paramf;
 };
 
 #endif	/* train_H */
