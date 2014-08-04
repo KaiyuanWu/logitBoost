@@ -21,6 +21,7 @@ public:
         float _cut;
         float _f;
         bool _isInternal;
+        int _class;
         struct _NODE_* _leftChildNode;
         struct _NODE_* _rightChildNode;
         struct _NODE_* _parentNode;
@@ -58,6 +59,8 @@ public:
     application(char* fileDBName);
     application(const application& orig);
     void eval(double* pnt, double* f);
+    void evalV(double* pnt, double* f);
+    void evalS(double* pnt,double* f);
     virtual ~application();
 private:
     string _fileDBName;

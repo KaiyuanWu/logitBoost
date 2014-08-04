@@ -21,9 +21,69 @@ application::application(const application& orig) {
 
 application::~application() {
 }
-
-void application::eval(double* pnt, double* f){
-    for(int i)
+void application::eval(double* pnt, double* direction){
+    switch(_treeType) {
+        case directionFunction::_ABC_LOGITBOOST_:
+        case directionFunction::_MART_:
+        case directionFunction::_LOGITBOOST_:
+            evalS(pnt, direction);
+            break;
+        case directionFunction::_AOSO_LOGITBOOST_:
+        case directionFunction::_SLOGITBOOST_:
+            evalV(pnt, direction);
+            break;
+        default:
+            cout << "This tree type " << _treeType << " has not been implemented!" << endl;
+            break;
+    }
+}
+void application::evalS(double* pnt, double* direction){
+    for(int iClass=0;iClass<_nClass;iClass++)
+        direction[iClass]=0.;
+    
+}
+void application::evalV(double* pnt, double* direction){
+    for(int iClass=0;iClass<_nClass;iClass++)
+        direction[iClass]=0.;
+    for(int iIteration=0;iIteration<_nMaximumIteration;iIteration++){
+        struct _NODE_ *n=_bootedTrees[iIteration];
+        while (n->_isInternal) {
+            if (pnt[n->_iDimension] <= n->_cut) {
+                n = n->_leftChildNode;
+            } else {
+                n = n->_rightChildNode;
+            }
+        }
+        double f;
+        int workingClass,workingClass1, workingClass2;
+        f = n->_f;
+        workingClass=n->_class;
+        workingClass1 = workingClass / _nClass;
+        workingClass2 = workingClass % _nClass;
+        switch (_treeType) {
+            case directionFunction::_SLOGITBOOST_:
+                for (int iClass = 0.; iClass < _nClass; iClass++) {
+                    if (iClass == workingClass)
+                        direction[iClass] = (_nClass - 1.) * f;
+                    else
+                        direction[iClass] = -f;
+                }
+                break;
+            case directionFunction::_AOSO_LOGITBOOST_:
+                for (int iClass = 0.; iClass < _nClass; iClass++) {
+                    if (iClass == workingClass1)
+                        direction[iClass] = f;
+                    else if (iClass == workingClass2)
+                        direction[iClass] = -f;
+                    else
+                        direction[iClass] = 0;
+                }
+                break;
+            default:
+                cout << "This tree type " << _treeType << " has not been implemented!" << endl;
+                break;
+        } 
+    }
 }
 void application::buildTree(char* tree, struct _NODE_* root){
     char op;
