@@ -56,10 +56,10 @@ void test1(int jobID,int fold,int nLeaves, int minimumNodeSize, int nMaxIteratio
     nClass=nClassA[jobID];
     nVariables=nVariablesA[jobID];
     
-    train eval(fTrain, fTest, fOut, nTrainEvents,nTestEvents,nClass,nVariables,treeType, shrinkage,nLeaves,minimumNodeSize,nMaxIteration);
-    eval.init();
-    eval.start();
-    eval.saveResult();
+    train t(fTrain, fTest, fOut, nTrainEvents,nTestEvents,nClass,nVariables,treeType, shrinkage,nLeaves,minimumNodeSize,nMaxIteration);
+    t.init();
+    t.start();
+    t.saveResult();
 }
 int main(int argc, char** argv) {
     //srand((unsigned)time(NULL));

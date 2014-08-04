@@ -6,6 +6,9 @@
  */
 
 #include "train.h"
+#include <string>
+#include <sstream>
+#include <map>
 
 train::train(char* fTrain, char* fTest, char* fOut, int nTrainEvents,int nTestEvents,int nClass,int nVariables,
             directionFunction::_TREE_TYPE_ treeType, double shrinkage,int nLeaves,int minimumNodeSize,int nMaxIteration){
@@ -18,6 +21,21 @@ train::train(char* fTrain, char* fTest, char* fOut, int nTrainEvents,int nTestEv
     _nTestEvents=nTestEvents;
     _nClass=nClass;
     _nVariables=nVariables;
+    
+    //decision tree parameters
+    _treeType=treeType;
+    _shrinkage=shrinkage;
+    _nLeaves=nLeaves;
+    _minimumNodeSize=minimumNodeSize;
+    _nMaxIteration=nMaxIteration;
+}
+train::train(char* fTrain, char* fOut,
+            directionFunction::_TREE_TYPE_ treeType, double shrinkage,int nLeaves,int minimumNodeSize,int nMaxIteration){
+    _fTrain=fTrain;
+    _fOut=fOut;
+   
+    _nTestEvents=0;
+    getDataInformation(fTrain,_nTrainEvents,_nClass,_nVariables);
     
     //decision tree parameters
     _treeType=treeType;
@@ -56,19 +74,20 @@ void train::init(){
     }
     
     infTrain.close();
-
-    ifstream infTest(_fTest.c_str(),ifstream::in);
-    if(!infTest.good()){
-        cout<<"Can not open "<<_fTest<<endl;
-        exit(-1);
+    if (_nTestEvents > 0) {
+        ifstream infTest(_fTest.c_str(), ifstream::in);
+        if (!infTest.good()) {
+            cout << "Can not open " << _fTest << endl;
+            exit(-1);
+        }
+        for (int iEvent = 0; iEvent < _nTestEvents; iEvent++) {
+            for (int iDimension = 0; iDimension < _nVariables; iDimension++)
+                infTest >> X[iDimension];
+            infTest>>label;
+            _data->addValidateEvent(X, label);
+        }
+        infTest.close();
     }
-    for(int iEvent=0;iEvent<_nTestEvents;iEvent++){
-        for(int iDimension=0;iDimension<_nVariables;iDimension++)
-            infTest>>X[iDimension];
-        infTest>>label;
-        _data->addValidateEvent(X,label);
-    }
-    infTest.close();
     _data->finishAddingEvent();
     cout<<"Finish Reading Data!"<<endl;
     _outf=new ofstream(_fOut.c_str(),ofstream::out);
@@ -78,6 +97,54 @@ void train::init(){
     }
     _outf->setf(ios::scientific);
     _linearSearchMinimizer = new linearSearch(_data,_nLeaves,_shrinkage,_minimumNodeSize,_treeType);
+}
+void train::getDataInformation(char* fileInName,int& nEvent,int& nClass,int& nVariable){
+    map<int,int> classMap;
+    ifstream fin1(fileInName,ifstream::in);
+    //get the number of variables
+    int nGuess=16;
+    char* line;
+    while(true){
+        line=new char[nGuess];
+        fin1.getline(line,nGuess);
+        if(fin1.fail()){
+            nGuess*=2;
+            delete line;
+            fin1.clear();
+            fin1.seekg(0);
+        }
+        else
+            break;
+    }
+    nVariable=0;
+    stringstream ss;
+    ss.str(line);
+    double t;int l;
+    ss>>t;
+    while(ss.good()){
+        nVariable++;
+        ss>>t;
+    }
+    
+    fin1.clear();
+    fin1.seekg(0);
+    nEvent=0;
+    for(int iVar=0;iVar<nVariable;iVar++){
+        fin1>>t;
+    }
+    fin1>>l;
+    classMap[l]=1;
+    while (fin1.good()) {
+        nEvent++;
+        for (int iVar = 0; iVar < nVariable; iVar++) {
+            fin1>>t;
+        }
+        fin1>>l;
+        classMap[l] = 1;
+    }
+    nClass=classMap.size();
+    fin1.close();
+    delete[] line;
 }
 void train::start(){
     int iIteration;

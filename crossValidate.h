@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <fstream>
 #include "stdio.h"
 #include "stdlib.h"
@@ -45,6 +46,7 @@ public:
 private:
     //split samples into different folds
     void splitData();
+    void getDataInformation(char* fileInName,int& nEvent,int& nClass,int& nVariable);
     
     //_jobID to discriminate the dataset
     int _jobID;

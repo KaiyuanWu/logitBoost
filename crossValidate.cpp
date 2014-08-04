@@ -5,7 +5,9 @@
  * Created on January 21, 2014, 5:21 PM
  */
 #include "crossValidate.h"
-#include "string.h"
+#include <string>
+#include <sstream>
+#include <map>
 
 crossValidate::crossValidate(int jobID,int nFold, directionFunction::_TREE_TYPE_ treeType, 
         double shrinkage,int nLeaves,int minimumNodeSize,int nMaxIteration){
@@ -206,6 +208,53 @@ void crossValidate::splitData(){
     delete[] classCount;
     delete[] foldIndex;
     delete[] perm;
+}
+void crossValidate::getDataInformation(char* fileInName,int& nEvent,int& nClass,int& nVariable){
+    map<int,int> classMap;
+    ifstream fin1(fileInName,ifstream::in);
+    //get the number of variables
+    int nGuess=16;
+    char* line;
+    while(true){
+        line=new char[nGuess];
+        fin1.getline(line,nGuess);
+        if(fin1.fail()){
+            nGuess*=2;
+            delete line;
+            fin1.clear();
+            fin1.seekg(0);
+        }
+        else
+            break;
+    }
+    nVariable=0;
+    stringstream ss;
+    ss.str(line);
+    double t;int l;
+    ss>>t;
+    while(ss.good()){
+        nVariable++;
+        ss>>t;
+    }
+    
+    fin1.clear();
+    fin1.seekg(0);
+    nEvent=0;
+    for(int iVar=0;iVar<nVariable;iVar++){
+        fin1>>t;
+    }
+    fin1>>l;
+    classMap[l]=1;
+    while (fin1.good()) {
+        nEvent++;
+        for (int iVar = 0; iVar < nVariable; iVar++) {
+            fin1>>t;
+        }
+        fin1>>l;
+        classMap[l] = 1;
+    }
+    nClass=classMap.size();
+    fin1.close();
 }
 crossValidate::~crossValidate() {
     delete[] _dataX;
