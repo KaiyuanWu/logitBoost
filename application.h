@@ -56,7 +56,7 @@ public:
         };
     };
 public:
-    application(char* fileDBName);
+    application(const char* fileDBName);
     application(const application& orig);
     void eval(double* pnt, double* f);
     void evalV(double* pnt,int iIteration);

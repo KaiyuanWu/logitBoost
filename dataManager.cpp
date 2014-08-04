@@ -350,3 +350,18 @@ void dataManager::swap(int i, int j, int iDimension, bool atInit) {
         _dataIndex[iDimension][j] = tempIndex;
     }
 }
+
+void dataManager::saveF(){
+    ofstream fout("saveF.dat",ofstream::out);
+    if(!fout.good()){
+        cout<<"Can not open saveF.dat!"<<endl;
+        return;
+    }
+    for(int iEvent=0;iEvent<_nTrainEvents;iEvent++){
+        for(int iClass=0;iClass<_nClass;iClass++){
+            fout<<_trainF[iClass]<<" ";
+        }
+        fout<<endl;
+    }
+    fout.close();
+}

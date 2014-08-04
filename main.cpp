@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include "train.h"
 #include "directionFunction.h"
+#include "application.h"
 
 using namespace std;
 //jobID
@@ -60,6 +61,16 @@ void test1(int jobID,int fold,int nLeaves, int minimumNodeSize, int nMaxIteratio
     t.init();
     t.start();
     t.saveResult();
+}
+
+void testApplication(int argc, char** argv){
+    char* model=argv[1];
+    char* data=argv[2];
+    string fdb=model;
+    fdb=fdb+".model";
+    application app(fdb.c_str());
+    
+    
 }
 int main(int argc, char** argv) {
     //srand((unsigned)time(NULL));

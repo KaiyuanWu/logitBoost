@@ -7,7 +7,7 @@
 
 #include "application.h"
 
-application::application(char* fileDBName) {
+application::application(const char* fileDBName) {
     _fileDBName=fileDBName;
     bool ret=init();
     if(!ret){

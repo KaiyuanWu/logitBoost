@@ -88,6 +88,7 @@ public:
     int _nTrainEvents;
     int _nTestEvents;
     
+    void saveF();
 private:
     //correct/wrongly classified number of training events
     int* _correctOld;
