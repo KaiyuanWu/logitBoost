@@ -79,5 +79,8 @@ int main(int argc, char** argv) {
     int maxIterations=atoi(argv[4]);
     
     train t(prefix,directionFunction::_SLOGITBOOST_,0.1,nLeaves,minimumNodeSize,maxIterations);
+    t.init();
+    t.start();
+    t.saveResult();
     return 0;
 }

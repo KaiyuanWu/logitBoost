@@ -53,6 +53,7 @@ void treeVectorDirection::NODE::saveNode(ofstream& fileDB){
 }
 void treeVectorDirection::saveTree(ofstream& fileDB){
     _rootNode->saveNode(fileDB);
+    fileDB<<endl;
 }
 void treeVectorDirection::resetRootNode() {
     if (_rootNode) {

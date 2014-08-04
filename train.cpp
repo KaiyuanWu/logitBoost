@@ -101,7 +101,7 @@ void train::init(){
         cout<<"Can not open "<<_fParam<<endl;
         exit(-1);
     }
-    (*_paramf)<<_treeType<<" "<<_nClass<<" "<<_data->_nDimension<<" "<<_nMaxIteration<<" "<<_shrinkage;
+    (*_paramf)<<_treeType<<" "<<_nClass<<" "<<_data->_nDimension<<" "<<_nMaxIteration<<" "<<_shrinkage<<endl;
     _linearSearchMinimizer = new linearSearch(_data,_nLeaves,_shrinkage,_minimumNodeSize,_treeType);
 }
 void train::getDataInformation(char* fileInName,int& nEvent,int& nClass,int& nVariable){
@@ -159,6 +159,7 @@ void train::start(){
         //call the weak learner for each fold
         _linearSearchMinimizer->minimization(iIteration);
         _linearSearchMinimizer->saveDirection(*_paramf);
+        _paramf->flush();
 //        cout << "Gradient: " << endl;
 //        for (int ix = 0; ix < _data->_nTrainEvents; ix++) {
 //            cout << "[";
@@ -192,6 +193,9 @@ void train::start(){
 }
 void train::saveResult(){
     _outf->close();
+    if(_paramf){
+        _paramf->close();
+    }
 }
 train::~train() {
     delete _data;
