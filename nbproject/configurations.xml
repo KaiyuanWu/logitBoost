@@ -31,10 +31,10 @@
     <itemPath>dataManager.h</itemPath>
     <itemPath>directionFunction.cpp</itemPath>
     <itemPath>directionFunction.h</itemPath>
-    <itemPath>evaluation.cpp</itemPath>
-    <itemPath>evaluation.h</itemPath>
     <itemPath>linearSearch.cpp</itemPath>
     <itemPath>linearSearch.h</itemPath>
+    <itemPath>train.cpp</itemPath>
+    <itemPath>train.h</itemPath>
     <itemPath>treeScalarDirection.cpp</itemPath>
     <itemPath>treeScalarDirection.h</itemPath>
     <itemPath>treeVectorDirection.cpp</itemPath>
@@ -77,15 +77,15 @@
       </item>
       <item path="directionFunction.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="evaluation.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="evaluation.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="linearSearch.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="linearSearch.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="train.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="train.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="treeScalarDirection.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -143,15 +143,15 @@
       </item>
       <item path="directionFunction.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="evaluation.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="evaluation.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="linearSearch.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="linearSearch.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="train.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="train.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="treeScalarDirection.cpp" ex="false" tool="1" flavor2="0">
       </item>

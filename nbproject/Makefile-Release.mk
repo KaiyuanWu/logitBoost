@@ -41,9 +41,9 @@ OBJECTFILES= \
 	${OBJECTDIR}/crossValidate.o \
 	${OBJECTDIR}/dataManager.o \
 	${OBJECTDIR}/directionFunction.o \
-	${OBJECTDIR}/evaluation.o \
 	${OBJECTDIR}/linearSearch.o \
 	${OBJECTDIR}/main.o \
+	${OBJECTDIR}/train.o \
 	${OBJECTDIR}/treeScalarDirection.o \
 	${OBJECTDIR}/treeVectorDirection.o
 
@@ -102,11 +102,6 @@ ${OBJECTDIR}/directionFunction.o: directionFunction.cpp
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/directionFunction.o directionFunction.cpp
 
-${OBJECTDIR}/evaluation.o: evaluation.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/evaluation.o evaluation.cpp
-
 ${OBJECTDIR}/linearSearch.o: linearSearch.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
@@ -116,6 +111,11 @@ ${OBJECTDIR}/main.o: main.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
+
+${OBJECTDIR}/train.o: train.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/train.o train.cpp
 
 ${OBJECTDIR}/treeScalarDirection.o: treeScalarDirection.cpp 
 	${MKDIR} -p ${OBJECTDIR}

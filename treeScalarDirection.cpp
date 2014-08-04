@@ -74,7 +74,7 @@ treeScalarDirection::NODE::NODE(dataManager* data, treeScalarDirection* tree, in
     _isInternal = false;
 }
 void treeScalarDirection::NODE::saveNode(ofstream& outf){
-    outf<<_iDimension<<" "<<_cut<<" "<<_f<<" "<<_isInternal;
+    outf<<_iDimension<<" "<<_cut<<" "<<_f<<" "<<_isInternal<<" "<<_tree->_treeClass<<" ";
     if(_isInternal){
         outf<<"( ";
         _leftChildNode->saveNode(outf);
@@ -85,7 +85,6 @@ void treeScalarDirection::NODE::saveNode(ofstream& outf){
 }
 
 void treeScalarDirection::saveTree(ofstream& fileDB){
-    fileDB<<_treeType<<" "<<_treeClass<<endl;
     _rootNode->saveNode(fileDB);
 }
 treeScalarDirection::NODE::~NODE() {

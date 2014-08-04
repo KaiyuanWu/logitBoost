@@ -1,13 +1,13 @@
     /* 
- * File:   evaluation.cpp
+ * File:   train.cpp
  * Author: kaiwu
  * 
  * Created on July 25, 2014, 11:05 AM
  */
 
-#include "evaluation.h"
+#include "train.h"
 
-evaluation::evaluation(char* fTrain, char* fTest, char* fOut, int nTrainEvents,int nTestEvents,int nClass,int nVariables,
+train::train(char* fTrain, char* fTest, char* fOut, int nTrainEvents,int nTestEvents,int nClass,int nVariables,
             directionFunction::_TREE_TYPE_ treeType, double shrinkage,int nLeaves,int minimumNodeSize,int nMaxIteration){
     //dataset parameters
     _fTrain=fTrain;
@@ -26,7 +26,7 @@ evaluation::evaluation(char* fTrain, char* fTest, char* fOut, int nTrainEvents,i
     _minimumNodeSize=minimumNodeSize;
     _nMaxIteration=nMaxIteration;
 }
-void evaluation::init(){
+void train::init(){
     double* X=new double[_nVariables];
     int     label;
     
@@ -79,7 +79,7 @@ void evaluation::init(){
     _outf->setf(ios::scientific);
     _linearSearchMinimizer = new linearSearch(_data,_nLeaves,_shrinkage,_minimumNodeSize,_treeType);
 }
-void evaluation::start(){
+void train::start(){
     int iIteration;
     //start the training iteration
     for (iIteration = 0; iIteration < _nMaxIteration; iIteration++) {
@@ -116,10 +116,10 @@ void evaluation::start(){
         _outf->flush();
     }
 }
-void evaluation::saveResult(){
+void train::saveResult(){
     _outf->close();
 }
-evaluation::~evaluation() {
+train::~train() {
     delete _data;
     delete _linearSearchMinimizer;
     delete[] _accuracyTrainArray;

@@ -23,7 +23,7 @@ public:
     void printInfo(){
         //_rootNode->printInfo("",true);
     }
-    //tree evaluation
+    //tree train
     void eval(double* pnt, double* direction);
     void   buildIndex(int** dataIndex=NULL,int** dataReverseIndex0=NULL);
     void saveTree(ofstream& fileDB);

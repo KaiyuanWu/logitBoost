@@ -1,12 +1,12 @@
 /* 
- * File:   evaluation.h
+ * File:   train.h
  * Author: kaiwu
  *
  * Created on July 25, 2014, 11:05 AM
  */
 
-#ifndef EVALUATION_H
-#define	EVALUATION_H
+#ifndef train_H
+#define	train_H
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -18,11 +18,11 @@
 #include "linearSearch.h"
 #include "directionFunction.h"
 
-class evaluation {
+class train {
 public:
-    evaluation(char* fTrain, char* fTest, char* fOut, int nTrainEvents,int nTestEvents,int nClass,int nVariables,
+    train(char* fTrain, char* fTest, char* fOut, int nTrainEvents,int nTestEvents,int nClass,int nVariables,
             directionFunction::_TREE_TYPE_ treeType, double shrinkage=1.,int nLeaves=8,int minimumNodeSize=1,int nMaxIteration=1000);
-    virtual ~evaluation();
+    virtual ~train();
     
     //initialization procedure
     //read data file
@@ -61,5 +61,5 @@ private:
     ofstream* _outf;
 };
 
-#endif	/* EVALUATION_H */
+#endif	/* train_H */
 

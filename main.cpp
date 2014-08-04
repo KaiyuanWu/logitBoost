@@ -6,7 +6,7 @@
  */
 
 #include <cstdlib>
-#include "evaluation.h"
+#include "train.h"
 #include "directionFunction.h"
 
 using namespace std;
@@ -56,7 +56,7 @@ void test1(int jobID,int fold,int nLeaves, int minimumNodeSize, int nMaxIteratio
     nClass=nClassA[jobID];
     nVariables=nVariablesA[jobID];
     
-    evaluation eval(fTrain, fTest, fOut, nTrainEvents,nTestEvents,nClass,nVariables,treeType, shrinkage,nLeaves,minimumNodeSize,nMaxIteration);
+    train eval(fTrain, fTest, fOut, nTrainEvents,nTestEvents,nClass,nVariables,treeType, shrinkage,nLeaves,minimumNodeSize,nMaxIteration);
     eval.init();
     eval.start();
     eval.saveResult();
