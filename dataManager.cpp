@@ -359,7 +359,7 @@ void dataManager::saveF(){
     }
     for(int iEvent=0;iEvent<_nTrainEvents;iEvent++){
         for(int iClass=0;iClass<_nClass;iClass++){
-            fout<<_trainF[iClass]<<" ";
+            fout<<_trainF[iEvent*_nClass+iClass]<<" ";
         }
         fout<<endl;
     }

@@ -109,17 +109,17 @@ int main(int argc, char** argv) {
 //    int maxIterations=atoi(argv[5]);
 //    char* prefix=argv[6];
 //    test1(jobID,iFold,nLeaves,minimumSize,maxIterations,prefix);
-    
-//    char* prefix=argv[1];
-//    int nLeaves=atoi(argv[2]);
-//    int minimumNodeSize=atoi(argv[3]);
-//    int maxIterations=atoi(argv[4]);
-//    
-//    train t(prefix,directionFunction::_SLOGITBOOST_,0.1,nLeaves,minimumNodeSize,maxIterations);
-//    t.init();
-//    t.start();
-//    t.saveResult();
-    
-    testApplication(argc,argv);
+    if (argc > 3) {
+        char* prefix = argv[1];
+        int nLeaves = atoi(argv[2]);
+        int minimumNodeSize = atoi(argv[3]);
+        int maxIterations = atoi(argv[4]);
+
+        train t(prefix, directionFunction::_SLOGITBOOST_, 0.1, nLeaves, minimumNodeSize, maxIterations);
+        t.init();
+        t.start();
+        t.saveResult();
+    } else
+        testApplication(argc, argv);
     return 0;
 }

@@ -24,6 +24,7 @@ application::~application() {
         delete _bootedTrees[iTree];
     }
     delete[] _bootedTrees;
+    delete[] _direction;
 }
 void application::eval(double* pnt, double* f){
     for(int iClass=0;iClass<_nClass;iClass++)
@@ -78,6 +79,7 @@ void application::evalV(double* pnt,int iIteration) {
     for (int iClass = 0; iClass < _nClass; iClass++)
         _direction[iClass] = 0.;
     struct _NODE_ *n = _bootedTrees[iIteration];
+    cout<<_bootedTrees[iIteration]->printInfo("");
     while (n->_isInternal) {
         if (pnt[n->_iDimension] <= n->_cut) {
             n = n->_leftChildNode;
@@ -128,6 +130,7 @@ void application::buildTree(const char* tree, struct _NODE_* root){
     stringstream ss;
     ss.str(tree);
     ss >> iDimension >> cut>>f>>internal>>iclass;
+    
     root->_cut = cut;
     root->_iDimension = iDimension;
     root->_f = f;
@@ -178,6 +181,7 @@ bool application::init(){
     (*_fileDB)>>k;
     _treeType=directionFunction::_TREE_TYPE_(k);
     (*_fileDB)>>_nClass>>_nVariable>>_nMaximumIteration>>_shrinkage;
+    _direction=new double[_nClass];
     
     switch(_treeType) {
         case directionFunction::_ABC_LOGITBOOST_:
@@ -206,6 +210,8 @@ bool application::init(){
     int nT=0;
     while(_fileDB->good()){
         buildTree(tree.c_str(),_bootedTrees[nT]);
+        _bootedTrees[nT]->printInfo("",true);
+        cout<<"------------------------------------"<<endl;
         getline(*_fileDB,tree);
     }
     return ret;
