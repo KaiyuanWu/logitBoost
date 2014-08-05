@@ -79,7 +79,7 @@ void application::evalV(double* pnt,int iIteration) {
     for (int iClass = 0; iClass < _nClass; iClass++)
         _direction[iClass] = 0.;
     struct _NODE_ *n = _bootedTrees[iIteration];
-    cout<<_bootedTrees[iIteration]->printInfo("");
+//    _bootedTrees[iIteration]->printInfo("",true);
     while (n->_isInternal) {
         if (pnt[n->_iDimension] <= n->_cut) {
             n = n->_leftChildNode;
@@ -115,7 +115,7 @@ void application::evalV(double* pnt,int iIteration) {
         default:
             cout << "This tree type " << _treeType << " has not been implemented!" << endl;
             break;
-    } 
+    }
 }
 void application::buildTree(const char* tree, struct _NODE_* root){
     char op;
@@ -213,6 +213,7 @@ bool application::init(){
         _bootedTrees[nT]->printInfo("",true);
         cout<<"------------------------------------"<<endl;
         getline(*_fileDB,tree);
+        nT++;
     }
     return ret;
 }
