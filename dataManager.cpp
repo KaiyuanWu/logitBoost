@@ -352,16 +352,34 @@ void dataManager::swap(int i, int j, int iDimension, bool atInit) {
 }
 
 void dataManager::saveF(){
-    ofstream fout("saveF.dat",ofstream::out);
-    if(!fout.good()){
+    ofstream* fout;
+    switch(_treeType){
+        case directionFunction::_ABC_LOGITBOOST_:
+            fout=new ofstream("abcLogit_saveF.dat",ofstream::out);
+            break;
+        case directionFunction::_AOSO_LOGITBOOST_:
+            fout=new ofstream("aosoLogit_saveF.dat",ofstream::out);
+            break;
+        case directionFunction::_LOGITBOOST_:
+            fout=new ofstream("logit_saveF.dat",ofstream::out);
+            break;
+        case directionFunction::_MART_:
+            fout=new ofstream("mart_saveF.dat",ofstream::out);
+            break;
+        case directionFunction::_SLOGITBOOST_:
+            fout=new ofstream("slogit_saveF.dat",ofstream::out);
+            break;    
+    }
+    
+    if(!fout->good()){
         cout<<"Can not open saveF.dat!"<<endl;
         return;
     }
     for(int iEvent=0;iEvent<_nTrainEvents;iEvent++){
         for(int iClass=0;iClass<_nClass;iClass++){
-            fout<<_trainF[iEvent*_nClass+iClass]<<" ";
+            (*fout)<<_trainF[iEvent*_nClass+iClass]<<" ";
         }
-        fout<<endl;
+        (*fout)<<endl;
     }
-    fout.close();
+    fout->close();
 }

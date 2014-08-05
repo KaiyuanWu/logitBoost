@@ -15,6 +15,9 @@ treeScalarDirection::treeScalarDirection(dataManager* data,int nLeaves, int mini
     _data = data;
     _nLeaves = nLeaves;
     _minimumNodeSize=minimumNodeSize;
+    if(_minimumNodeSize<1){
+        _minimumNodeSize=1;
+    }
     _treeType=treeType;
     _treeClass=treeClass;
     

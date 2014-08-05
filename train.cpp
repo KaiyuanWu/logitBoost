@@ -32,8 +32,32 @@ train::train(char* fTrain, char* fTest, char* fOut, int nTrainEvents,int nTestEv
 train::train(char* fTrain, 
             directionFunction::_TREE_TYPE_ treeType, double shrinkage,int nLeaves,int minimumNodeSize,int nMaxIteration){
     _fTrain=fTrain;
-    _fOut=_fTrain+".out";
-    _fParam=_fTrain+".model";
+    char paramPrefix[1024];
+    switch(treeType){
+        case directionFunction::_ABC_LOGITBOOST_:
+            sprintf(paramPrefix,"abcLogit_shrinkage%f_nLeave%d_minimumNodeSize%d_nMaxIteration%d",shrinkage,nLeaves,minimumNodeSize,nMaxIteration);
+            break;
+        case directionFunction::_AOSO_LOGITBOOST_:
+            sprintf(paramPrefix,"aosoLogit_shrinkage%f_nLeave%d_minimumNodeSize%d_nMaxIteration%d",shrinkage,nLeaves,minimumNodeSize,nMaxIteration);
+            break;
+        case directionFunction::_LOGITBOOST_:
+            sprintf(paramPrefix,"logit_shrinkage%f_nLeave%d_minimumNodeSize%d_nMaxIteration%d",shrinkage,nLeaves,minimumNodeSize,nMaxIteration);
+            break;
+        case directionFunction::_MART_:
+            sprintf(paramPrefix,"mart_shrinkage%f_nLeave%d_minimumNodeSize%d_nMaxIteration%d",shrinkage,nLeaves,minimumNodeSize,nMaxIteration);
+            break;
+        case directionFunction::_SLOGITBOOST_:
+            sprintf(paramPrefix,"slogit_shrinkage%f_nLeave%d_minimumNodeSize%d_nMaxIteration%d",shrinkage,nLeaves,minimumNodeSize,nMaxIteration);
+            break;
+        default:
+            cout<<"tree type= "<<int(_treeType)<<" has not been implemented!"<<endl;
+            exit(-1);
+            break;
+    }
+    _fOut=_fTrain+paramPrefix;
+    _fOut=_fOut+".out";
+    _fParam=_fTrain+paramPrefix;
+    _fParam=_fParam+".model";
     
     _nTestEvents=0;
     getDataInformation(fTrain,_nTrainEvents,_nClass,_nVariables);
@@ -192,7 +216,7 @@ void train::start(){
     }
 }
 void train::saveResult(){
-    _data->saveF();
+//    _data->saveF();
     _outf->close();
     if(_paramf){
         _paramf->close();

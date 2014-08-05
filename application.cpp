@@ -33,6 +33,12 @@ void application::eval(double* pnt, double* f){
         f[iClass]=0.;
     switch(_treeType) {
         case directionFunction::_ABC_LOGITBOOST_:
+            for(int iIteration=0;iIteration<_nMaximumIteration;iIteration++){
+                evalS(pnt, iIteration);
+                for(int iClass=0;iClass<_nClass;iClass++)
+                    f[iClass]-=_shrinkage*_direction[iClass];
+            }
+            break;
         case directionFunction::_MART_:
         case directionFunction::_LOGITBOOST_:
             for(int iIteration=0;iIteration<_nMaximumIteration;iIteration++){
@@ -58,7 +64,7 @@ void application::evalS(double* pnt,int iIteration){
     for (int iClass = 0; iClass < _nClass; iClass++)
         _direction[iClass] = 0.;
     struct _NODE_ *n;
-    for (int iTree = 0; iTree < _nTrees; iTree++) {
+    for(int iTree = 0; iTree < _nTrees; iTree++) {
         n = _bootedTrees[iIteration * _nTrees + iTree];
         while (n->_isInternal) {
             if (pnt[n->_iDimension] <= n->_cut) {

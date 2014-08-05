@@ -2,11 +2,8 @@
 <configurationDescriptor version="94">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="HeaderFiles" displayName="头文件" projectFiles="true">
-      <itemPath>application.h</itemPath>
     </logicalFolder>
     <logicalFolder name="SourceFiles" displayName="源文件" projectFiles="true">
-      <itemPath>application.cpp</itemPath>
-      <itemPath>main.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles" displayName="资源文件" projectFiles="true">
     </logicalFolder>
@@ -23,6 +20,8 @@
     </logicalFolder>
     <itemPath>LossFunction.cpp</itemPath>
     <itemPath>LossFunction.h</itemPath>
+    <itemPath>application.cpp</itemPath>
+    <itemPath>application.h</itemPath>
     <itemPath>bitArray.cpp</itemPath>
     <itemPath>bitArray.h</itemPath>
     <itemPath>crossValidate.cpp</itemPath>
@@ -33,6 +32,7 @@
     <itemPath>directionFunction.h</itemPath>
     <itemPath>linearSearch.cpp</itemPath>
     <itemPath>linearSearch.h</itemPath>
+    <itemPath>main.cpp</itemPath>
     <itemPath>train.cpp</itemPath>
     <itemPath>train.h</itemPath>
     <itemPath>treeScalarDirection.cpp</itemPath>

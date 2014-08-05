@@ -13,6 +13,9 @@ treeVectorDirection::treeVectorDirection(dataManager* data,int nLeaves, int mini
     _data = data;
     _nLeaves = nLeaves;
     _minimumNodeSize=minimumNodeSize;
+    if(_minimumNodeSize<1){
+        _minimumNodeSize=1;
+    }
     _treeType=treeType;
     if (_nLeaves < 2) {
         cout << "Number of terminate nodes is " << _nLeaves << ", change it to 2!" << endl;
@@ -280,7 +283,7 @@ void treeVectorDirection::reArrange(NODE* node, int splitPoint) {
         for (int ip = splitPoint + 1; ip <= node->_rightPoint; ip++) {
             if (!_indexMask->set(_data->_dataReverseIndex[id][_data->_dataIndex[iDimension][ip]])) {
                 cout << "Fail to set the index mask!"<< endl;
-                exit(0);
+                exit(-1);
             }
         }
         int left = node->_leftPoint;
@@ -435,7 +438,7 @@ void treeVectorDirection::buildDirection() {
 //                cout << _data->_lossHessian[ix * _nG + ic] << ", ";
 //            cout << "]" << endl;
 //        }
-//        exit(0);
+//        exit(-1);
 //    }
     
     _round++;
@@ -453,8 +456,8 @@ void treeVectorDirection::buildDirection() {
         if (node->_leftChildNode)
             node->_isInternal = true;
     }
-    _rootNode->printInfo("",true);
-    cout<<"++++++++++ "<<_round<<" +++++++++++++++"<<endl;
+//    _rootNode->printInfo("",true);
+//    cout<<"++++++++++ "<<_round<<" +++++++++++++++"<<endl;
 //    exit(0);
 }
 
