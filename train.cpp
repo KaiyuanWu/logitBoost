@@ -192,6 +192,7 @@ void train::start(){
     }
 }
 void train::saveResult(){
+    _data->saveF();
     _outf->close();
     if(_paramf){
         _paramf->close();

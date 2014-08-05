@@ -115,7 +115,7 @@ void application::evalV(double* pnt,int iIteration) {
             break;
     } 
 }
-void application::buildTree(char* tree, struct _NODE_* root){
+void application::buildTree(const char* tree, struct _NODE_* root){
     char op;
     int  iDimension,iclass;
     float cut,f;
@@ -196,6 +196,17 @@ bool application::init(){
             break;
     }
     _bootedTrees=new struct _NODE_*[_nTrees*_nMaximumIteration];
-    
+    for(int iT=0;iT<_nTrees*_nMaximumIteration;iT++){
+        _bootedTrees[iT]=new struct _NODE_;
+    }
+    string tree;
+    //skip the first endl
+    getline(*_fileDB,tree);
+    getline(*_fileDB,tree);
+    int nT=0;
+    while(_fileDB->good()){
+        buildTree(tree.c_str(),_bootedTrees[nT]);
+        getline(*_fileDB,tree);
+    }
     return ret;
 }

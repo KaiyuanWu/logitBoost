@@ -66,11 +66,37 @@ void test1(int jobID,int fold,int nLeaves, int minimumNodeSize, int nMaxIteratio
 void testApplication(int argc, char** argv){
     char* model=argv[1];
     char* data=argv[2];
-    string fdb=model;
-    fdb=fdb+".model";
-    application app(fdb.c_str());
-    
-    
+    application app(model);
+    //read in test data
+    int nVariable=app._nVariable;
+    int nClass=app._nClass;
+    double* x=new double[nVariable];
+    int l;
+    double* f=new double[nClass];
+    ifstream infs(data,ifstream::in);
+    if(!infs.good()){
+        cout<<"Can not open "<<data<<endl;
+        return;
+    }
+    ofstream outf("testApplication.dat",ofstream::out);
+    if(!outf.good()){
+        cout<<"Can not open testApplication.out"<<endl;
+        return;
+    }
+    for(int iVar=0;iVar<nVariable;iVar++)
+        infs>>x[iVar];
+    infs>>l;
+    while(infs.good()){
+        app.eval(x,f);
+        for(int iClass=0;iClass<nClass;iClass++)
+            outf<<f[iClass]<<" ";
+        outf << endl;
+        for (int iVar = 0; iVar < nVariable; iVar++)
+            infs >> x[iVar];
+        infs>>l;
+    }
+    infs.close();
+    outf.close();
 }
 int main(int argc, char** argv) {
     //srand((unsigned)time(NULL));
@@ -84,14 +110,16 @@ int main(int argc, char** argv) {
 //    char* prefix=argv[6];
 //    test1(jobID,iFold,nLeaves,minimumSize,maxIterations,prefix);
     
-    char* prefix=argv[1];
-    int nLeaves=atoi(argv[2]);
-    int minimumNodeSize=atoi(argv[3]);
-    int maxIterations=atoi(argv[4]);
+//    char* prefix=argv[1];
+//    int nLeaves=atoi(argv[2]);
+//    int minimumNodeSize=atoi(argv[3]);
+//    int maxIterations=atoi(argv[4]);
+//    
+//    train t(prefix,directionFunction::_SLOGITBOOST_,0.1,nLeaves,minimumNodeSize,maxIterations);
+//    t.init();
+//    t.start();
+//    t.saveResult();
     
-    train t(prefix,directionFunction::_SLOGITBOOST_,0.1,nLeaves,minimumNodeSize,maxIterations);
-    t.init();
-    t.start();
-    t.saveResult();
+    testApplication(argc,argv);
     return 0;
 }

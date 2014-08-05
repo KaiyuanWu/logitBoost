@@ -62,16 +62,16 @@ public:
     void evalV(double* pnt,int iIteration);
     void evalS(double* pnt,int iIteration);
     virtual ~application();
+    int _nClass;
+    int _nVariable;
 private:
     string _fileDBName;
     ifstream* _fileDB;
-    int _nClass;
-    int _nVariable;
     int _nMaximumIteration;
     double _shrinkage;
     directionFunction::_TREE_TYPE_ _treeType;
     bool init();
-    void buildTree(char* tree,struct _NODE_* root);
+    void buildTree(const char* tree,struct _NODE_* root);
     struct _NODE_** _bootedTrees;
     int _nTrees;
     int* _baseClass;
