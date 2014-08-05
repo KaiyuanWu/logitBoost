@@ -152,7 +152,7 @@ double LossFunction::lossabcLogitNewton(double* f, int y, int c1,int c2, double&
         gradient-=(pc2-1);
     else
         gradient-=pc2;
-//    gradient*=-1;
+    gradient*=-1;
     hessian=pc1*(1.-pc1)+pc2*(1.-pc2)+2.*pc1*pc2;
     if(hessian<_MIN_HESSIAN_)
         hessian=_MIN_HESSIAN_;

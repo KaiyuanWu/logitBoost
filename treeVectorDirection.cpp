@@ -41,20 +41,7 @@ treeVectorDirection::treeVectorDirection(dataManager* data,int nLeaves, int mini
             exit(-1);
     }
 }
-void treeVectorDirection::NODE::saveNode(ofstream& fileDB){
-    fileDB<<_iDimension<<" "<<_cut<<" "<<_f<<" "<<_isInternal<<" "<<_class<<" ";
-    if(_isInternal){
-        fileDB<<"( ";
-        _leftChildNode->saveNode(fileDB);
-        fileDB<<") + ( ";
-        _rightChildNode->saveNode(fileDB);
-        fileDB<<" )";
-    }
-}
-void treeVectorDirection::saveTree(ofstream& fileDB){
-    _rootNode->saveNode(fileDB);
-    fileDB<<endl;
-}
+
 void treeVectorDirection::resetRootNode() {
     if (_rootNode) {
         if (_rootNode->_leftChildNode)
@@ -316,12 +303,26 @@ void treeVectorDirection::reArrange(NODE* node, int splitPoint) {
         memcpy(_data->_dataIndex[id] + node->_leftPoint, _data->_dataIndexTemp + node->_leftPoint, (node->_rightPoint - node->_leftPoint + 1) * sizeof (int));
     }
 }
+void treeVectorDirection::NODE::saveNode(ofstream& outf){
+    outf<<_iDimension<<" "<<_cut<<" "<<_f<<" "<<_isInternal<<" "<<_class<<" ";
+    if(_isInternal){
+        outf<<"( ";
+        _leftChildNode->saveNode(outf);
+        outf<<") + ( ";
+        _rightChildNode->saveNode(outf);
+        outf<<" )";
+    }
+    outf<<endl;
+}
 
 treeVectorDirection::~treeVectorDirection() {
     delete _indexMask;
     delete  _rootNode;
 }
-
+void treeVectorDirection::saveTree(ofstream& fileDB){
+    _rootNode->saveNode(fileDB);
+    fileDB<<endl;
+}
 bool treeVectorDirection::NODE::printInfo(const char* indent, bool last) {
     bool ret;
     char leftS[1024];
@@ -374,7 +375,7 @@ void treeVectorDirection::NODE::selectBestClass(){
     _nodeGain=maxG;
     
     if(maxIndex==-1){
-        //cout<<"All probabilities of this node are either 1 or 0!"<<endl;
+        cout<<"All probabilities of this node are either 1 or 0!"<<endl;
         _ableSplit=false;
         _f=0.;
     }
@@ -404,7 +405,7 @@ void treeVectorDirection::eval(double* pnt, double* direction) {
                     direction[iClass] = (_nClass - 1.) * f;
                 else
                     direction[iClass] = -f;
-            }
+            }    
             break;
         case _AOSO_LOGITBOOST_:
             for (int iClass = 0.; iClass < _nClass; iClass++) {

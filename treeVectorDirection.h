@@ -77,7 +77,7 @@ private:
     void resetRootNode();
     //tree array for different classes
     NODE* _rootNode;
-    //tree train
+    //tree evaluation
     double evalp(double* s,int& iClass);
     //initialize root nodes
     void initNode();

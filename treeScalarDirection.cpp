@@ -76,17 +76,17 @@ treeScalarDirection::NODE::NODE(dataManager* data, treeScalarDirection* tree, in
 void treeScalarDirection::NODE::saveNode(ofstream& outf){
     outf<<_iDimension<<" "<<_cut<<" "<<_f<<" "<<_isInternal<<" "<<_tree->_treeClass<<" ";
     if(_isInternal){
-        outf<<" ( ";
+        outf<<"( ";
         _leftChildNode->saveNode(outf);
-        outf<<" ) + ( ";
+        outf<<") + ( ";
         _rightChildNode->saveNode(outf);
-        outf<<" ) ";
+        outf<<" )";
     }
+    outf<<endl;
 }
 
 void treeScalarDirection::saveTree(ofstream& fileDB){
     _rootNode->saveNode(fileDB);
-    fileDB<<endl;
 }
 treeScalarDirection::NODE::~NODE() {
     if (_leftChildNode)
