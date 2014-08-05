@@ -138,10 +138,10 @@ void linearSearch::updateDirection2() {
                 continue;
             double d;
             _df[_baseClass * _nClass + iClass]->eval(_data->_trainX + iEvent * _nDimension,&d);
-            _data->_trainDescendingDirection[iEvent * _nClass + iClass] = d;
+            _data->_trainDescendingDirection[iEvent * _nClass + iClass] = -d;
             sumD += d;
         }
-        _data->_trainDescendingDirection[iEvent * _nClass + _baseClass] = -1. * sumD;
+        _data->_trainDescendingDirection[iEvent * _nClass + _baseClass] = sumD;
     }
     for (int iEvent = 0; iEvent < _nTestEvents; iEvent++) {
         double sumD = 0.;
@@ -152,10 +152,10 @@ void linearSearch::updateDirection2() {
             _df[_baseClass * _nClass + iClass]->eval(_data->_testX + iEvent * _nDimension,&d);
 //            if(iClass<_baseClass)
 //                d*= -1.;
-            _data->_testDescendingDirection[iEvent * _nClass + iClass] = d;
+            _data->_testDescendingDirection[iEvent * _nClass + iClass] = -d;
             sumD += d;
         }
-        _data->_testDescendingDirection[iEvent * _nClass + _baseClass] = -1. * sumD;
+        _data->_testDescendingDirection[iEvent * _nClass + _baseClass] = sumD;
     }
     _g++;
     for(int iClass=0;iClass<_nClass;iClass++){

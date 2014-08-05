@@ -4,7 +4,6 @@
  * 
  * Created on June 14, 2014, 1:55 PM
  */
-
 #include "LossFunction.h"
 
 LossFunction::LossFunction(directionFunction::_TREE_TYPE_ treeType,int nDimension,int nClass) {
@@ -113,7 +112,6 @@ double LossFunction::lossSNewton(double* f, int y, int c, double& gradient, doub
     hessian=_nClass*_nClass*pc*(1.-pc);
     if(hessian<_MIN_HESSIAN_)
         hessian=_MIN_HESSIAN_;
-
 //    cout << "pc= " << pc << ", py= " << py <<" y= "<<y<<", c= "<<c<< ", " << gradient<<", "<<hessian<<endl;
     return loss;
 }
@@ -146,17 +144,18 @@ double LossFunction::lossabcLogitNewton(double* f, int y, int c1,int c2, double&
     gradient=0;
     if(y==c1)
         gradient+=pc1-1;
-    else
+    else{
         gradient+=pc1;
+    }
     if(y==c2)
         gradient-=(pc2-1);
-    else
+    else{
         gradient-=pc2;
+    }
     gradient*=-1;
     hessian=pc1*(1.-pc1)+pc2*(1.-pc2)+2.*pc1*pc2;
     if(hessian<_MIN_HESSIAN_)
         hessian=_MIN_HESSIAN_;
     return loss;
-
 }
 

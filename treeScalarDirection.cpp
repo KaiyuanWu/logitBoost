@@ -218,13 +218,34 @@ void treeScalarDirection::NODE::splitNode() {
         t->_nodeSumH= leftSumH1;
         t->_iDimension=_iDimension;
         t->calculateF();
-
+//        if (t->_nodeSumH < 0.00001) {
+//            double g = 0., h = 0.;
+//            for (int ip = t->_leftPoint; ip <= t->_rightPoint; ip++) {
+//                cout << _data->_lossGradient[_data->_dataIndex[_iDimension][ip]* _tree->_nG + _tree->_treeClass] << ", " << _data->_lossHessian[_data->_dataIndex[_iDimension][ip]* _tree->_nG + _tree->_treeClass] << endl;
+//                g += _data->_lossGradient[_data->_dataIndex[_iDimension][ip]* _tree->_nG + _tree->_treeClass];
+//                h += _data->_lossHessian[_data->_dataIndex[_iDimension][ip]* _tree->_nG + _tree->_treeClass];
+//            }
+//            cout << "g= " << g << ", h= " << h <<", nodeG= "<<t->_nodeSumG<<", nodeH= "<<t->_nodeSumH<< endl;
+//            exit(0);
+//        }
+        
         t = new NODE(_data, _tree, maxI + 1, _rightPoint);
         _rightChildNode = t;
         t->_nodeSumG= rightSumG1;
         t->_nodeSumH= rightSumH1;
         t->_iDimension=_iDimension;
         t->calculateF();
+        
+//        if (t->_nodeSumH < 0.00001) {
+//            double g = 0., h = 0.;
+//            for (int ip = t->_leftPoint; ip <= t->_rightPoint; ip++) {
+//                cout << _data->_lossGradient[_data->_dataIndex[_iDimension][ip]* _tree->_nG + _tree->_treeClass] << ", " << _data->_lossHessian[_data->_dataIndex[_iDimension][ip]* _tree->_nG + _tree->_treeClass] << endl;
+//                g += _data->_lossGradient[_data->_dataIndex[_iDimension][ip]* _tree->_nG + _tree->_treeClass];
+//                h += _data->_lossHessian[_data->_dataIndex[_iDimension][ip]* _tree->_nG + _tree->_treeClass];
+//            }
+//            cout << "g= " << g << ", h= " << h <<", nodeG= "<<t->_nodeSumG<<", nodeH= "<<t->_nodeSumH<< endl;
+//            exit(0);
+//        }
     }
     _ableSplit = false;
 }
@@ -276,6 +297,16 @@ bool treeScalarDirection::NODE::printInfo(const char* indent, bool last) {
         if(last){
             sprintf(rightS,"%s",indent);
             printf("%s|-x%.2d<=%.6f f= %f (%d,%d) nodeGain=%f additiveGain=%f G=%f H=%f \n",rightS,_iDimension,_cut,_f, _leftPoint, _rightPoint,_nodeGain,_additiveGain,_nodeSumG,_nodeSumH);
+//            if(_nodeSumH<0.00001){
+//                double g=0.,h=0.;
+//                for(int ip=_leftPoint;ip<=_rightPoint;ip++){
+//                    cout<<_data->_lossGradient[_data->_dataReverseIndex[_iDimension][ip]]<<", "<<_data->_lossHessian[_data->_dataReverseIndex[_iDimension][ip]]<<endl;
+//                    g+=_data->_lossGradient[_data->_dataReverseIndex[_iDimension][ip]];
+//                    h+=_data->_lossHessian[_data->_dataReverseIndex[_iDimension][ip]];
+//                }
+//                cout<<"g= "<<g<<", h= "<<h<<endl;
+//                exit(0);
+//            }    
             sprintf(leftS,"%s|  ",indent);
             ret = _leftChildNode->printInfo(leftS, true);
             ret = _rightChildNode->printInfo(leftS, false);

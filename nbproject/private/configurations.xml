@@ -29,12 +29,13 @@
           <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}"   5 1 8 1 1000 /Users/kaiwu/Documents/MulticlassLossFunctionComparision/files/</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}"   ../../datasets/trValTestData/letterT_0.dat 8 0 10</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}"   ../../datasets/trValTestData/letterTr_0.dat 8 0 10</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}"   ../../datasets/trValTestData/letterTr_0.dat.model ../../datasets/trValTestData/letterTr_0</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}"  ../../datasets/trValTestData/letterTr_0.dat 8 0 10</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}"   ../../datasets/trValTestData/letterTr_0.dat.model ../../datasets/trValTestData/letterTr_0.dat</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}"   ../../datasets/trValTestData/letterTr_0.dat 8 0 10</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}"   ../../datasets/trValTestData/letterTr_0.dat 8 1 10</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}"   ../../datasets/trValTestData/letterTr_0.dat.model ../../datasets/trValTestData/letterTr_0.dat</runcommand>
+        <runcommand>"${OUTPUT_PATH}"   ../../datasets/trValTestData/letterTr_0.dat 8 1 10</runcommand>
         <rundir></rundir>
         <buildfirst>true</buildfirst>
         <terminal-type>0</terminal-type>
