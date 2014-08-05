@@ -374,7 +374,7 @@ void treeVectorDirection::NODE::selectBestClass(){
     _nodeGain=maxG;
     
     if(maxIndex==-1){
-        cout<<"All probabilities of this node are either 1 or 0!"<<endl;
+        //cout<<"All probabilities of this node are either 1 or 0!"<<endl;
         _ableSplit=false;
         _f=0.;
     }
@@ -404,7 +404,7 @@ void treeVectorDirection::eval(double* pnt, double* direction) {
                     direction[iClass] = (_nClass - 1.) * f;
                 else
                     direction[iClass] = -f;
-            }    
+            }
             break;
         case _AOSO_LOGITBOOST_:
             for (int iClass = 0.; iClass < _nClass; iClass++) {

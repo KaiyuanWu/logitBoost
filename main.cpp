@@ -110,12 +110,12 @@ int main(int argc, char** argv) {
 //    char* prefix=argv[6];
 //    test1(jobID,iFold,nLeaves,minimumSize,maxIterations,prefix);
     if (argc > 3) {
-        char* prefix = argv[1];
+        char* data = argv[1];
         int nLeaves = atoi(argv[2]);
         int minimumNodeSize = atoi(argv[3]);
         int maxIterations = atoi(argv[4]);
-
-        train t(prefix, directionFunction::_SLOGITBOOST_, 0.1, nLeaves, minimumNodeSize, maxIterations);
+        
+        train t(data, directionFunction::_LOGITBOOST_, 0.1, nLeaves, minimumNodeSize, maxIterations);
         t.init();
         t.start();
         t.saveResult();
