@@ -115,7 +115,7 @@ int main(int argc, char** argv) {
         int minimumNodeSize = atoi(argv[3]);
         int maxIterations = atoi(argv[4]);
         
-        train t(data, directionFunction::_AOSO_LOGITBOOST_, 0.1, nLeaves, minimumNodeSize, maxIterations);
+        train t(data, directionFunction::_ABC_LOGITBOOST_, 0.1, nLeaves, minimumNodeSize, maxIterations);
         t.init();
         t.start();
         t.saveResult();

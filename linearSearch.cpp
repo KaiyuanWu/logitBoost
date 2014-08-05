@@ -21,8 +21,6 @@ linearSearch::linearSearch(dataManager*  data,int nLeaves,double shrinkage,int m
     _nLeaves=nLeaves;
     _minimumNodeSize=minimumNodeSize;
     _shrinkage=shrinkage;
-    treeVectorDirection* t;
-    //treeVectorDirection* tt;
     switch(_treeType){
         case directionFunction::_MART_:
         case directionFunction::_LOGITBOOST_:
@@ -132,7 +130,7 @@ void linearSearch::updateDirection2() {
         }
         _g = -1;
     }
-    cout<<"Base Class= "<<_baseClass<<endl;
+    //cout<<"Base Class= "<<_baseClass<<endl;
     for (int iEvent = 0; iEvent < _nTrainEvents; iEvent++) {
         double sumD = 0.;
         for (int iClass = 0; iClass < _nClass; iClass++) {
@@ -160,6 +158,11 @@ void linearSearch::updateDirection2() {
         _data->_testDescendingDirection[iEvent * _nClass + _baseClass] = -1. * sumD;
     }
     _g++;
+    for(int iClass=0;iClass<_nClass;iClass++){
+        if(iClass==_baseClass)
+            continue;
+        ((treeScalarDirection*)_df[_baseClass * _nClass + iClass])->printInfo();
+    }
 }
 void linearSearch::updateDirection(int iRound){
     switch(_treeType){
@@ -230,7 +233,7 @@ void linearSearch::saveDirection(ofstream& fileDB){
                 _df[id]->saveTree(fileDB);
             break;
         case directionFunction::_ABC_LOGITBOOST_:
-            fileDB<<_baseClass<<" ";
+            fileDB<<_baseClass<<" "<<endl;
             for(int iClass1=0;iClass1<_data->_nClass;iClass1++){
                 if(iClass1==_baseClass)
                     continue;

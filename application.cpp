@@ -25,6 +25,8 @@ application::~application() {
     }
     delete[] _bootedTrees;
     delete[] _direction;
+    if(_treeType==directionFunction::_ABC_LOGITBOOST_)
+        delete[] _baseClass;
 }
 void application::eval(double* pnt, double* f){
     for(int iClass=0;iClass<_nClass;iClass++)
@@ -65,7 +67,7 @@ void application::evalS(double* pnt,int iIteration){
                 n = n->_rightChildNode;
             }
         }
-        _direction[n->_class]=n->_f;
+        _direction[n->_class%_nClass]=n->_f;
     }
     if(_treeType==directionFunction::_ABC_LOGITBOOST_){
         for(int iClass=0;iClass<_nClass;iClass++){
@@ -182,6 +184,9 @@ bool application::init(){
     _treeType=directionFunction::_TREE_TYPE_(k);
     (*_fileDB)>>_nClass>>_nVariable>>_nMaximumIteration>>_shrinkage;
     _direction=new double[_nClass];
+    if(_treeType==directionFunction::_ABC_LOGITBOOST_){
+        _baseClass=new int[_nMaximumIteration];
+    }
     
     switch(_treeType) {
         case directionFunction::_ABC_LOGITBOOST_:
@@ -206,14 +211,19 @@ bool application::init(){
     string tree;
     //skip the first endl
     getline(*_fileDB,tree);
-    getline(*_fileDB,tree);
-    int nT=0;
-    while(_fileDB->good()){
-        buildTree(tree.c_str(),_bootedTrees[nT]);
-        _bootedTrees[nT]->printInfo("",true);
-        cout<<"------------------------------------"<<endl;
-        getline(*_fileDB,tree);
-        nT++;
+    for(int iIteration=0;iIteration<_nMaximumIteration;iIteration++) {
+        if (_treeType == directionFunction::_ABC_LOGITBOOST_) {
+            getline(*_fileDB, tree);
+            _baseClass[iIteration] = atoi(tree.c_str());
+        }
+//        cout<<"------------- iIteration= "<<iIteration<<" baseClass= "<<_baseClass[iIteration]<<" -------------"<<endl;
+        for(int iTree=0;iTree<_nTrees;iTree++){
+            getline(*_fileDB,tree);
+            buildTree(tree.c_str(),_bootedTrees[iIteration*_nTrees+iTree]);
+//            cout<<"["<<iIteration*_nTrees+iTree<<"]"<<endl;
+//            _bootedTrees[iIteration*_nTrees+iTree]->printInfo("",true);
+        }
+//        cout<<endl;
     }
     return ret;
 }

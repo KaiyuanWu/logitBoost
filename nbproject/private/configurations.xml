@@ -31,10 +31,10 @@
           <runcommandpicklistitem>"${OUTPUT_PATH}"   ../../datasets/trValTestData/letterT_0.dat 8 0 10</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}"   ../../datasets/trValTestData/letterTr_0.dat 8 0 10</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}"   ../../datasets/trValTestData/letterTr_0.dat.model ../../datasets/trValTestData/letterTr_0</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}"   ../../datasets/trValTestData/letterTr_0.dat.model ../../datasets/trValTestData/letterTr_0.dat</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}"  ../../datasets/trValTestData/letterTr_0.dat 8 0 10</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}"   ../../datasets/trValTestData/letterTr_0.dat.model ../../datasets/trValTestData/letterTr_0.dat</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}"  ../../datasets/trValTestData/letterTr_0.dat 8 0 10</runcommand>
+        <runcommand>"${OUTPUT_PATH}"   ../../datasets/trValTestData/letterTr_0.dat.model ../../datasets/trValTestData/letterTr_0.dat</runcommand>
         <rundir></rundir>
         <buildfirst>true</buildfirst>
         <terminal-type>0</terminal-type>

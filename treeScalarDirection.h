@@ -21,7 +21,7 @@ public:
     dataManager* _data;
     int _treeClass;
     void printInfo(){
-        //_rootNode->printInfo("",true);
+        _rootNode->printInfo("",true);
     }
     //tree train
     void eval(double* pnt, double* direction);

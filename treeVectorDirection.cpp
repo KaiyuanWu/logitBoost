@@ -310,9 +310,8 @@ void treeVectorDirection::NODE::saveNode(ofstream& outf){
         _leftChildNode->saveNode(outf);
         outf<<") + ( ";
         _rightChildNode->saveNode(outf);
-        outf<<" )";
+        outf<<" ) ";
     }
-    outf<<endl;
 }
 
 treeVectorDirection::~treeVectorDirection() {

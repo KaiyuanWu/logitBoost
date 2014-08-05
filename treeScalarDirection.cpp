@@ -82,11 +82,11 @@ void treeScalarDirection::NODE::saveNode(ofstream& outf){
         _rightChildNode->saveNode(outf);
         outf<<" )";
     }
-    outf<<endl;
 }
 
 void treeScalarDirection::saveTree(ofstream& fileDB){
     _rootNode->saveNode(fileDB);
+    fileDB<<endl;
 }
 treeScalarDirection::NODE::~NODE() {
     if (_leftChildNode)
