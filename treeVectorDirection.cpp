@@ -26,7 +26,9 @@ treeVectorDirection::treeVectorDirection(dataManager* data,int nLeaves, int mini
     _nEvents = _data->_nTrainEvents ;
     _round = 0;
 
-    _rootNode      = new NODE(_data, this,  0, _nEvents - 1,1.0e300);
+    _rootNode = new NODE(_data, this, 0, _nEvents - 1, 1.0e300);
+    _rootNode->_leftChildNode = NULL;
+    _rootNode->_rightChildNode = NULL;
     _rootNode->_isInternal = true;
     _indexMask     = new bitArray(_nEvents)   ;
     
@@ -446,6 +448,7 @@ void treeVectorDirection::buildDirection() {
         memcpy(_data->_dataIndex[iDimension], _data->_dataIndex0[iDimension], _nEvents * sizeof (int));
         memcpy(_data->_dataReverseIndex[iDimension], _data->_dataReverseIndex0[iDimension], _nEvents * sizeof (int));
     }
+    resetRootNode();
     initNode();
     for (int ileaf = 0; ileaf < _nLeaves - 1; ileaf++) {
         NODE* node = NULL;

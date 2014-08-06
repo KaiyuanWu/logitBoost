@@ -38,7 +38,6 @@ int test::getBestAccuracy(string& modelFile,string& dataFile, double& bestAccura
             infile>>x[iEvent*nVariable+iV];
         infile>>l[iEvent];
     }
-    cout<<"nEvents= "<<nEvents<<endl;
     for(int iIteration=0;iIteration<nMaxIteration;iIteration++){
         double accuracy=0.;
         double maxF=-1.e300;
@@ -57,24 +56,23 @@ int test::getBestAccuracy(string& modelFile,string& dataFile, double& bestAccura
             if(maxI==l[iEvent]){
                 accuracy+=1.;
             }
-             if(iIteration<20){
-                 for(int iClass=0;iClass<nClass;iClass++){
-                     cout<<f[iEvent*nClass+iClass]<<" ";
-                 }
-                 cout<<maxI<<", "<<maxF<<": "<<l[iEvent]<<endl;
-             }
+//             if(iIteration<20){
+//                 for(int iClass=0;iClass<nClass;iClass++){
+//                     cout<<f[iEvent*nClass+iClass]<<" ";
+//                 }
+//                 cout<<maxI<<", "<<maxF<<": "<<l[iEvent]<<endl;
+//             }
         }
         accuracy/=nEvents;
-        if(iIteration<20){
-            
-            cout<<accuracy<<endl;
-        }
+//        if(iIteration<20){
+//            cout<<accuracy<<endl;
+//        }
         if(accuracy>bestAccuracy){
             bestAccuracy=accuracy;
             bestIteration=iIteration;
         }
     }
-    exit(0);
+//    exit(0);
     delete[] x;
     delete[] l;
     delete[] f;
@@ -169,9 +167,9 @@ void test::start() {
             sprintf(s,"%sTr_%d.dat%s_shrinkage0.100000_nLeave%d_minimumNodeSize1_nMaxIteration%d.model",
                     datasets[_iDataset],_iTask,exes[iExe],nLeaves[iL],nMax);
             string modelFile=modelFileNamePrefix+s;
-            sprintf(s,"%sTr_%d.dat",datasets[_iDataset],_iTask);
+            sprintf(s,"%sVal_%d.dat",datasets[_iDataset],_iTask);
             string dataFile=dataFileNamePrefix+s;
-            cout<<dataFile<<endl;
+//            cout<<dataFile<<endl;
             bestValIteration[iExe*nL+iL]=getBestAccuracy(modelFile,dataFile,bestValAccuracy[iExe*nL+iL]);
             cout<<exes[iExe]<<" nLeave= "<<nLeaves[iL]<<", bestValAccuracy= "<<bestValAccuracy[iExe*nL+iL]<<", bestValIteration= "<<bestValIteration[iExe*nL+iL]<<endl;
         }

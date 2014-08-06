@@ -158,11 +158,11 @@ void linearSearch::updateDirection2() {
         _data->_testDescendingDirection[iEvent * _nClass + _baseClass] = sumD;
     }
     _g++;
-    for(int iClass=0;iClass<_nClass;iClass++){
-        if(iClass==_baseClass)
-            continue;
-        ((treeScalarDirection*)_df[_baseClass * _nClass + iClass])->printInfo();
-    }
+//    for(int iClass=0;iClass<_nClass;iClass++){
+//        if(iClass==_baseClass)
+//            continue;
+//        ((treeScalarDirection*)_df[_baseClass * _nClass + iClass])->printInfo();
+//    }
 }
 void linearSearch::updateDirection(int iRound){
     switch(_treeType){
