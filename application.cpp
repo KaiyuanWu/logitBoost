@@ -28,12 +28,35 @@ application::~application() {
     if(_treeType==directionFunction::_ABC_LOGITBOOST_)
         delete[] _baseClass;
 }
-void application::eval(double* pnt, double* f){
-    for(int iClass=0;iClass<_nClass;iClass++)
-        f[iClass]=0.;
+void application::eval(double* pnt,int iIteration){
     switch(_treeType) {
         case directionFunction::_ABC_LOGITBOOST_:
-            for(int iIteration=0;iIteration<_nMaximumIteration;iIteration++){
+            evalS(pnt, iIteration);
+            for(int iClass=0;iClass<_nClass;iClass++)
+                _direction[iClass]*=-1.;
+            break;
+        case directionFunction::_MART_:
+        case directionFunction::_LOGITBOOST_:
+            evalS(pnt, iIteration);
+            break;
+        case directionFunction::_AOSO_LOGITBOOST_:
+        case directionFunction::_SLOGITBOOST_:
+            evalV(pnt, iIteration);
+            break;
+        default:
+            cout << "This tree type " << _treeType << " has not been implemented!" << endl;
+            break;
+    }
+}
+void application::eval(double* pnt, double* f,int nIteration){
+    for(int iClass=0;iClass<_nClass;iClass++)
+        f[iClass]=0.;
+    if(nIteration<=0||nIteration>=_nMaximumIteration)
+        nIteration=_nMaximumIteration;
+    
+    switch(_treeType) {
+        case directionFunction::_ABC_LOGITBOOST_:
+            for(int iIteration=0;iIteration<nIteration;iIteration++){
                 evalS(pnt, iIteration);
                 for(int iClass=0;iClass<_nClass;iClass++)
                     f[iClass]-=_shrinkage*_direction[iClass];
@@ -41,7 +64,7 @@ void application::eval(double* pnt, double* f){
             break;
         case directionFunction::_MART_:
         case directionFunction::_LOGITBOOST_:
-            for(int iIteration=0;iIteration<_nMaximumIteration;iIteration++){
+            for(int iIteration=0;iIteration<nIteration;iIteration++){
                 evalS(pnt, iIteration);
                 for(int iClass=0;iClass<_nClass;iClass++)
                     f[iClass]+=_shrinkage*_direction[iClass];
@@ -49,7 +72,7 @@ void application::eval(double* pnt, double* f){
             break;
         case directionFunction::_AOSO_LOGITBOOST_:
         case directionFunction::_SLOGITBOOST_:
-            for(int iIteration=0;iIteration<_nMaximumIteration;iIteration++){
+            for(int iIteration=0;iIteration<nIteration;iIteration++){
                 evalV(pnt, iIteration);
                 for(int iClass=0;iClass<_nClass;iClass++)
                     f[iClass]+=_shrinkage*_direction[iClass];

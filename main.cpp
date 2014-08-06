@@ -66,6 +66,7 @@ void test1(int jobID,int fold,int nLeaves, int minimumNodeSize, int nMaxIteratio
 void testApplication(int argc, char** argv){
     char* model=argv[1];
     char* data=argv[2];
+    char* outFileName=argv[3];
     application app(model);
     //read in test data
     int nVariable=app._nVariable;
@@ -78,7 +79,7 @@ void testApplication(int argc, char** argv){
         cout<<"Can not open "<<data<<endl;
         return;
     }
-    ofstream outf("testApplication.dat",ofstream::out);
+    ofstream outf(outFileName,ofstream::out);
     if(!outf.good()){
         cout<<"Can not open testApplication.out"<<endl;
         return;
@@ -90,6 +91,7 @@ void testApplication(int argc, char** argv){
         app.eval(x,f);
         for(int iClass=0;iClass<nClass;iClass++)
             outf<<f[iClass]<<" ";
+        outf <<l;
         outf << endl;
         for (int iVar = 0; iVar < nVariable; iVar++)
             infs >> x[iVar];
@@ -109,7 +111,7 @@ int main(int argc, char** argv) {
 //    int maxIterations=atoi(argv[5]);
 //    char* prefix=argv[6];
 //    test1(jobID,iFold,nLeaves,minimumSize,maxIterations,prefix);
-    if (argc > 3) {
+    if (argc > 4) {
         char* data = argv[1];
         int treeType=atoi(argv[2]);
         int nLeaves = atoi(argv[3]);
