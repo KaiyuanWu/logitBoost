@@ -7,8 +7,9 @@
 
 #include "test.h"
 
-test::test(int dataID) {
-    _dataID=dataID;
+test::test(int iTask,int iDataset) {
+    _iTask=iTask;
+    _iDataset=iDataset;
 }
 
 test::test(const test& orig) {
@@ -71,6 +72,8 @@ double test::getBestAccuracy(string& modelFile,string& dataFile,int iIteration){
     int nVariable=app._nVariable;
     int nClass=app._nClass;
     int nMaxIteration=app._nMaximumIteration;
+    if(iIteration>=nMaxIteration)
+        iIteration=nMaxIteration-1;
     int nEvents=getNEvents(dataFile);
     double* x=new double[nVariable*nEvents];
     int* l=new int[nEvents];
@@ -124,6 +127,59 @@ int test::getNEvents(string& file){
     infile.close();
     return ret;
 }
-void test::start(){
+void test::start() {
+    char* datasets[] = {"dna", "letter", "optdigits", "pendigits", "satImage", "shuttle"};
+    int nClass[] = {3, 26, 10, 10, 6, 7};
+    int nDatasets = sizeof (datasets) / sizeof (char*);
+    int nLeaves[] = {2, 8, 11, 21};
+    int nL = sizeof (nLeaves) / sizeof (int);
+    char* exes[] = {"abcLogit", "aosoLogit", "logit", "mart", "slogit"};
+    int nExes = sizeof (exes) / sizeof (char*);
+    int nTasks = 60;
+    int nMax = 3000;
+
+    if(_iTask>nTasks){
+        cout<<"This task is not available! "<<_iTask<<endl;
+        exit(-1);
+    }
     
+    double* bestValAccuracy = new double[nL * nExes];
+    int* bestValIteration = new int[nL * nExes];
+    int* bestValLeaves = new int[nExes];
+    double* testAccuracy = new double[nExes];
+    
+    for(int iExe=0;iExe<nExes;iExe++){
+        for(int iL=0;iL<nL;iL++){
+            string modelFile;
+            string dataFile;
+            bestValIteration[iExe*nL+iL]=getBestAccuracy(modelFile,dataFile,bestValAccuracy[iExe*nL+iL]);
+        }
+    }
+    for(int iExe=0;iExe<nExes;iExe++){
+        double bestA=-1;
+        for(int iL=0;iL<nL;iL++){
+            if(bestValAccuracy[iExe*nL+iL]>bestA){
+                bestA=bestValAccuracy[iExe*nL+iL];
+                bestValLeaves[iExe]=iL;
+            }
+        }
+    }
+    
+    for(int iExe=0;iExe<nExes;iExe++){
+        string modelFile;
+        string dataFile;
+        testAccuracy[iExe]=getBestAccuracy(modelFile,dataFile,bestValIteration[iExe*nL+bestValLeaves[iExe]]);
+    }
+    
+    delete[] bestValAccuracy;
+    delete[] bestValIteration;
+    delete[] bestValLeaves;
+    delete[] testAccuracy;
+    char outFileName[1024];
+    sprintf(outFileName,"task%d_data%d.dat",_iTask,_iDataset);
+    ofstream outf(outFileName,ofstream::out);
+    for(int iExe=0;iExe<nExes;iExe++){
+        outf<<nLeaves[bestValLeaves[iExe]]<<" "<<bestValIteration[bestValLeaves[iExe]*nExes+iExe]<<" "<<testAccuracy[iExe]<<endl;
+    }
+    outf.close();
 }

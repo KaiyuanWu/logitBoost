@@ -15,18 +15,13 @@
 using namespace std;
 class test {
 public:
-    test(int dataID);
+    test(int iTask,int iDataset);
     test(const test& orig);
     void start();
     virtual ~test();
 private:
-    int _dataID;
-    string _modelFileName;
-    string _testFileName;
-    string _valFileName;
-    double* _testAccuracy;
-    int* _bestIteration;
-    int* _bestnLeaves;
+    int _iTask;
+    int _iDataset;
     int getBestAccuracy(string& modelFile,string& dataFile, double& bestAccuracy);
     double getBestAccuracy(string& modelFile,string& dataFile,int iIteration);
     int getNEvents(string& file);
