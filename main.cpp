@@ -9,6 +9,7 @@
 #include "train.h"
 #include "directionFunction.h"
 #include "application.h"
+#include "test.h"
 
 using namespace std;
 //jobID
@@ -122,7 +123,11 @@ int main(int argc, char** argv) {
         t.init();
         t.start();
         t.saveResult();
-    } else
+    } else if(argc>2)
         testApplication(argc, argv);
+    else{
+        test t(atoi(argv[1]),0);
+        t.start();
+    }
     return 0;
 }

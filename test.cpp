@@ -13,6 +13,7 @@ test::test(int iTask,int iDataset) {
 }
 
 test::test(const test& orig) {
+    
 }
 
 test::~test() {
@@ -128,6 +129,8 @@ int test::getNEvents(string& file){
     return ret;
 }
 void test::start() {
+    string modelFileNamePrefix="/Users/kaiwu/Documents/MulticlassLossFunctionComparision/files/output/expAllinOneProgram/ws/";
+    string dataFileNamePrefix="/Users/kaiwu/Documents/MulticlassLossFunctionComparision/files/datasets/trValTestData/";
     char* datasets[] = {"dna", "letter", "optdigits", "pendigits", "satImage", "shuttle"};
     int nClass[] = {3, 26, 10, 10, 6, 7};
     int nDatasets = sizeof (datasets) / sizeof (char*);
@@ -150,8 +153,12 @@ void test::start() {
     
     for(int iExe=0;iExe<nExes;iExe++){
         for(int iL=0;iL<nL;iL++){
-            string modelFile;
-            string dataFile;
+            char s[1024];
+            sprintf(s,"%sTr_%d.dat%s_shrinkage0.100000_nLeave%d_minimumNodeSize1_nMaxIteration%d.model",
+                    datasets[_iDataset],_iTask,exes[iExe],nLeaves[iL],nMax);
+            string modelFile=modelFileNamePrefix+s;
+            sprintf(s,"%sVal_%d.dat",datasets[_iDataset],_iTask);
+            string dataFile=dataFileNamePrefix+s;
             bestValIteration[iExe*nL+iL]=getBestAccuracy(modelFile,dataFile,bestValAccuracy[iExe*nL+iL]);
         }
     }
@@ -165,9 +172,13 @@ void test::start() {
         }
     }
     
-    for(int iExe=0;iExe<nExes;iExe++){
-        string modelFile;
-        string dataFile;
+    for(int iExe=0;iExe<nExes;iExe++) {
+        char s[1024];
+        sprintf(s, "%sTr_%d.dat%s_shrinkage0.100000_nLeave%d_minimumNodeSize1_nMaxIteration%d.model",
+                datasets[_iDataset], _iTask, exes[iExe], nLeaves[bestValLeaves[iExe]], nMax);
+        string modelFile = modelFileNamePrefix + s;
+        sprintf(s, "%sT_%d.dat", datasets[_iDataset], _iTask);
+        string dataFile = dataFileNamePrefix + s;
         testAccuracy[iExe]=getBestAccuracy(modelFile,dataFile,bestValIteration[iExe*nL+bestValLeaves[iExe]]);
     }
     
