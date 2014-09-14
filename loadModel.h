@@ -51,11 +51,16 @@ private:
     int _baseClass;
     int  _nTrees;
     struct _NODE_* _trees=NULL;
+    string _treeDescription;
     
     
     //load decision tree from the db file
     bool loadTree(bool isFirstIteration=false);
     bool buildTree(const char* tree,struct _NODE_* root);
+    bool updateDirection();
+    void evalS(double* pnt);
+    void evalV(double* pnt);
+    
 };
 
 #endif	/* LOADMODEL_H */
