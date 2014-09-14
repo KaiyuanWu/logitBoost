@@ -31,6 +31,7 @@ public:
                      const char* newModelFileName, const char* newOutputName, dataManager* data);
     void rebuild();
     virtual ~loadModel();
+    int _availableIterations;
 private:
     ifstream _oldModelFile;
     ifstream _oldOutput;
@@ -38,7 +39,7 @@ private:
     ofstream _newOutput;
     
     dataManager* _data;
-    int _availableIterations;
+
     
     
     directionFunction::_TREE_TYPE_ _treeType;
@@ -50,7 +51,7 @@ private:
     //for abc-LogitBoost
     int _baseClass;
     int  _nTrees;
-    struct _NODE_* _trees=NULL;
+    struct _NODE_** _trees=NULL;
     string _treeDescription;
     string _modelDescription;
     
@@ -58,7 +59,7 @@ private:
     //load decision tree from the db file
     bool loadTree(bool isFirstIteration=false);
     bool buildTree(const char* tree,struct _NODE_* root);
-    bool updateDirection();
+    void updateDirection();
     void evalS(double* pnt);
     void evalV(double* pnt);
     

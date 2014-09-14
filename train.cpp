@@ -69,6 +69,55 @@ train::train(char* fTrain,
     _minimumNodeSize=minimumNodeSize;
     _nMaxIteration=nMaxIteration;
 }
+
+train::train(char* fTrain, char* fOldOut,
+            directionFunction::_TREE_TYPE_ treeType, double shrinkage,int nLeaves,int minimumNodeSize,int nMaxIteration){
+    _fTrain=fTrain;
+    char paramPrefix[1024];
+    switch(treeType){
+        case directionFunction::_ABC_LOGITBOOST_:
+            sprintf(paramPrefix,"abcLogit_shrinkage%f_nLeave%d_minimumNodeSize%d_nMaxIteration%d",shrinkage,nLeaves,minimumNodeSize,nMaxIteration);
+            break;
+        case directionFunction::_AOSO_LOGITBOOST_:
+            sprintf(paramPrefix,"aosoLogit_shrinkage%f_nLeave%d_minimumNodeSize%d_nMaxIteration%d",shrinkage,nLeaves,minimumNodeSize,nMaxIteration);
+            break;
+        case directionFunction::_LOGITBOOST_:
+            sprintf(paramPrefix,"logit_shrinkage%f_nLeave%d_minimumNodeSize%d_nMaxIteration%d",shrinkage,nLeaves,minimumNodeSize,nMaxIteration);
+            break;
+        case directionFunction::_MART_:
+            sprintf(paramPrefix,"mart_shrinkage%f_nLeave%d_minimumNodeSize%d_nMaxIteration%d",shrinkage,nLeaves,minimumNodeSize,nMaxIteration);
+            break;
+        case directionFunction::_SLOGITBOOST_:
+            sprintf(paramPrefix,"slogit_shrinkage%f_nLeave%d_minimumNodeSize%d_nMaxIteration%d",shrinkage,nLeaves,minimumNodeSize,nMaxIteration);
+            break;
+        default:
+            cout<<"tree type= "<<int(_treeType)<<" has not been implemented!"<<endl;
+            exit(-1);
+            break;
+    }
+    _fOut=_fTrain+paramPrefix;
+    _fOut=_fOut+".out";
+    _fParam=_fTrain+paramPrefix;
+    _fParam=_fParam+".model";
+    
+    _fOldOut=fOldOut;
+    _fOldOut+=paramPrefix;
+    _fOldOut=_fOldOut+".out";
+    _fOldParam=fOldOut;
+    _fOldParam+=paramPrefix;
+    _fOldParam=_fOldParam+".model";
+    
+    _nTestEvents=0;
+    getDataInformation(fTrain,_nTrainEvents,_nClass,_nVariables);
+    
+    //decision tree parameters
+    _treeType=treeType;
+    _shrinkage=shrinkage;
+    _nLeaves=nLeaves;
+    _minimumNodeSize=minimumNodeSize;
+    _nMaxIteration=nMaxIteration;
+}
+
 void train::init(){
     double* X=new double[_nVariables];
     int     label;
@@ -114,19 +163,25 @@ void train::init(){
     }
     _data->finishAddingEvent();
     cout<<"Finish Reading Data!"<<endl;
-    _outf=new ofstream(_fOut.c_str(),ofstream::out);
+    _outf=new ofstream(_fOut.c_str(),ofstream::app);
     if(!_outf){
         cout<<"Can not open "<<_fOut<<endl;
         exit(-1);
     }
     _outf->setf(ios::scientific);
-    _paramf=new ofstream(_fParam.c_str(),ofstream::out);
+    _paramf=new ofstream(_fParam.c_str(),ofstream::app);
     if(!_paramf){
         cout<<"Can not open "<<_fParam<<endl;
         exit(-1);
     }
-    (*_paramf)<<_treeType<<" "<<_nClass<<" "<<_data->_nDimension<<" "<<_nMaxIteration<<" "<<_shrinkage<<endl;
+    if(_fOldParam.size()==0)
+        (*_paramf)<<_treeType<<" "<<_nClass<<" "<<_data->_nDimension<<" "<<_nMaxIteration<<" "<<_shrinkage<<endl;
     _linearSearchMinimizer = new linearSearch(_data,_nLeaves,_shrinkage,_minimumNodeSize,_treeType);
+}
+int train::load(){
+    loadModel loader(_fOldParam.c_str(), _fOldOut.c_str(),_fParam.c_str(), _fParam.c_str(), _data);
+    loader.rebuild();
+    return loader._availableIterations;
 }
 void train::getDataInformation(char* fileInName,int& nEvent,int& nClass,int& nVariable){
     map<int,int> classMap;
@@ -217,9 +272,11 @@ void train::start(){
 }
 void train::saveResult(){
 //    _data->saveF();
-    _outf->close();
+    if(_outf->is_open())
+        _outf->close();
     if(_paramf){
-        _paramf->close();
+        if(_paramf->is_open())
+            _paramf->close();
     }
 }
 train::~train() {

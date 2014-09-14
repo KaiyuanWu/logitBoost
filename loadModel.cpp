@@ -56,7 +56,11 @@ loadModel::~loadModel() {
         _newOutput.close();
     }
     if (_direction) delete[] _direction;
-    if (_trees) delete[] _trees;
+    if (_trees){
+        for(int iTree=0;iTree<_nTrees;iTree++)
+            delete _trees[iTree];
+        delete[] _trees;
+    }
 }
 //update the dataManager
 void loadModel::updateDirection() {
@@ -108,7 +112,7 @@ void loadModel::evalS(double* pnt){
 void loadModel::evalV(double* pnt) {
     for (int iClass = 0; iClass < _nClass; iClass++)
         _direction[iClass] = 0.;
-    struct _NODE_ *n = _trees;
+    struct _NODE_ *n = _trees[0];
 //    _bootedTrees[iIteration]->printInfo("",true);
     while (n->_isInternal) {
         if (pnt[n->_iDimension] <= n->_cut) {
@@ -163,7 +167,8 @@ void loadModel::rebuild() {
     oldTestLoss=atof(oldTestLossStr);
     if(oldTrainAccuracy==0.0)
         return;
-    loadTree(true);
+    if(!loadTree(true))
+        return;
     
     while(_oldOutput.good()){
         updateDirection();
@@ -172,15 +177,17 @@ void loadModel::rebuild() {
         if(fabs(newTrainLoss-oldTrainLoss)<0.00001*oldTrainLoss){
             _availableIterations++;
         }
-        else{
+        else
             break;
-        }
+        _oldOutput>>oldTrainAccuracyStr>>oldTestAccuracyStr>>oldTrainLossStr>>oldTestLossStr;
         oldTrainAccuracy = atof(oldTrainAccuracyStr);
         oldTestAccuracy = atof(oldTestAccuracyStr);
         oldTrainLoss = atof(oldTrainLossStr);
         oldTestLoss = atof(oldTestLossStr);
         if (oldTrainAccuracy == 0.0)
             break;
+        if(!loadTree(true))
+            return;
     }
 }
 
@@ -191,10 +198,9 @@ bool loadModel::loadTree(bool isFirstIteration) {
     if (isFirstIteration) {
         int k;
         _oldModelFile>>k;
-        _newModelFile<<k;
         _treeType = directionFunction::_TREE_TYPE_(k);
         _oldModelFile >> _nClass >> _nVariable >> _nMaximumIteration>>_shrinkage;
-        _newModelFile<<_nClass<<" "<<_nVariable<<" "<<_nMaximumIteration<<" "<<_shrinkage<<endl;
+        _newModelFile<<k<<" "<<_nClass<<" "<<_nVariable<<" "<<_nMaximumIteration<<" "<<_shrinkage<<endl;
         _direction = new double[_nClass];
         
         switch (_treeType) {
@@ -213,7 +219,9 @@ bool loadModel::loadTree(bool isFirstIteration) {
                 cout << "This tree type " << _treeType << " has not been implemented!" << endl;
                 break;
         }
-        _trees = new struct _NODE_[_nTrees];
+        _trees = new struct _NODE_*[_nTrees];
+        for(int iT=0;iT<_nTrees;iT++)
+            _trees[iT]=new struct _NODE_;
     }
     //skip the first endl
     getline(_oldModelFile, _treeDescription);
@@ -229,12 +237,16 @@ bool loadModel::loadTree(bool isFirstIteration) {
         getline(_oldModelFile, _treeDescription);
         _modelDescription += _treeDescription;
         _modelDescription += "\n";
-        buildTree(_treeDescription.c_str(), _trees[iTree]);
+        ret=buildTree(_treeDescription.c_str(), _trees[iTree]);
+        if(!ret){
+            break;
+        }
     }
     return ret;
 }
 
-void loadModel::buildTree(const char* tree, struct _NODE_* root) {
+bool loadModel::buildTree(const char* tree, struct _NODE_* root) {
+    bool ret=true;
     char op;
     int iDimension, iclass;
     float cut, f;
@@ -276,6 +288,9 @@ void loadModel::buildTree(const char* tree, struct _NODE_* root) {
                 curNode = curNode->_rightChildNode;
                 ss>>op;
                 break;
+            default:
+                ret=false;
+                break;
         }
         if (op == '(') {
             ss >> iDimension >> cut >> f >> internal>>iclass;
@@ -286,4 +301,6 @@ void loadModel::buildTree(const char* tree, struct _NODE_* root) {
             curNode->_class = iclass;
         }
     }
+    
+    return ret;
 }
