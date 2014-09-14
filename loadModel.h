@@ -52,6 +52,7 @@ private:
     int  _nTrees;
     struct _NODE_* _trees=NULL;
     string _treeDescription;
+    string _modelDescription;
     
     
     //load decision tree from the db file

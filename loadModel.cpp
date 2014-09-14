@@ -80,7 +80,7 @@ void loadModel::updateDirection() {
                 break;
         }
     }
-    _data->increment(0.01,_availableIterations);
+    _data->increment(_shrinkage,_availableIterations);
 }
 void loadModel::evalS(double* pnt){
     for (int iClass = 0; iClass < _nClass; iClass++)
@@ -186,14 +186,17 @@ void loadModel::rebuild() {
 
 bool loadModel::loadTree(bool isFirstIteration) {
     bool ret = true;
+    _modelDescription="";
     //if this is the first iteration, we will load informations about the tree
     if (isFirstIteration) {
         int k;
         _oldModelFile>>k;
+        _newModelFile<<k;
         _treeType = directionFunction::_TREE_TYPE_(k);
         _oldModelFile >> _nClass >> _nVariable >> _nMaximumIteration>>_shrinkage;
+        _newModelFile<<_nClass<<" "<<_nVariable<<" "<<_nMaximumIteration<<" "<<_shrinkage<<endl;
         _direction = new double[_nClass];
-
+        
         switch (_treeType) {
             case directionFunction::_ABC_LOGITBOOST_:
                 _nTrees = _nClass - 1;
@@ -214,12 +217,18 @@ bool loadModel::loadTree(bool isFirstIteration) {
     }
     //skip the first endl
     getline(_oldModelFile, _treeDescription);
+    _modelDescription+=_treeDescription;
+    _modelDescription+="\n";
     if (_treeType == directionFunction::_ABC_LOGITBOOST_) {
         getline(_oldModelFile, _treeDescription);
+        _modelDescription += _treeDescription;
+        _modelDescription += "\n";
         _baseClass = atoi(_treeDescription.c_str());
     }
     for (int iTree = 0; iTree < _nTrees; iTree++) {
         getline(_oldModelFile, _treeDescription);
+        _modelDescription += _treeDescription;
+        _modelDescription += "\n";
         buildTree(_treeDescription.c_str(), _trees[iTree]);
     }
     return ret;
