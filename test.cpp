@@ -4,7 +4,8 @@
  * 
  * Created on August 6, 2014, 2:49 PM
  */
-
+#include "stdlib.h"
+#include "string.h"
 #include "test.h"
 
 test::test(int iTask,int iDataset) {

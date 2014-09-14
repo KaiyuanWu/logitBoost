@@ -11,6 +11,7 @@
 #include <fstream>
 #include <iostream>
 #include "application.h"
+#include "dataManager.h"
 
 using namespace std;
 class test {

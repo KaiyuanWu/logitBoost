@@ -5,6 +5,8 @@
  * Created on January 21, 2014, 5:21 PM
  */
 #include "crossValidate.h"
+#include "stdlib.h"
+#include "string.h"
 #include <string>
 #include <sstream>
 #include <map>

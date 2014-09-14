@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="94">
+<configurationDescriptor version="90">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="HeaderFiles" displayName="头文件" projectFiles="true">
     </logicalFolder>
@@ -32,6 +32,8 @@
     <itemPath>directionFunction.h</itemPath>
     <itemPath>linearSearch.cpp</itemPath>
     <itemPath>linearSearch.h</itemPath>
+    <itemPath>loadModel.cpp</itemPath>
+    <itemPath>loadModel.h</itemPath>
     <itemPath>main.cpp</itemPath>
     <itemPath>test.cpp</itemPath>
     <itemPath>test.h</itemPath>
@@ -82,6 +84,10 @@
       <item path="linearSearch.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="linearSearch.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="loadModel.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="loadModel.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -152,6 +158,10 @@
       <item path="linearSearch.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="linearSearch.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="loadModel.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="loadModel.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>

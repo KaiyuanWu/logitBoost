@@ -76,9 +76,7 @@ private:
     void buildTree(const char* tree,struct _NODE_* root);
     struct _NODE_** _bootedTrees;
     int _nTrees;
-    int* _baseClass;
-    
-    
+    int* _baseClass;        
 };
 
 #endif	/* APPLICATION_H */

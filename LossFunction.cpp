@@ -5,6 +5,7 @@
  * Created on June 14, 2014, 1:55 PM
  */
 #include "LossFunction.h"
+#include "stdlib.h"
 
 LossFunction::LossFunction(directionFunction::_TREE_TYPE_ treeType,int nDimension,int nClass) {
     _treeType=treeType;

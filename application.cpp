@@ -6,6 +6,7 @@
  */
 
 #include "application.h"
+#include "stdlib.h"
 
 application::application(const char* fileDBName) {
     _fileDBName=fileDBName;

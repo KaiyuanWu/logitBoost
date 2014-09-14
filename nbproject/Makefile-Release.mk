@@ -14,15 +14,15 @@ GREP=grep
 NM=nm
 CCADMIN=CCadmin
 RANLIB=ranlib
-CC=gcc
+CC=gcc 
 CCC=g++
 CXX=g++
 FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-MacOSX
-CND_DLIB_EXT=dylib
+CND_PLATFORM=GNU-Linux-x86
+CND_DLIB_EXT=so
 CND_CONF=Release
 CND_DISTDIR=dist
 CND_BUILDDIR=build
@@ -42,6 +42,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/dataManager.o \
 	${OBJECTDIR}/directionFunction.o \
 	${OBJECTDIR}/linearSearch.o \
+	${OBJECTDIR}/loadModel.o \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/test.o \
 	${OBJECTDIR}/train.o \
@@ -107,6 +108,11 @@ ${OBJECTDIR}/linearSearch.o: linearSearch.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/linearSearch.o linearSearch.cpp
+
+${OBJECTDIR}/loadModel.o: loadModel.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/loadModel.o loadModel.cpp
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
