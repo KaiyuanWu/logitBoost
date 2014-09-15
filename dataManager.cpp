@@ -190,7 +190,7 @@ void dataManager::finishAddingEvent(){
         _trainLoss+=_loss[iEvent];
     }
     //exit(0);
-    for (int iEvent = 0; iEvent < _nTestEvents; iEvent++)
+            for (int iEvent = 0; iEvent < _nTestEvents; iEvent++)
         _testLoss+=_lossFunction->loss(_testF + iEvent*_nClass, _testClass[iEvent], g, h,1);
     
 }
@@ -270,12 +270,16 @@ void  dataManager::increment(double shrinkage,int iRound) {
         //_testLoss+=_lossFunction->_costMatrix[_testClass[iEvent]*_nClass+_maxI];
     }
     //_testLoss/=_nTestEvents;
-    if(_nTrainEvents>0)
+    if(_nTrainEvents>0){
         _trainAccuracy=double(_trainCorrectClassification)/_nTrainEvents;
+        _trainLoss/=_nTrainEvents;
+    }
     else
         _trainAccuracy=0.;
-    if(_nTestEvents>0)
+    if(_nTestEvents>0){
         _testAccuracy=double(_testCorrectClassification)/_nTestEvents;
+        _trainLoss/=_nTrainEvents;
+    }
     else
         _nTestEvents=0.;
     if (iRound % OUTPUT_INTERVAL == OUTPUT_INTERVAL-1) {

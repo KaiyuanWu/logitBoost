@@ -179,7 +179,7 @@ void train::init(){
     _linearSearchMinimizer = new linearSearch(_data,_nLeaves,_shrinkage,_minimumNodeSize,_treeType);
 }
 int train::load(){
-    loadModel loader(_fOldParam.c_str(), _fOldOut.c_str(),_fParam.c_str(), _fParam.c_str(), _data);
+    loadModel loader(_fOldParam.c_str(), _fOldOut.c_str(),_fParam.c_str(), _fOldOut.c_str(), _data);
     loader.rebuild();
     return loader._availableIterations;
 }
@@ -234,7 +234,9 @@ void train::getDataInformation(char* fileInName,int& nEvent,int& nClass,int& nVa
 void train::start(){
     int iIteration;
     //start the training iteration
-    for (iIteration = 0; iIteration < _nMaxIteration; iIteration++) {
+    iIteration=load();
+    
+    for (; iIteration < _nMaxIteration; iIteration++) {
         //call the weak learner for each fold
         _linearSearchMinimizer->minimization(iIteration);
         _linearSearchMinimizer->saveDirection(*_paramf);
