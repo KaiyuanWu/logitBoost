@@ -85,11 +85,11 @@ private:
     int _nVariable;
     int _nMaximumIteration;
     double _shrinkage;
-    double *_direction=NULL;
+    double *_direction;
     //for abc-LogitBoost
     int _baseClass;
     int  _nTrees;
-    struct _NODE_** _trees=NULL;
+    struct _NODE_** _trees;
     string _treeDescription;
     string _modelDescription;
     

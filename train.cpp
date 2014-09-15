@@ -179,7 +179,7 @@ void train::init(){
     _linearSearchMinimizer = new linearSearch(_data,_nLeaves,_shrinkage,_minimumNodeSize,_treeType);
 }
 int train::load(){
-    loadModel loader(_fOldParam.c_str(), _fOldOut.c_str(),_fParam.c_str(), _fOldOut.c_str(), _data);
+    loadModel loader(_fOldParam.c_str(), _fOldOut.c_str(),_fParam.c_str(), _fOut.c_str(), _data);
     loader.rebuild();
     return loader._availableIterations;
 }

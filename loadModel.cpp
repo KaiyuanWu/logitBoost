@@ -9,7 +9,7 @@
 #include <sstream>
 
 loadModel::loadModel(const char* oldModelFileName, const char* oldOutputName,
-        const char* newModelFileName, const char* newOutputName, dataManager* data) {
+        const char* newModelFileName, const char* newOutputName, dataManager* data):_direction(NULL),_trees(NULL) {
     _oldModelFile.open(oldModelFileName, ifstream::in);
     _oldOutput.open(oldOutputName, ifstream::in);
     _newModelFile.open(newModelFileName, ofstream::out);
@@ -146,7 +146,7 @@ void loadModel::evalV(double* pnt) {
             }
             break;
         case directionFunction::_AOSO_LOGITBOOST_:
-            for (int iClass = 0.; iClass < _nClass; iClass++) {
+            for (int iClass = 0; iClass < _nClass; iClass++) {
                 if (iClass == workingClass1)
                     _direction[iClass] = f;
                 else if (iClass == workingClass2)
