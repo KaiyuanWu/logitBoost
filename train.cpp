@@ -235,7 +235,6 @@ void train::start(){
     int iIteration;
     //start the training iteration
     iIteration=load();
-    
     for (; iIteration < _nMaxIteration; iIteration++) {
         //call the weak learner for each fold
         _linearSearchMinimizer->minimization(iIteration);

@@ -213,7 +213,7 @@ bool loadModel::loadTree(bool isFirstIteration) {
         _oldModelFile>>k;
         _treeType = directionFunction::_TREE_TYPE_(k);
         _oldModelFile >> _nClass >> _nVariable >> _nMaximumIteration>>_shrinkage;
-        _newModelFile<<k<<" "<<_nClass<<" "<<_nVariable<<" "<<_nMaximumIteration<<" "<<_shrinkage<<endl;
+        _newModelFile <<k<<" "<<_nClass<<" "<<_nVariable<<" "<<_nMaximumIteration<<" "<<_shrinkage<<endl;
         _direction = new double[_nClass];
         
         switch (_treeType) {
