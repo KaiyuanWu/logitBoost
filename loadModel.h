@@ -92,6 +92,7 @@ private:
     struct _NODE_** _trees;
     string _treeDescription;
     string _modelDescription;
+    bool _fileOK;
     
     
     //load decision tree from the db file

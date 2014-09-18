@@ -15,25 +15,22 @@ loadModel::loadModel(const char* oldModelFileName, const char* oldOutputName,
     _newModelFile.open(newModelFileName, ofstream::out);
     _newOutput.open(newOutputName, ofstream::out);
     //check the files
-    bool fileOK = true;
+    _fileOK = true;
     if (!_oldModelFile.good()) {
         cout << "Can not open " << oldModelFileName << endl;
-        fileOK = false;
+        _fileOK = false;
     }
     if (!_oldOutput.good()) {
         cout << "Can not open " << oldOutputName << endl;
-        fileOK = false;
+        _fileOK = false;
     }
     if (!_newModelFile.good()) {
         cout << "Can not open " << newModelFileName << endl;
-        fileOK = false;
+        _fileOK = false;
     }
     if (!_newOutput.good()) {
         cout << "Can not open " << newOutputName << endl;
-        fileOK = false;
-    }
-    if (!fileOK) {
-        exit(-1);
+        _fileOK = false;
     }
 
 
@@ -162,6 +159,8 @@ void loadModel::evalV(double* pnt) {
 }
 //try to rebuild the dataManager from previous train result
 void loadModel::rebuild() {
+    if(!_fileOK)
+        return;
     //variables list
     char oldTrainAccuracyStr[1024], oldTestAccuracyStr[1024], oldTrainLossStr[1024], oldTestLossStr[1024];
     
