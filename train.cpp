@@ -174,11 +174,12 @@ void train::init(){
         cout<<"Can not open "<<_fParam<<endl;
         exit(-1);
     }
-    if(_fOldParam.size()==0)
-        (*_paramf)<<_treeType<<" "<<_nClass<<" "<<_data->_nDimension<<" "<<_nMaxIteration<<" "<<_shrinkage<<endl;
+    (*_paramf)<<_treeType<<" "<<_nClass<<" "<<_data->_nDimension<<" "<<_nMaxIteration<<" "<<_shrinkage<<endl;
     _linearSearchMinimizer = new linearSearch(_data,_nLeaves,_shrinkage,_minimumNodeSize,_treeType);
 }
 int train::load(){
+    if(_fOldParam.size()==0||_fOldOut.size()==0)
+        return 0;
     loadModel loader(_fOldParam.c_str(), _fOldOut.c_str(),_fParam.c_str(), _fOut.c_str(), _data);
     loader.rebuild();
     return loader._availableIterations;

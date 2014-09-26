@@ -196,6 +196,8 @@ void testApplication(int argc, char** argv) {
 }
 
 int main(int argc, char** argv) {
+    //testApplication2(argc, argv);
+    //return 0;
     //srand((unsigned)time(NULL));
     //job(argc,argv);
 

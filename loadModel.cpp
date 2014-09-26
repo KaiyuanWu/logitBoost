@@ -16,6 +16,7 @@ loadModel::loadModel(const char* oldModelFileName, const char* oldOutputName,
     _newOutput.open(newOutputName, ofstream::out);
     //check the files
     _fileOK = true;
+    
     if (!_oldModelFile.good()) {
         cout << "Can not open " << oldModelFileName << endl;
         _fileOK = false;
@@ -212,7 +213,7 @@ bool loadModel::loadTree(bool isFirstIteration) {
         _oldModelFile>>k;
         _treeType = directionFunction::_TREE_TYPE_(k);
         _oldModelFile >> _nClass >> _nVariable >> _nMaximumIteration>>_shrinkage;
-        _newModelFile <<k<<" "<<_nClass<<" "<<_nVariable<<" "<<_nMaximumIteration<<" "<<_shrinkage<<endl;
+        //_newModelFile <<k<<" "<<_nClass<<" "<<_nVariable<<" "<<_nMaximumIteration<<" "<<_shrinkage<<endl;
         _direction = new double[_nClass];
         
         switch (_treeType) {
