@@ -13,6 +13,23 @@
 #include "test.h"
 
 using namespace std;
+int getNEvents(const char* file){
+    int ret=0;
+    ifstream infile(file,ifstream::in);
+    if(!infile.good()){
+        cout<<"Can not open "<<file<<endl;
+        exit(0);
+    }
+    while(infile.good()){
+        string s;
+        getline(infile,s);
+        if(s.size()>0)
+            ret++;
+    }
+    infile.close();
+    return ret;
+}
+
 //jobID
 //0 --> letter
 //1 --> optdigits
@@ -64,6 +81,80 @@ void test1(int jobID, int fold, int nLeaves, int minimumNodeSize, int nMaxIterat
     t.init();
     t.start();
     t.saveResult();
+}
+void testApplication2(int argc, char** argv) {
+    char* model = argv[1];
+    char* data = argv[2];
+    char* outFileName = argv[3];
+    application app(model);
+    int nVariable=app._nVariable;
+    int nClass=app._nClass;
+    int nMaxIteration=app._nMaximumIteration;
+    double shrinkage=app._shrinkage;
+    int nEvents=getNEvents(data);
+    double* x=new double[nVariable*nEvents];
+    int* l=new int[nEvents];
+    double* f=new double[nClass*nEvents];
+    //reset f
+    memset(f,0,sizeof(double)*nClass*nEvents);
+    //read in data
+    ifstream infile(data,ifstream::in);
+    if(!infile.good()){
+        cout<<"Can not open "<<data<<endl;
+        return;
+    }
+    for(int iEvent=0;iEvent<nEvents;iEvent++){
+        for(int iV=0;iV<nVariable;iV++){
+            infile>>x[iEvent*nVariable+iV];
+        }
+        infile>>l[iEvent];
+
+    }
+    infile.close();
+    
+    ofstream outfile(outFileName,ofstream::out);
+    if(!outfile.good()){
+        cout<<"Can not open "<<outFileName<<endl;
+        return;
+    }
+    outfile.setf(ios::scientific);
+    for(int iIteration=0;iIteration<nMaxIteration;iIteration++){
+        double accuracy=0.;
+        double maxF=-1.e300;
+        double loss=0.;
+        double totalExp,prob;
+        int maxI=0;
+        for(int iEvent=0;iEvent<nEvents;iEvent++){
+            maxF=-1.e300;
+            maxI=0;
+            totalExp=0.;
+            app.eval(x+iEvent*nVariable,iIteration);
+            for(int iClass=0;iClass<nClass;iClass++){
+                f[iEvent*nClass+iClass]+=shrinkage*app._direction[iClass];
+                if(f[iEvent*nClass+iClass]>maxF){
+                    maxF=f[iEvent*nClass+iClass];
+                    maxI=iClass;
+                }
+            }
+            if(maxI==l[iEvent]){
+                accuracy+=1.;
+            }
+            for(int iClass=0;iClass<nClass;iClass++)
+                totalExp+=exp(f[iEvent*nClass+iClass]-maxF);
+            prob = exp(f[iEvent * nClass + l[iEvent]] - maxF) / totalExp;
+            if (prob > 0)
+                loss += -log(prob);
+            else
+                loss += 1.0e300;
+        }
+        loss/=nEvents;
+        accuracy/=nEvents;
+        outfile<<accuracy<<"  "<<loss<<endl;
+    }
+    delete[] x;
+    delete[] l;
+    delete[] f;
+    outfile.close();
 }
 
 void testApplication(int argc, char** argv) {
