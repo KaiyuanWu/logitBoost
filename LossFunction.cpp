@@ -18,8 +18,8 @@ LossFunction::~LossFunction() {
     
 }
 
-double LossFunction::loss(double*f,int y,double& gradient, double& hessian,int c1){
-    double ret=0.;
+float  LossFunction::loss(float *f,int y,float & gradient, float & hessian,int c1){
+    float  ret=0.;
     int class1,class2;
     switch(_treeType){
         case directionFunction::_ABC_LOGITBOOST_:
@@ -35,13 +35,11 @@ double LossFunction::loss(double*f,int y,double& gradient, double& hessian,int c
             }
             break;
         case directionFunction::_SLOGITBOOST_:
-            class1=c1;
-            ret=lossSNewton(f,y,class1,gradient,hessian);
+            ret=lossSNewton(f,y,c1,gradient,hessian);
             break;
         case directionFunction::_MART_:
         case directionFunction::_LOGITBOOST_:
-            class1=c1;
-            ret=lossNewton(f,y,class1,gradient,hessian);
+            ret=lossNewton(f,y,c1,gradient,hessian);
             break;
         default:
             cout<<"Sorry the _lossType= "<<_treeType<<" has not been implemented!"<<endl;
@@ -51,14 +49,14 @@ double LossFunction::loss(double*f,int y,double& gradient, double& hessian,int c
     return ret;
 }
 
-double LossFunction::lossNewton(double* f, int y, int c, double& gradient, double& hessian){
-    double loss=0.;
-    double maxf=f[0];
+float  LossFunction::lossNewton(float * f, int y, int c, float & gradient, float & hessian){
+    float  loss=0.;
+    float  maxf=f[0];
     for(int iClass=1;iClass<_nClass;iClass++){
         if(f[iClass]>maxf)
             maxf=f[iClass];
     }
-    double pc=1.,sumF=0.,t=1.,py=1.;
+    float  pc=1.,sumF=0.,t=1.,py=1.;
     for(int iClass=0;iClass<_nClass;iClass++){
         t=exp(f[iClass]-maxf);
         if(iClass==c)
@@ -85,14 +83,14 @@ double LossFunction::lossNewton(double* f, int y, int c, double& gradient, doubl
     return loss;
 }
 
-double LossFunction::lossSNewton(double* f, int y, int c, double& gradient, double& hessian){
-    double loss=0.;
-    double maxf=f[0];
+float  LossFunction::lossSNewton(float * f, int y, int c, float & gradient, float & hessian){
+    float  loss=0.;
+    float  maxf=f[0];
     for(int iClass=1;iClass<_nClass;iClass++){
         if(f[iClass]>maxf)
             maxf=f[iClass];
     }
-    double pc, sumF=0.,t,py;
+    float  pc, sumF=0.,t,py;
     for(int iClass=0;iClass<_nClass;iClass++){
         t=exp(f[iClass]-maxf);
         if(iClass==c)
@@ -113,18 +111,17 @@ double LossFunction::lossSNewton(double* f, int y, int c, double& gradient, doub
     hessian=_nClass*_nClass*pc*(1.-pc);
     if(hessian<_MIN_HESSIAN_)
         hessian=_MIN_HESSIAN_;
-//    cout << "pc= " << pc << ", py= " << py <<" y= "<<y<<", c= "<<c<< ", " << gradient<<", "<<hessian<<endl;
     return loss;
 }
 
-double LossFunction::lossabcLogitNewton(double* f, int y, int c1,int c2, double& gradient, double& hessian){
-    double loss=0.;
-    double maxf=f[0];
+float  LossFunction::lossabcLogitNewton(float * f, int y, int c1,int c2, float & gradient, float & hessian){
+    float  loss=0.;
+    float  maxf=f[0];
     for(int iClass=1;iClass<_nClass;iClass++){
         if(f[iClass]>maxf)
             maxf=f[iClass];
     }
-    double pc1=1.,pc2=1., sumF=0.,t=1.,py=1.;
+    float  pc1=1.,pc2=1., sumF=0.,t=1.,py=1.;
     for(int iClass=0;iClass<_nClass;iClass++){
         t=exp(f[iClass]-maxf);
         if(iClass==c1)

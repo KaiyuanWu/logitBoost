@@ -52,7 +52,7 @@ void test1(int jobID, int fold, int nLeaves, int minimumNodeSize, int nMaxIterat
     sprintf(fOut, "%s/output/logitBoost_Fold%dDataset%snLeaves%dminimumNodeSize%dMaxiteration%d.dat", prefix, fold, datasetNames[jobID], nLeaves, minimumNodeSize, nMaxIteration);
 
     directionFunction::_TREE_TYPE_ treeType = directionFunction::_ABC_LOGITBOOST_;
-    double shrinkage = 0.1;
+    float  shrinkage = 0.1;
 
     int nTrainEventsA[] = {
         16000, 16000, 16000, 16000, 16000,
@@ -90,13 +90,13 @@ void testApplication2(int argc, char** argv) {
     int nVariable=app._nVariable;
     int nClass=app._nClass;
     int nMaxIteration=app._nMaximumIteration;
-    double shrinkage=app._shrinkage;
+    float  shrinkage=app._shrinkage;
     int nEvents=getNEvents(data);
-    double* x=new double[nVariable*nEvents];
+    float * x=new float [nVariable*nEvents];
     int* l=new int[nEvents];
-    double* f=new double[nClass*nEvents];
+    float * f=new float [nClass*nEvents];
     //reset f
-    memset(f,0,sizeof(double)*nClass*nEvents);
+    memset(f,0,sizeof(float )*nClass*nEvents);
     //read in data
     ifstream infile(data,ifstream::in);
     if(!infile.good()){
@@ -119,10 +119,10 @@ void testApplication2(int argc, char** argv) {
     }
     outfile.setf(ios::scientific);
     for(int iIteration=0;iIteration<nMaxIteration;iIteration++){
-        double accuracy=0.;
-        double maxF=-1.e300;
-        double loss=0.;
-        double totalExp,prob;
+        float  accuracy=0.;
+        float  maxF=-1.e300;
+        float  loss=0.;
+        float  totalExp,prob;
         int maxI=0;
         for(int iEvent=0;iEvent<nEvents;iEvent++){
             maxF=-1.e300;
@@ -165,9 +165,9 @@ void testApplication(int argc, char** argv) {
     //read in test data
     int nVariable = app._nVariable;
     int nClass = app._nClass;
-    double* x = new double[nVariable];
+    float * x = new float [nVariable];
     int l;
-    double* f = new double[nClass];
+    float * f = new float [nClass];
     ifstream infs(data, ifstream::in);
     if (!infs.good()) {
         cout << "Can not open " << data << endl;

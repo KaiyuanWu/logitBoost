@@ -22,12 +22,12 @@ bitArray::bitArray(int nElement) {
     memset(_data,0,_nChar);
     
 }
-void bitArray::randomMask(double r){
+void bitArray::randomMask(float  r){
     for(int i=0;i<_nElement;i++)
         _index[i]=i;
     int maxMask=ceil(r*_nElement);
     for(int iE=0;iE<maxMask;iE++){
-        int ie=(_nElement-iE)*(double(rand())/RAND_MAX);
+        int ie=(_nElement-iE)*(float (rand())/RAND_MAX);
         int ii=_index[ie];
         set(ii);
         _index[ie]=_index[_nElement-iE-1];
@@ -37,7 +37,7 @@ void bitArray::randomMask(int r){
     for(int i=0;i<_nElement;i++)
         _index[i]=i;
     for(int iE=0;iE<r;iE++){
-        int ie=(_nElement-iE)*(double(rand())/RAND_MAX);
+        int ie=(_nElement-iE)*(float (rand())/RAND_MAX);
         int ii=_index[ie];
         set(ii);
         _index[ie]=_index[_nElement-iE-1];

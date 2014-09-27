@@ -7,6 +7,7 @@
 #ifndef TREESCALARDIRECTION_H
 #define	TREESCALARDIRECTION_H
 #include <string.h>
+#include <QDataStream>
 #include "directionFunction.h"
 #include "dataManager.h"
 #include "LossFunction.h"
@@ -24,7 +25,7 @@ public:
         _rootNode->printInfo("",true);
     }
     //tree train
-    void eval(double* pnt, double* direction);
+    void eval(float * pnt, float * direction);
     void   buildIndex(int** dataIndex=NULL,int** dataReverseIndex0=NULL);
     void saveTree(ofstream& fileDB);
 private:
@@ -37,32 +38,32 @@ private:
         NODE* _leftChildNode;
         NODE* _rightChildNode;
         //gain of current node
-        double _nodeGain;
+        float  _nodeGain;
         //raw _nodeSumH   --> sum of Hessian elements
         //    _nodeSumG   --> sum of Gradient elements
-        double _nodeSumH;
-        double _nodeSumG;
+        float  _nodeSumH;
+        float  _nodeSumG;
         //best split gain with this node
-        double _additiveGain;
+        float  _additiveGain;
         //whether this point is an internal point
         bool _isInternal;
         int _iDimension;
-        double _cut;
+        float  _cut;
         //regression value of current node
-        double _f;
+        float  _f;
         bool _ableSplit;
         dataManager* _data;
         treeScalarDirection* _tree;
-        void bestNode(NODE*& n,double& gain);
+        void bestNode(NODE*& n,float & gain);
         void splitNode();
         bool printInfo(const char* indent,bool last);
-        void saveNode(ofstream& outf);
+        void saveNode(QDataStream& outf);
         //select best working class
         void calculateF();
-        double leftSumG, leftSumH;
-        double rightSumG, rightSumH;
-        double leftSumG1, leftSumH1;
-        double rightSumG1, rightSumH1;
+        float  leftSumG, leftSumH;
+        float  rightSumG, rightSumH;
+        float  leftSumG1, leftSumH1;
+        float  rightSumG1, rightSumH1;
     };
     bitArray* _indexMask;
     //recursively sort the projected data

@@ -20,7 +20,7 @@ public:
     bool set(int index);
     void reset(int start,int end);
     void print();
-    void randomMask(double r);
+    void randomMask(float  r);
     void randomMask(int r);
     virtual ~bitArray();
 private:

@@ -24,18 +24,20 @@
       </nativedebugger>
       <runprofile version="9">
         <runcommandpicklist>
-          <runcommandpicklistitem>"${OUTPUT_PATH}"   ../../datasets/trValTestData/letterT_0.dat 8 0 10</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}"   ../../datasets/trValTestData/letterTr_0.dat.model ../../datasets/trValTestData/letterTr_0</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}"  ../../datasets/trValTestData/letterTr_0.dat 8 0 10</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}"   ../../datasets/trValTestData/letterTr_0.dat.model ../../datasets/trValTestData/letterTr_0.dat</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}"   ../../datasets/trValTestData/letterTr_0.dat 8 0 10</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}"   ../../datasets/trValTestData/letterTr_0.dat 8 1 10</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}"   0</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}"   1</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}"  5 1 8 1 1000 /Users/kaiwu/Documents/MulticlassLossFunctionComparision/files/</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}"  /home/kaiwu/Documents/MulticlassLossFunctionComparision/src/test/new/covTypeTr_0.dat  /home/kaiwu/Documents/MulticlassLossFunctionComparision/src/test/old/covTypeTr_0.dat 1 21 1 8000</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}"  /home/kaiwu/Documents/MulticlassLossFunctionComparision/temp/testOldModel/zipTr_1.dat zipTr_1.dat  1 21 1 8000</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}"  /home/kaiwu/Documents/MulticlassLossFunctionComparision/temp/testOldModel/zipTr_1.dat  /home/kaiwu/Documents/MulticlassLossFunctionComparision/temp/zipTr_1.dat  1 21 1 8000</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}"  /home/kaiwu/Documents/MulticlassLossFunctionComparision/temp/zipTr_1.dat /home/kaiwu/Documents/MulticlassLossFunctionComparision/temp/testOldModel/zipTr_1.dat  1 21 1 8000</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" /home/kaiwu/Documents/MulticlassLossFunctionComparision/temp/kk/zipTr_1.dat 0 21 1 8000
+</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}"  /home/kaiwu/Documents/MulticlassLossFunctionComparision/temp/zipTr_1.dat /home/kaiwu/Documents/MulticlassLossFunctionComparision/temp/testOldModel/zipTr_1.dat  0 21 1 8000</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}"  /home/kaiwu/Documents/MulticlassLossFunctionComparision/temp/covTypeTr_1.dat /home/kaiwu/Documents/MulticlassLossFunctionComparision/temp/testOldModel/covTypeTr_1.dat  0 21 1 8000
+</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}"  /home/kaiwu/Documents/MulticlassLossFunctionComparision/src/test/new/covTypeTr_0.dat  /home/kaiwu/Documents/MulticlassLossFunctionComparision/src/test/old/covTypeTr_0.dat 1 21 1 8000</runcommand>
+        <runcommand>"${OUTPUT_PATH}"  /home/kaiwu/Documents/MulticlassLossFunctionComparision/temp/covTypeTr_1.dat /home/kaiwu/Documents/MulticlassLossFunctionComparision/temp/testOldModel/covTypeTr_1.dat  0 21 1 8000</runcommand>
         <rundir></rundir>
         <buildfirst>true</buildfirst>
         <terminal-type>0</terminal-type>

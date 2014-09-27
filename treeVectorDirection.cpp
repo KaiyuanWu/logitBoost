@@ -60,7 +60,7 @@ void treeVectorDirection::resetRootNode() {
     }
 }
 
-treeVectorDirection::NODE::NODE(dataManager* data, treeVectorDirection* tree, int leftPoint, int rightPoint,double loss) {
+treeVectorDirection::NODE::NODE(dataManager* data, treeVectorDirection* tree, int leftPoint, int rightPoint,float  loss) {
     _additiveGain = 0.;
     _data = data;
     _tree = tree;
@@ -88,17 +88,17 @@ treeVectorDirection::NODE::NODE(dataManager* data, treeVectorDirection* tree, in
             cout<<"This type of tree: "<<_tree->_treeType<<" has not been implmented!"<<endl;
             exit(-1);
     }
-    _nodeSumG=new double[_nG];
-    _nodeSumH=new double[_nG];
-    leftSumG =new double[_nG];
-    leftSumH =new double[_nG];
-    rightSumG=new double[_nG];
-    rightSumH=new double[_nG];
+    _nodeSumG=new float [_nG];
+    _nodeSumH=new float [_nG];
+    leftSumG =new float [_nG];
+    leftSumH =new float [_nG];
+    rightSumG=new float [_nG];
+    rightSumH=new float [_nG];
     
-    leftSumG1 =new double[_nG];
-    leftSumH1 =new double[_nG];
-    rightSumG1=new double[_nG];
-    rightSumH1=new double[_nG];
+    leftSumG1 =new float [_nG];
+    leftSumH1 =new float [_nG];
+    rightSumG1=new float [_nG];
+    rightSumH1=new float [_nG];
 }
 
 treeVectorDirection::NODE::~NODE() {
@@ -122,7 +122,7 @@ treeVectorDirection::NODE::~NODE() {
     delete[] rightSumH1;
 }
 
-double treeVectorDirection::evalp(double* s,int& iClass) {
+float  treeVectorDirection::evalp(float * s,int& iClass) {
     NODE* n = _rootNode;
     while (n->_isInternal) {
         if (s[n->_iDimension] <= n->_cut) {
@@ -142,8 +142,8 @@ void treeVectorDirection::initNode() {
     n->_ableSplit  = true ;
     n->_additiveGain = 0. ;
     n->_nodeLoss=0;
-    memset(n->_nodeSumG,0,_nG*sizeof(double));
-    memset(n->_nodeSumH,0,_nG*sizeof(double));
+    memset(n->_nodeSumG,0,_nG*sizeof(float ));
+    memset(n->_nodeSumH,0,_nG*sizeof(float ));
 
     for (int iPoint = 0; iPoint < _nEvents; iPoint++) {
         n->_nodeLoss+=_data->_loss[iPoint];
@@ -159,53 +159,53 @@ void treeVectorDirection::initNode() {
 void treeVectorDirection::NODE::splitNode() {
     int splitPoint;
     //initialization
-    double maxGain   = _nodeGain;
+    float  maxGain   = _nodeGain;
     int maxDimension = 0 ;
     int maxI         = -1;
     int    iDimension;
-    double bestC = 0.;
-    double bestLeftV,bestRightV;   
+    float  bestC = 0.;
+    float  bestLeftV,bestRightV;   
     
     int shift=_tree->_minimumNodeSize;
     
     for (iDimension = 0; iDimension < _tree->_nDimension; iDimension++) {
-        memset(leftSumG, 0,sizeof(double)*_nG);
-        memset(leftSumH, 0,sizeof(double)*_nG);
+        memset(leftSumG, 0,sizeof(float )*_nG);
+        memset(leftSumH, 0,sizeof(float )*_nG);
         leftLoss=0;
         rightLoss= _nodeLoss;
-        memcpy(rightSumG , _nodeSumG,sizeof(double)*_nG);
-        memcpy(rightSumH , _nodeSumH,sizeof(double)*_nG);
+        memcpy(rightSumG , _nodeSumG,sizeof(float )*_nG);
+        memcpy(rightSumH , _nodeSumH,sizeof(float )*_nG);
         
         splitPoint = _leftPoint;
         //get rid of the same value elements
-        double postX = _data->_trainX[_data->_dataIndex[iDimension][_leftPoint + 1] * _tree->_nDimension + iDimension];
-        double cVal  = 1.e300   ;
-        double leftV,rightV     ;
+        float  postX = _data->_trainX[_data->_dataIndex[iDimension][_leftPoint + 1] * _tree->_nDimension + iDimension];
+        float  cVal  = 1.e300   ;
+        float  leftV,rightV     ;
         for (splitPoint = _leftPoint; splitPoint < _leftPoint + shift; splitPoint++) {
             for (int iG = 0; iG < _nG; iG++) {
-                double g,h;
+                float  g,h;
                 g=_data->_lossGradient[_data->_dataIndex[iDimension][splitPoint]*_nG+iG];
                 h=_data->_lossHessian[_data->_dataIndex[iDimension][splitPoint]*_nG+iG];
                 
                 leftSumG[iG]  += g; leftSumH[iG]  += h;
                 rightSumG[iG] -= g; rightSumH[iG] -= h;
             }
-            double l=_data->_loss[_data->_dataIndex[iDimension][splitPoint]];
+            float  l=_data->_loss[_data->_dataIndex[iDimension][splitPoint]];
             leftLoss  +=l; 
             rightLoss -=l;
         }
         for (splitPoint = _leftPoint + shift; splitPoint <=_rightPoint-shift; splitPoint++) {
-            double x = _data->_trainX[_data->_dataIndex[iDimension][splitPoint] * _tree->_nDimension + iDimension];
+            float  x = _data->_trainX[_data->_dataIndex[iDimension][splitPoint] * _tree->_nDimension + iDimension];
 //            cout<<"Cut at "<<splitPoint<<": ";
             for (int iG = 0; iG < _nG; iG++) {
-                double  g, h;
+                float   g, h;
                 g=_data->_lossGradient[_data->_dataIndex[iDimension][splitPoint]*_nG+iG];
                 h=_data->_lossHessian[_data->_dataIndex[iDimension][splitPoint]*_nG+iG];
                 leftSumG[iG]  += g; leftSumH[iG]  += h;
                 rightSumG[iG] -= g; rightSumH[iG] -= h;
             }
 //            cout<<endl;
-            double l=_data->_loss[_data->_dataIndex[iDimension][splitPoint]];
+            float  l=_data->_loss[_data->_dataIndex[iDimension][splitPoint]];
             leftLoss +=l;
             rightLoss -=l;
 //            cout<<endl;
@@ -215,12 +215,12 @@ void treeVectorDirection::NODE::splitNode() {
             leftV=x;rightV=postX;
             postX = x                   ;
             cVal  = 0.5 * (x + postX)   ;
-            double gain=-1.;
+            float  gain=-1.;
             for(int iG=0;iG<_nG;iG++) {
                 if (leftSumH[iG] == 0.||rightSumH[iG]==0.) {
                     continue;
                 }
-                double newgain=(leftSumG[iG] *leftSumG[iG]*rightSumH[iG]+rightSumG[iG]*rightSumG[iG]*leftSumH[iG])/(leftSumH[iG]*rightSumH[iG]);
+                float  newgain=(leftSumG[iG] *leftSumG[iG]*rightSumH[iG]+rightSumG[iG]*rightSumG[iG]*leftSumH[iG])/(leftSumH[iG]*rightSumH[iG]);
                 if(newgain>gain)
                     gain=newgain;
             }
@@ -234,10 +234,10 @@ void treeVectorDirection::NODE::splitNode() {
                 
                 leftLoss1=leftLoss;
                 rightLoss1=rightLoss;
-                memcpy(leftSumG1 ,leftSumG, sizeof(double)*_nG);
-                memcpy(leftSumH1 ,leftSumH, sizeof(double)*_nG);                
-                memcpy(rightSumG1 ,rightSumG, sizeof(double)*_nG);
-                memcpy(rightSumH1 ,rightSumH, sizeof(double)*_nG);
+                memcpy(leftSumG1 ,leftSumG, sizeof(float )*_nG);
+                memcpy(leftSumH1 ,leftSumH, sizeof(float )*_nG);                
+                memcpy(rightSumG1 ,rightSumG, sizeof(float )*_nG);
+                memcpy(rightSumH1 ,rightSumH, sizeof(float )*_nG);
             }
         }
     }
@@ -250,24 +250,24 @@ void treeVectorDirection::NODE::splitNode() {
         
         NODE* t = new NODE(_data, _tree, _leftPoint, maxI,leftLoss1);
         _leftChildNode = t;
-        memcpy(t->_nodeSumG ,leftSumG1, sizeof(double)*_nG);
-        memcpy(t->_nodeSumH ,leftSumH1, sizeof(double)*_nG);
+        memcpy(t->_nodeSumG ,leftSumG1, sizeof(float )*_nG);
+        memcpy(t->_nodeSumH ,leftSumH1, sizeof(float )*_nG);
         t->_iDimension=_iDimension;
         t->selectBestClass();
 
         t = new NODE(_data, _tree, maxI + 1, _rightPoint,rightLoss1);
         _rightChildNode = t;
-        memcpy(t->_nodeSumG ,rightSumG1, sizeof(double)*_nG);
-        memcpy(t->_nodeSumH ,rightSumH1, sizeof(double)*_nG);
+        memcpy(t->_nodeSumG ,rightSumG1, sizeof(float )*_nG);
+        memcpy(t->_nodeSumH ,rightSumH1, sizeof(float )*_nG);
         t->_iDimension=_iDimension;
         t->selectBestClass();
         //check the node is correctly split
 //        cout<<"Box("<<_leftPoint<<", "<<_rightPoint<<"): "<<endl;
 //        for(int iClass=0;iClass<_tree->_nClass;iClass++){
-//            double lg=_leftChildNode->_nodeSumG[iClass];
-//            double lh=_leftChildNode->_nodeSumH[iClass];
-//            double rg=_rightChildNode->_nodeSumG[iClass];
-//            double rh=_rightChildNode->_nodeSumH[iClass];
+//            float  lg=_leftChildNode->_nodeSumG[iClass];
+//            float  lh=_leftChildNode->_nodeSumH[iClass];
+//            float  rg=_rightChildNode->_nodeSumG[iClass];
+//            float  rh=_rightChildNode->_nodeSumH[iClass];
 //            cout<<_nodeSumG[iClass]<<" "<<lg<<"+"<<rg<<"= "<<lg+rg<<"; "<<_nodeSumH[iClass]<<" "<<lh<<"+"<<rh<<"= "<<lh+rh<<endl;          
 //        }
     }
@@ -360,13 +360,13 @@ bool treeVectorDirection::NODE::printInfo(const char* indent, bool last) {
     return ret;
 }
 void treeVectorDirection::NODE::selectBestClass(){
-    double maxG=0.;
+    float  maxG=0.;
     int maxIndex=-1;
     for(int iG=0;iG<_nG;iG++){
         if(_nodeSumH[iG]<=0.){
             continue;
         }
-        double gain=_nodeSumG[iG]*_nodeSumG[iG]/_nodeSumH[iG];
+        float  gain=_nodeSumG[iG]*_nodeSumG[iG]/_nodeSumH[iG];
         if(gain>=maxG){
             maxG=gain      ;
             maxIndex=iG;
@@ -396,8 +396,8 @@ void treeVectorDirection::NODE::selectBestClass(){
     //cout<<"Node("<<_leftPoint<<", "<<_rightPoint<<") Loss= "<<_nodeLoss<<endl;
 }
 
-void treeVectorDirection::eval(double* pnt, double* direction) {
-    double f;
+void treeVectorDirection::eval(float * pnt, float * direction) {
+    float  f;
     int workingClass, workingClass1, workingClass2;
     f = evalp(pnt,workingClass);
     workingClass1=workingClass/_nClass;
@@ -452,7 +452,7 @@ void treeVectorDirection::buildDirection() {
     initNode();
     for (int ileaf = 0; ileaf < _nLeaves - 1; ileaf++) {
         NODE* node = NULL;
-        double bestGain = -1.;
+        float  bestGain = -1.;
         _rootNode->bestNode(node, bestGain);
         if (bestGain == -1.)
             break;
@@ -464,7 +464,7 @@ void treeVectorDirection::buildDirection() {
 //    exit(0);
 }
 
-void treeVectorDirection::NODE::bestNode(NODE*& n, double& gain) {
+void treeVectorDirection::NODE::bestNode(NODE*& n, float & gain) {
     //if this node has not been split
     if (_ableSplit)
         splitNode();

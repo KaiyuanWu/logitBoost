@@ -22,7 +22,7 @@ using namespace std;
 
 class crossValidate {
 public:
-    crossValidate(int jobID,int nFold, directionFunction::_TREE_TYPE_ treeType,double shrinkage=1.,int nLeaves=8,int minimumNodeSize=1,int nMaxIteration=1000);
+    crossValidate(int jobID,int nFold, directionFunction::_TREE_TYPE_ treeType,float  shrinkage=1.,int nLeaves=8,int minimumNodeSize=1,int nMaxIteration=1000);
     virtual ~crossValidate();
     
 public:
@@ -35,12 +35,12 @@ public:
     void start();
     void saveResult();
     
-    double _bestAccuracy;
+    float  _bestAccuracy;
     int    _bestIteration;
-    double* _accuracyTestArray;
-    double* _accuracyTrainArray;
-    double* _lossTestArray;
-    double* _lossTrainArray;
+    float * _accuracyTestArray;
+    float * _accuracyTrainArray;
+    float * _lossTestArray;
+    float * _lossTrainArray;
     int _nMaxIteration;
     int _nEvents;    
 private:
@@ -50,7 +50,7 @@ private:
     
     //_jobID to discriminate the dataset
     int _jobID;
-    double _shrinkage;
+    float  _shrinkage;
     int _nLeaves;
     int _minimumNodeSize;
     
@@ -64,7 +64,7 @@ private:
     //all data will be stored into an one dimension array
     //x_ij will be x[i*nDimension+j]
     //c_i  will be c[i]
-    double* _dataX;
+    float * _dataX;
     int*    _classX;
     int     _label;
     

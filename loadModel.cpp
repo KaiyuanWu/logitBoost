@@ -61,7 +61,7 @@ loadModel::~loadModel() {
     }
 }
 //update the dataManager
-void loadModel::updateDirection() {
+void loadModel::updateDirection(int sign) {
     for (int iEvent = 0; iEvent < _data->_nTrainEvents; iEvent++) {
         switch (_treeType) {
             case directionFunction::_ABC_LOGITBOOST_:
@@ -81,22 +81,28 @@ void loadModel::updateDirection() {
                 cout << "This tree type " << _treeType << " has not been implemented!" << endl;
                 break;
         }
-        for (int iClass = 0; iClass < _nClass; iClass++)
-            _data->_trainDescendingDirection[iEvent*_nClass+iClass]=_direction[iClass];
+        for (int iClass = 0; iClass < _nClass; iClass++){
+            _data->_trainDescendingDirection[iEvent*_nClass+iClass]=_direction[iClass]*sign;
+        }
     }
+    
     _data->increment(_shrinkage,_availableIterations);
 }
-void loadModel::evalS(double* pnt){
+void loadModel::evalS(float * pnt){
     for (int iClass = 0; iClass < _nClass; iClass++)
         _direction[iClass] = 0.;
     for(int iTree = 0; iTree < _nTrees; iTree++) {
         struct _NODE_ *n = _trees[iTree];
         while (n->_isInternal) {
-            if (pnt[n->_iDimension] <= n->_cut) {
+//            printf("%.10g  %.10g -> %.10g %d=>%d\n",pnt[n->_iDimension],n->_cut,1.0000005*n->_cut,pnt[n->_iDimension] <= n->_cut,(pnt[n->_iDimension] <= 1.000005*n->_cut&&n->_cut>0)||(pnt[n->_iDimension] <= 0.999995*n->_cut&&n->_cut<0));
+//            if((pnt[n->_iDimension] <= 1.000*n->_cut)!=((pnt[n->_iDimension] <= 1.000005*n->_cut&&n->_cut>0)||(pnt[n->_iDimension] <= 0.999995*n->_cut&&n->_cut<0)))
+//                printf("Here Here\n");
+            
+            
+            if ((pnt[n->_iDimension] <= 1.000005*n->_cut&&n->_cut>=0)||(pnt[n->_iDimension] <= 0.999995*n->_cut&&n->_cut<0))
                 n = n->_leftChildNode;
-            } else {
+            else 
                 n = n->_rightChildNode;
-            }
             if(!n){
                 cout<<_modelDescription<<endl;
                 for(int iT=0;iT<_nTrees;iT++){
@@ -116,19 +122,19 @@ void loadModel::evalS(double* pnt){
         }
     }
 }
-void loadModel::evalV(double* pnt) {
+void loadModel::evalV(float * pnt) {
     for (int iClass = 0; iClass < _nClass; iClass++)
         _direction[iClass] = 0.;
     struct _NODE_ *n = _trees[0];
 //    _bootedTrees[iIteration]->printInfo("",true);
     while (n->_isInternal) {
-        if (pnt[n->_iDimension] <= n->_cut) {
+        if (pnt[n->_iDimension] <= 1.0000005*n->_cut) {
             n = n->_leftChildNode;
         } else {
             n = n->_rightChildNode;
         }
     }
-    double f;
+    float  f;
     int workingClass, workingClass1, workingClass2;
     f = n->_f;
     workingClass = n->_class;
@@ -164,9 +170,8 @@ void loadModel::rebuild() {
         return;
     //variables list
     char oldTrainAccuracyStr[1024], oldTestAccuracyStr[1024], oldTrainLossStr[1024], oldTestLossStr[1024];
-    
-    double oldTrainAccuracy, oldTestAccuracy, oldTrainLoss, oldTestLoss;
-    double newTrainAccuracy, newTrainLoss;
+    float  oldTrainAccuracy, oldTestAccuracy, oldTrainLoss, oldTestLoss;
+    float  newTrainAccuracy, newTrainLoss;
     
     _availableIterations=0;
     _oldOutput>>oldTrainAccuracyStr>>oldTestAccuracyStr>>oldTrainLossStr>>oldTestLossStr;
@@ -178,26 +183,34 @@ void loadModel::rebuild() {
         return;
     if(!loadTree(true))
         return;
-    
+//    for(int iTree=0;iTree<_nTrees;iTree++){
+//        cout<<"============= "<<iTree<<" ===================="<<endl;
+//        _trees[iTree]->printInfo("",false);
+//    }
+//    exit(0);
     while(_oldOutput.good()&&_oldModelFile.good()){
-        updateDirection();
-        for(int iTree=0;iTree<_nTrees;iTree++)
-            _trees[iTree]->clear();
+        updateDirection(1.);
         newTrainAccuracy=_data->_trainAccuracy;
         newTrainLoss=_data->_trainLoss;
-        if(fabs(newTrainLoss-oldTrainLoss)<0.00001*oldTrainLoss){
+        cout<<newTrainAccuracy<<" vs "<<oldTrainAccuracy<<endl;
+        if(fabs(newTrainAccuracy-oldTrainAccuracy)<0.5/_data->_nTrainEvents){
             _availableIterations++;
+            cout<<_availableIterations<<endl;
             _newModelFile<<_modelDescription;
             _newOutput<<newTrainAccuracy<<" "<<newTrainLoss<<endl;
         }
-        else
+        else{
+            updateDirection(-1);
             break;
+        }
+        for(int iTree=0;iTree<_nTrees;iTree++)
+            _trees[iTree]->clear();
         _oldOutput>>oldTrainAccuracyStr>>oldTestAccuracyStr>>oldTrainLossStr>>oldTestLossStr;
         oldTrainAccuracy = atof(oldTrainAccuracyStr);
         oldTestAccuracy = atof(oldTestAccuracyStr);
         oldTrainLoss = atof(oldTrainLossStr);
         oldTestLoss = atof(oldTestLossStr);
-        if (oldTrainAccuracy == 0.0)
+        if(oldTrainAccuracy == 0.0)
             break;
         if(!loadTree())
             return;
@@ -214,7 +227,7 @@ bool loadModel::loadTree(bool isFirstIteration) {
         _treeType = directionFunction::_TREE_TYPE_(k);
         _oldModelFile >> _nClass >> _nVariable >> _nMaximumIteration>>_shrinkage;
         //_newModelFile <<k<<" "<<_nClass<<" "<<_nVariable<<" "<<_nMaximumIteration<<" "<<_shrinkage<<endl;
-        _direction = new double[_nClass];
+        _direction = new float [_nClass];
         
         switch (_treeType) {
             case directionFunction::_ABC_LOGITBOOST_:

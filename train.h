@@ -22,11 +22,11 @@
 class train {
 public:
     train(char* fTrain, char* fTest, char* fOut, int nTrainEvents,int nTestEvents,int nClass,int nVariables,
-            directionFunction::_TREE_TYPE_ treeType, double shrinkage=1.,int nLeaves=8,int minimumNodeSize=1,int nMaxIteration=1000);
+            directionFunction::_TREE_TYPE_ treeType, float  shrinkage=1.,int nLeaves=8,int minimumNodeSize=1,int nMaxIteration=1000);
     train(char* fTrain, 
-            directionFunction::_TREE_TYPE_ treeType, double shrinkage=1.,int nLeaves=8,int minimumNodeSize=1,int nMaxIteration=1000);
+            directionFunction::_TREE_TYPE_ treeType, float  shrinkage=1.,int nLeaves=8,int minimumNodeSize=1,int nMaxIteration=1000);
     train(char* fTrain, char* fOldFout,
-            directionFunction::_TREE_TYPE_ treeType, double shrinkage=1.,int nLeaves=8,int minimumNodeSize=1,int nMaxIteration=1000);
+            directionFunction::_TREE_TYPE_ treeType, float  shrinkage=1.,int nLeaves=8,int minimumNodeSize=1,int nMaxIteration=1000);
     
     virtual ~train();
     
@@ -38,12 +38,12 @@ public:
     void start();
     void saveResult();
     
-    double _bestAccuracy;
+    float  _bestAccuracy;
     int    _bestIteration;
-    double* _accuracyTestArray;
-    double* _accuracyTrainArray;
-    double* _lossTestArray;
-    double* _lossTrainArray;
+    float * _accuracyTestArray;
+    float * _accuracyTrainArray;
+    float * _lossTestArray;
+    float * _lossTrainArray;
     int _nMaxIteration;
 private:
     //parameters
@@ -54,7 +54,7 @@ private:
     string _fOldOut;
     string _fOldParam;
     directionFunction::_TREE_TYPE_  _treeType;
-    double _shrinkage;
+    float  _shrinkage;
     int _nLeaves;
     int _minimumNodeSize;
     
