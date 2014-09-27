@@ -78,20 +78,20 @@ treeScalarDirection::NODE::NODE(dataManager* data, treeScalarDirection* tree, in
     _rightChildNode = NULL;
     _isInternal = false;
 }
-void treeScalarDirection::NODE::saveNode(ofstream& outf){
-    outf<<_iDimension<<" "<<_cut<<" "<<_f<<" "<<_isInternal<<" "<<_tree->_treeClass<<" ";
+void treeScalarDirection::NODE::saveNode(QDataStream& fileDBReader){
+    fileDBReader<<_iDimension<<_cut<<_f<<_isInternal<<_tree->_treeClass;
     if(_isInternal){
-        outf<<"( ";
-        _leftChildNode->saveNode(outf);
-        outf<<") + ( ";
-        _rightChildNode->saveNode(outf);
-        outf<<" )";
+        fileDBReader<<qint8('(');
+        _leftChildNode->saveNode(fileDBReader);
+        fileDBReader<<qint8(')')<<qint8('+')<<qint8('()');
+        _rightChildNode->saveNode(fileDBReader);
+        fileDBReader<<qint8(')');
     }
 }
 
-void treeScalarDirection::saveTree(ofstream& fileDB){
-    _rootNode->saveNode(fileDB);
-    fileDB<<endl;
+void treeScalarDirection::saveTree(QDataStream& fileDBReader){
+    _rootNode->saveNode(fileDBReader);
+    fileDBReader<<qint8(';');
 }
 treeScalarDirection::NODE::~NODE() {
     if (_leftChildNode)

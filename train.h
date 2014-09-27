@@ -10,6 +10,8 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <QFile>
+#include <QDataStream>
 #include "stdio.h"
 #include "string.h"
 #include "stdlib.h"
@@ -69,8 +71,10 @@ private:
     dataManager* _data;
     linearSearch* _linearSearchMinimizer;
     void getDataInformation(char* fileInName,int& nEvent,int& nClass,int& nVariable);
-    ofstream* _outf;
-    ofstream* _paramf;
+    QFile* _outFile;
+    QFile* _paramFile;
+    QDataStream _outFileReader;
+    QDataStream _paramFileReader;
 };
 
 #endif	/* train_H */

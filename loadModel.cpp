@@ -9,21 +9,23 @@
 #include <sstream>
 
 loadModel::loadModel(const char* oldModelFileName, const char* oldOutputName,
-        const char* newModelFileName, const char* newOutputName, dataManager* data):_direction(NULL),_trees(NULL) {
+        const char* newModelFileName, const char* newOutputName, dataManager* data):_direction(NULL),_trees(NULL),
+_oldModelFile(oldModelFileName),_oldOutput(oldOutputName),_newModelFile(newModelFileName),_newOutput(newOutputName)
+{
     _fileOK = true;
-    if(!_oldModelFile.open(oldModelFileName, QIODevice::ReadOnly)){
+    if(!_oldModelFile.open(QIODevice::ReadOnly)){
         cout << "Can not open " << oldModelFileName << endl;
         _fileOK = false;
     }
-    if(!_oldOutput.open(oldOutputName, QIODevice::ReadOnly)){
+    if(!_oldOutput.open( QIODevice::ReadOnly)){
         cout << "Can not open " << oldOutputName << endl;
         _fileOK = false;
     }
-    if(!_newModelFile.open(newModelFileName, QIODevice::WriteOnly)){
+    if(!_newModelFile.open( QIODevice::WriteOnly)){
         cout << "Can not open " << newModelFileName << endl;
         _fileOK = false;
     }
-    if(!_newOutput.open(newOutputName, QIODevice::WriteOnly)){
+    if(!_newOutput.open( QIODevice::WriteOnly)){
          cout << "Can not open " << newOutputName << endl;
         _fileOK = false;
     }
@@ -161,23 +163,16 @@ void loadModel::rebuild() {
     if(!_fileOK)
         return;
     //variables list
-    char oldTrainAccuracyStr[1024], oldTestAccuracyStr[1024], oldTrainLossStr[1024], oldTestLossStr[1024];
-
     float  oldTrainAccuracy, oldTestAccuracy, oldTrainLoss, oldTestLoss;
     float  newTrainAccuracy, newTrainLoss;
-
+    
     _availableIterations=0;
-    _oldOutput>>oldTrainAccuracyStr>>oldTestAccuracyStr>>oldTrainLossStr>>oldTestLossStr;
-    oldTrainAccuracy=atof(oldTrainAccuracyStr);
-    oldTestAccuracy=atof(oldTestAccuracyStr);
-    oldTrainLoss=atof(oldTrainLossStr);
-    oldTestLoss=atof(oldTestLossStr);
-    if(oldTrainAccuracy==0.0)
-        return;
+    _oldOutputReader>>oldTrainAccuracy>>oldTestAccuracy>>oldTrainLoss>>oldTestLoss;
+    
     if(!loadTree(true))
         return;
 
-    while(_oldOutput.good()&&_oldModelFile.good()){
+    while(!_oldOutputReader.atEnd()&&!_oldModelFileReader.atEnd()){
         updateDirection();
         for(int iTree=0;iTree<_nTrees;iTree++)
             _trees[iTree]->clear();
@@ -185,17 +180,15 @@ void loadModel::rebuild() {
         newTrainLoss=_data->_trainLoss;
         if(fabs(newTrainLoss-oldTrainLoss)<0.00001*oldTrainLoss){
             _availableIterations++;
-            _newModelFile<<_modelDescription;
-            _newOutput<<newTrainAccuracy<<" "<<newTrainLoss<<endl;
+            for(int iTree=0;iTree<_nTrees;iTree++)
+                _trees[iTree]->saveNode(_newModelFileReader,_baseClass);
+            _newModelFileReader<<qint8(';');
+            _newOutputReader<<newTrainAccuracy<<newTrainLoss;
         }
         else
             break;
-        _oldOutput>>oldTrainAccuracyStr>>oldTestAccuracyStr>>oldTrainLossStr>>oldTestLossStr;
-        oldTrainAccuracy = atof(oldTrainAccuracyStr);
-        oldTestAccuracy = atof(oldTestAccuracyStr);
-        oldTrainLoss = atof(oldTrainLossStr);
-        oldTestLoss = atof(oldTestLossStr);
-        if (oldTrainAccuracy == 0.0)
+        _oldOutputReader>>oldTrainAccuracy>>oldTestAccuracy>>oldTrainLoss>>oldTestLoss;
+        if (oldTrainAccuracy == 0)
             break;
         if(!loadTree())
             return;
@@ -208,12 +201,13 @@ bool loadModel::loadTree(bool isFirstIteration) {
     //if this is the first iteration, we will load informations about the tree
     if (isFirstIteration) {
         int k;
-        _oldModelFile>>k;
+        _oldModelFileReader >>k;
         _treeType = directionFunction::_TREE_TYPE_(k);
-        _oldModelFile >> _nClass >> _nVariable >> _nMaximumIteration>>_shrinkage;
-        //_newModelFile <<k<<" "<<_nClass<<" "<<_nVariable<<" "<<_nMaximumIteration<<" "<<_shrinkage<<endl;
+        _oldModelFileReader >> _nClass >> _nVariable >> _nMaximumIteration>>_shrinkage;
+        
+        if(_nClass==0||_nVariable==0||_nMaximumIteration==0)
+            return false;
         _direction = new float [_nClass];
-
         switch (_treeType) {
             case directionFunction::_ABC_LOGITBOOST_:
                 _nTrees = _nClass - 1;
@@ -233,83 +227,83 @@ bool loadModel::loadTree(bool isFirstIteration) {
         _trees = new struct _NODE_*[_nTrees];
         for(int iT=0;iT<_nTrees;iT++)
             _trees[iT]=new struct _NODE_;
-        //skip the first endl
-        getline(_oldModelFile, _treeDescription);
     }
-    if (_treeType == directionFunction::_ABC_LOGITBOOST_) {
-        getline(_oldModelFile, _treeDescription);
-        _modelDescription += _treeDescription;
-        _modelDescription += "\n";
-        _baseClass = atoi(_treeDescription.c_str());
-    }
+    if (_treeType == directionFunction::_ABC_LOGITBOOST_)
+        _oldModelFileReader >> _baseClass;
     for (int iTree = 0; iTree < _nTrees; iTree++) {
-        getline(_oldModelFile, _treeDescription);
-        _modelDescription += _treeDescription;
-        _modelDescription += "\n";
-        ret=buildTree(_treeDescription.c_str(), _trees[iTree]);
-        if(!ret){
+        ret=buildTree(_oldModelFileReader, _trees[iTree]);
+        if(!ret)
             break;
-        }
     }
     return ret;
 }
-
-bool loadModel::buildTree(const char* tree, struct _NODE_* root) {
-    bool ret=true;
-    char op;
-    int iDimension, iclass;
-    float cut, f;
+bool loadModel::buildTree(QDataStream& fileDBReader, struct _NODE_* root){
+    qint8 op;
+    int  iDimension,iclass;
+    float cut,f;
     bool internal;
     struct _NODE_* curNode;
-    root->_leftChildNode = NULL;
-    root->_rightChildNode = NULL;
-    root->_parentNode = NULL;
-    curNode = root;
-    stringstream ss;
-    ss.str(tree);
-    ss >> iDimension >> cut >> f >> internal>>iclass;
-
+    root->_leftChildNode=NULL;
+    root->_rightChildNode=NULL;
+    root->_parentNode=NULL;
+    curNode=root;
+    fileDBReader >> iDimension >> cut>>f>>internal>>iclass;
+    
     root->_cut = cut;
     root->_iDimension = iDimension;
     root->_f = f;
-    root->_isInternal = internal;
-    root->_class = iclass;
-    while (ss.good()) {
-        ss>>op;
-        switch (op) {
+    root->_isInternal=internal;
+    root->_class=iclass;
+    while(1){
+        fileDBReader>>op;
+        switch(op){
             case '(':
-                curNode->_leftChildNode = new struct _NODE_;
-                curNode->_leftChildNode->_leftChildNode = NULL;
-                curNode->_leftChildNode->_rightChildNode = NULL;
-                curNode->_leftChildNode->_parentNode = curNode;
-                curNode->_rightChildNode = new struct _NODE_;
-                curNode->_rightChildNode->_leftChildNode = NULL;
-                curNode->_rightChildNode->_rightChildNode = NULL;
-                curNode->_rightChildNode->_parentNode = curNode;
-                curNode = curNode->_leftChildNode;
+                curNode->_leftChildNode=new struct _NODE_;
+                curNode->_leftChildNode->_leftChildNode=NULL;
+                curNode->_leftChildNode->_rightChildNode=NULL;
+                curNode->_leftChildNode->_parentNode=curNode;
+                curNode->_rightChildNode=new struct _NODE_;
+                curNode->_rightChildNode->_leftChildNode=NULL;
+                curNode->_rightChildNode->_rightChildNode=NULL;
+                curNode->_rightChildNode->_parentNode=curNode;
+                curNode=curNode->_leftChildNode;
                 break;
-
+                
             case ')':
-                curNode = curNode->_parentNode;
+                curNode=curNode->_parentNode;
                 break;
-
+                
             case '+':
-                curNode = curNode->_rightChildNode;
-                ss>>op;
+                curNode=curNode->_rightChildNode;
+                fileDBReader>>op;
                 break;
+            case ';':
+                break;      
             default:
-                ret=false;
+                cout<<"Error: parse the database!";
+                return false;
                 break;
         }
-        if (op == '(') {
-            ss >> iDimension >> cut >> f >> internal>>iclass;
+        if(op==';')
+            break;
+        if(op=='(') {
+            fileDBReader >> iDimension >> cut>>f>>internal>>iclass;
             curNode->_cut = cut;
             curNode->_iDimension = iDimension;
             curNode->_f = f;
-            curNode->_isInternal = internal;
-            curNode->_class = iclass;
+            curNode->_isInternal=internal;
+            curNode->_class=iclass;
         }
     }
-
-    return ret;
+    return true;
+}
+void loadModel::_NODE_::saveNode(QDataStream& fileDBReader,int baseClass){
+    fileDBReader<<_iDimension<<_cut<<_f<<_isInternal<<baseClass;
+    if(_isInternal){
+        fileDBReader<<qint8('(');
+        _leftChildNode->saveNode(fileDBReader);
+        fileDBReader<<qint8(')')<<qint8('+')<<qint8('()');
+        _rightChildNode->saveNode(fileDBReader);
+        fileDBReader<<qint8(')');
+    }
 }

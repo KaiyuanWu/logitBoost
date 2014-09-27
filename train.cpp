@@ -9,6 +9,8 @@
 #include <string>
 #include <sstream>
 #include <map>
+#include <Qt/qfile.h>
+#include <Qt/qdatastream.h>
 
 train::train(char* fTrain, char* fTest, char* fOut, int nTrainEvents,int nTestEvents,int nClass,int nVariables,
             directionFunction::_TREE_TYPE_ treeType, float  shrinkage,int nLeaves,int minimumNodeSize,int nMaxIteration){
@@ -163,18 +165,19 @@ void train::init(){
     }
     _data->finishAddingEvent();
     cout<<"Finish Reading Data!"<<endl;
-    _outf=new ofstream(_fOut.c_str(),ofstream::app);
-    if(!_outf){
+    _outFile=new QFile(_fOut.c_str());
+    if(!_outFile->open(QIODevice::Append)){
         cout<<"Can not open "<<_fOut<<endl;
         exit(-1);
     }
-    _outf->setf(ios::scientific);
-    _paramf=new ofstream(_fParam.c_str(),ofstream::app);
-    if(!_paramf){
+    _outFileReader.setDevice(_outFile);
+    _paramFile=new QFile(_fParam.c_str());
+    if(!_paramFile->open(QIODevice::Append)){
         cout<<"Can not open "<<_fParam<<endl;
         exit(-1);
     }
-    (*_paramf)<<_treeType<<" "<<_nClass<<" "<<_data->_nDimension<<" "<<_nMaxIteration<<" "<<_shrinkage<<endl;
+    _paramFileReader.setDevice(_paramFile);
+    _paramFileReader<<_treeType<<_nClass<<_data->_nDimension<<_nMaxIteration<<_shrinkage;
     _linearSearchMinimizer = new linearSearch(_data,_nLeaves,_shrinkage,_minimumNodeSize,_treeType);
 }
 int train::load(){
@@ -239,21 +242,9 @@ void train::start(){
     for (; iIteration < _nMaxIteration; iIteration++) {
         //call the weak learner for each fold
         _linearSearchMinimizer->minimization(iIteration);
-        _linearSearchMinimizer->saveDirection(*_paramf);
-        _paramf->flush();
-//        cout << "Gradient: " << endl;
-//        for (int ix = 0; ix < _data->_nTrainEvents; ix++) {
-//            cout << "[";
-//            for (int ic = 0; ic < 10; ic++) {
-//                cout << _data->_trainX[ix * _data->_nDimension + ic] << ", ";
-//            }
-//            cout << "] ";
-//            for (int ic = 0; ic < _data->_nClass; ic++) {
-//                cout << _data->_lossGradient[ix * _data->_nClass + ic] << ", ";
-//            }
-//            cout << endl;
-//        }
-//        exit(0);
+        _linearSearchMinimizer->saveDirection(_paramFileReader);
+        _paramFile->flush();
+
         _accuracyTestArray[iIteration] = _data->_testAccuracy ;
         _accuracyTrainArray[iIteration]= _data->_trainAccuracy;
         _lossTrainArray[iIteration] = _data->_trainLoss/_nTrainEvents;
@@ -263,23 +254,15 @@ void train::start(){
             _bestAccuracy=_accuracyTestArray[iIteration];
             _bestIteration=iIteration;
         }
-//        if(iIteration%1==0){
-//            cout<<"+++++++++++++ Round "<<iIteration<<" +++++++++++++++++"<<endl;
-//            cout<<"Train accuracy: "<<_accuracyTrainArray[iIteration]<<" loss "<<_lossTrainArray[iIteration]<<endl;
-//            cout<<"Test accuracy: "<<_accuracyTestArray[iIteration]<<" loss "<<_lossTestArray[iIteration]<<" best "<<_bestAccuracy<<" at "<<_bestIteration<<endl;
-//        }
-        (*_outf)<<_accuracyTrainArray[iIteration]<<"\t"<<_accuracyTestArray[iIteration]<<"\t"<<_lossTrainArray[iIteration]<<"\t"<<_lossTestArray[iIteration]<<endl;
-        _outf->flush();
+
+        _outFileReader<<_accuracyTrainArray[iIteration]<<_accuracyTestArray[iIteration]<<_lossTrainArray[iIteration]<<_lossTestArray[iIteration];
+        _outFile->flush();
     }
 }
 void train::saveResult(){
 //    _data->saveF();
-    if(_outf->is_open())
-        _outf->close();
-    if(_paramf){
-        if(_paramf->is_open())
-            _paramf->close();
-    }
+    _outFile->close();
+    _paramFile->close();
 }
 train::~train() {
     delete _data;

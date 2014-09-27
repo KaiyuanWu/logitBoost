@@ -5,8 +5,6 @@
  * Created on August 4, 2014, 7:42 PM
  */
 
-#include <Qt/qdatastream.h>
-
 #include "application.h"
 #include "stdlib.h"
 
@@ -214,8 +212,7 @@ void application::buildTree(QDataStream& fileDBReader, struct _NODE_* root){
 bool application::init(){
     bool ret=true;
     QFile fileDB(_fileDBName.c_str());
-    fileDB.open(QIODevice::ReadOnly);
-    if(!fileDB.good()){
+    if(!fileDB.open(QIODevice::ReadOnly)){
         cout<<"Can not open "<<_fileDBName<<endl;
         return false;
     }

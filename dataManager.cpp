@@ -274,14 +274,10 @@ void  dataManager::increment(float  shrinkage,int iRound) {
         _trainAccuracy=float (_trainCorrectClassification)/_nTrainEvents;
         _trainLoss/=_nTrainEvents;
     }
-    else
-        _trainAccuracy=0.;
     if(_nTestEvents>0){
         _testAccuracy=float (_testCorrectClassification)/_nTestEvents;
-        _trainLoss/=_nTrainEvents;
+        _testLoss/=_nTestEvents;
     }
-    else
-        _nTestEvents=0.;
     if (iRound % OUTPUT_INTERVAL == OUTPUT_INTERVAL-1) {
         float  totalOld=0.;
         float  totalNew=0.;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         

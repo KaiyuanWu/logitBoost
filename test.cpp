@@ -13,10 +13,6 @@ test::test(int iTask,int iDataset) {
     _iDataset=iDataset;
 }
 
-test::test(const test& orig) {
-    
-}
-
 test::~test() {
 }
 int test::getBestAccuracy(string& modelFile,string& dataFile, float & bestAccuracy){

@@ -7,6 +7,8 @@
 #ifndef TREESCALARDIRECTION_H
 #define	TREESCALARDIRECTION_H
 #include <string.h>
+#include <QFile>
+#include <QDataStream>
 #include "directionFunction.h"
 #include "dataManager.h"
 #include "LossFunction.h"
@@ -26,7 +28,7 @@ public:
     //tree train
     void eval(float * pnt, float * direction);
     void   buildIndex(int** dataIndex=NULL,int** dataReverseIndex0=NULL);
-    void saveTree(ofstream& fileDB);
+    void saveTree(QDataStream& fileDBReader);
 private:
     class NODE{
     public:
@@ -56,7 +58,7 @@ private:
         void bestNode(NODE*& n,float & gain);
         void splitNode();
         bool printInfo(const char* indent,bool last);
-        void saveNode(ofstream& outf);
+        void saveNode(QDataStream& fileDBReader);
         //select best working class
         void calculateF();
         float  leftSumG, leftSumH;

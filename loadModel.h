@@ -37,6 +37,7 @@ class loadModel {
               delete _rightChildNode;
           }
         };
+        void saveNode(QDataStream& fileDBReader,int baseClass=0);
          void printInfo(const char* indent, bool last) {
             char leftS[1024];
             char rightS[1024];
@@ -103,7 +104,7 @@ private:
     
     //load decision tree from the db file
     bool loadTree(bool isFirstIteration=false);
-    bool buildTree(const char* tree,struct _NODE_* root);
+    bool buildTree(QDataStream& fileDBReader, struct _NODE_* root);
     void updateDirection();
     void evalS(float * pnt);
     void evalV(float * pnt);

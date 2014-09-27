@@ -75,7 +75,7 @@ private:
     QDataStream* _fileDB;
     directionFunction::_TREE_TYPE_ _treeType;
     bool init();
-    void buildTree(const char* tree,struct _NODE_* root);
+    void buildTree(QDataStream& fileDBReader, struct _NODE_* root);
     struct _NODE_** _bootedTrees;
     int _nTrees;
     int* _baseClass;        

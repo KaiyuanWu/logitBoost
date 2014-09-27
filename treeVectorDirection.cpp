@@ -308,14 +308,14 @@ void treeVectorDirection::reArrange(NODE* node, int splitPoint) {
         memcpy(_data->_dataIndex[id] + node->_leftPoint, _data->_dataIndexTemp + node->_leftPoint, (node->_rightPoint - node->_leftPoint + 1) * sizeof (int));
     }
 }
-void treeVectorDirection::NODE::saveNode(ofstream& outf){
-    outf<<_iDimension<<" "<<_cut<<" "<<_f<<" "<<_isInternal<<" "<<_class<<" ";
+void treeVectorDirection::NODE::saveNode(QDataStream& fileDBReader){
+    fileDBReader<<_iDimension<<_cut<<_f<<_isInternal<<_class;
     if(_isInternal){
-        outf<<"( ";
-        _leftChildNode->saveNode(outf);
-        outf<<") + ( ";
-        _rightChildNode->saveNode(outf);
-        outf<<" ) ";
+        fileDBReader<<qint8('(');
+        _leftChildNode->saveNode(fileDBReader);
+        fileDBReader<<qint8(')')<<qint8('+')<<qint8('(');
+        _rightChildNode->saveNode(fileDBReader);
+        fileDBReader<<qint8(')');
     }
 }
 
@@ -323,9 +323,9 @@ treeVectorDirection::~treeVectorDirection() {
     delete _indexMask;
     delete  _rootNode;
 }
-void treeVectorDirection::saveTree(ofstream& fileDB){
-    _rootNode->saveNode(fileDB);
-    fileDB<<endl;
+void treeVectorDirection::saveTree(QDataStream& fileDBReader){
+    _rootNode->saveNode(fileDBReader);
+    fileDBReader<<qint8(';');
 }
 bool treeVectorDirection::NODE::printInfo(const char* indent, bool last) {
     bool ret;

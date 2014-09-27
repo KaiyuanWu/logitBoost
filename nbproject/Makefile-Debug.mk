@@ -54,8 +54,8 @@ OBJECTFILES= \
 CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=
-CXXFLAGS=
+CCFLAGS=-I/opt/Qt5.0.1/5.0.1/gcc_64/include -I/opt/Qt5.0.1/5.0.1/gcc_64/include/QtCore -fPIC
+CXXFLAGS=-I/opt/Qt5.0.1/5.0.1/gcc_64/include -I/opt/Qt5.0.1/5.0.1/gcc_64/include/QtCore -fPIC
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -72,7 +72,7 @@ LDLIBSOPTIONS=
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/logitBoost: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/logitBoost ${OBJECTFILES} ${LDLIBSOPTIONS}
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/logitBoost ${OBJECTFILES} ${LDLIBSOPTIONS} -L/opt/Qt5.0.1/5.0.1/gcc_64/lib -lQt5Core -lpthread -fPIC
 
 ${OBJECTDIR}/LossFunction.o: LossFunction.cpp 
 	${MKDIR} -p ${OBJECTDIR}

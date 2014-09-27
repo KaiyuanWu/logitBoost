@@ -7,6 +7,8 @@
 #ifndef TREEVECTORDIRECTION_H
 #define	TREEVECTORDIRECTION_H
 #include <string.h>
+#include <QFile>
+#include <QDataStream>
 #include "directionFunction.h"
 #include "dataManager.h"
 #include "LossFunction.h"
@@ -18,7 +20,7 @@ public:
     virtual ~treeVectorDirection();
     void eval(float * pnt, float * direction);
     void buildDirection();
-    void saveTree(ofstream& fileDB);
+    void saveTree(QDataStream& fileDBReader);
     //Data Manager
     dataManager* _data;
     void printInfo(){
@@ -56,7 +58,7 @@ private:
         treeVectorDirection* _tree;
         void bestNode(NODE*& n,float & gain);
         void splitNode();
-        void saveNode(ofstream& fileDB);
+        void saveNode(QDataStream& fileDBReader);
         bool printInfo(const char* indent,bool last);
         //select best working class
         void selectBestClass();

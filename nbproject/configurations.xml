@@ -53,8 +53,12 @@
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
+        <ccTool>
+          <commandLine>-I/opt/Qt5.0.1/5.0.1/gcc_64/include -I/opt/Qt5.0.1/5.0.1/gcc_64/include/QtCore -fPIC</commandLine>
+        </ccTool>
         <linkerTool>
           <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/logitBoost</output>
+          <commandLine>-L/opt/Qt5.0.1/5.0.1/gcc_64/lib -lQt5Core -lpthread -fPIC</commandLine>
         </linkerTool>
       </compileType>
       <item path="LossFunction.cpp" ex="false" tool="1" flavor2="0">
@@ -120,6 +124,7 @@
         </cTool>
         <ccTool>
           <developmentMode>5</developmentMode>
+          <commandLine>-I/opt/Qt5.0.1/5.0.1/gcc_64/include -I/opt/Qt5.0.1/5.0.1/gcc_64/include/QtCore -fPIC</commandLine>
         </ccTool>
         <fortranCompilerTool>
           <developmentMode>5</developmentMode>
@@ -129,6 +134,7 @@
         </asmTool>
         <linkerTool>
           <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/logitBoost</output>
+          <commandLine>-L/opt/Qt5.0.1/5.0.1/gcc_64/lib -lQt5Core -lpthread -fPIC</commandLine>
         </linkerTool>
       </compileType>
       <item path="LossFunction.cpp" ex="false" tool="1" flavor2="0">
