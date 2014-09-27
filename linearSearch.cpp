@@ -103,11 +103,8 @@ void linearSearch::updateDirection2() {
                         continue;
                     float  d;
                     _df[iClass1 * _nClass + iClass2]->eval(_data->_trainX + iEvent * _nDimension,&d);
-//                    if(iClass1<iClass2)
-                        _F[iClass2] = _data->_trainF[iEvent * _nClass + iClass2] + _shrinkage * d;
-//                    else
-//                        _F[iClass2] = _data->_trainF[iEvent * _nClass + iClass2] - 
-//                                _shrinkage * d;
+                    _F[iClass2] = _data->_trainF[iEvent * _nClass + iClass2] + _shrinkage * d;
+
                     sumF += _F[iClass2];
                     if (_F[iClass2] < maxF)
                         maxF = _F[iClass2];
@@ -225,24 +222,24 @@ void linearSearch::buildDirection(){
             break;
     }
 }
-void linearSearch::saveDirection(ofstream& fileDB){
+void linearSearch::saveDirection(QDataStream& fileDBReader){
     switch(_treeType){
         case directionFunction::_MART_:
         case directionFunction::_LOGITBOOST_:
             for(int id=0;id<_nDirection;id++)
-                _df[id]->saveTree(fileDB);
+                _df[id]->saveTree(fileDBReader);
             break;
         case directionFunction::_ABC_LOGITBOOST_:
-            fileDB<<_baseClass<<" "<<endl;
+            fileDBReader<<_baseClass;
             for(int iClass1=0;iClass1<_data->_nClass;iClass1++){
                 if(iClass1==_baseClass)
                     continue;
-                _df[_baseClass*_data->_nClass+iClass1]->saveTree(fileDB);
+                _df[_baseClass*_data->_nClass+iClass1]->saveTree(fileDBReader);
             }
             break;
         case directionFunction::_AOSO_LOGITBOOST_:
         case directionFunction::_SLOGITBOOST_:
-            _df[0]->saveTree(fileDB);
+            _df[0]->saveTree(fileDBReader);
             break;
         default:
             cout<<"Has not been implemented!"<<endl;

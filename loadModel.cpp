@@ -1,7 +1,7 @@
-/* 
+/*
  * File:   loadModel.cpp
  * Author: kaiwu
- * 
+ *
  * Created on September 14, 2014, 2:24 PM
  */
 
@@ -10,30 +10,36 @@
 
 loadModel::loadModel(const char* oldModelFileName, const char* oldOutputName,
         const char* newModelFileName, const char* newOutputName, dataManager* data):_direction(NULL),_trees(NULL) {
-    _oldModelFile.open(oldModelFileName, ifstream::in);
-    _oldOutput.open(oldOutputName, ifstream::in);
-    _newModelFile.open(newModelFileName, ofstream::out);
-    _newOutput.open(newOutputName, ofstream::out);
-    //check the files
     _fileOK = true;
-    
-    if (!_oldModelFile.good()) {
+    if(!_oldModelFile.open(oldModelFileName, QIODevice::ReadOnly)){
         cout << "Can not open " << oldModelFileName << endl;
         _fileOK = false;
     }
-    if (!_oldOutput.good()) {
+    if(!_oldOutput.open(oldOutputName, QIODevice::ReadOnly)){
         cout << "Can not open " << oldOutputName << endl;
         _fileOK = false;
     }
-    if (!_newModelFile.good()) {
+    if(!_newModelFile.open(newModelFileName, QIODevice::WriteOnly)){
         cout << "Can not open " << newModelFileName << endl;
         _fileOK = false;
     }
-    if (!_newOutput.good()) {
-        cout << "Can not open " << newOutputName << endl;
+    if(!_newOutput.open(newOutputName, QIODevice::WriteOnly)){
+         cout << "Can not open " << newOutputName << endl;
         _fileOK = false;
     }
-
+    //try to close all open files
+    if(!_fileOK){
+        _oldModelFile.close();
+        _oldOutput.close();
+        _newModelFile.close();
+        _newOutput.close();
+    }
+    else{
+        _oldModelFileReader.setDevice(&_oldModelFile);
+        _oldOutputReader.setDevice(&_oldOutput);
+        _newModelFileReader.setDevice(&_newModelFile);
+        _newOutputReader.setDevice(&_newOutput);
+    }
 
     _data = data;
     _availableIterations = 0;
@@ -41,18 +47,10 @@ loadModel::loadModel(const char* oldModelFileName, const char* oldOutputName,
 }
 
 loadModel::~loadModel() {
-    if (_oldModelFile.is_open()) {
-        _oldModelFile.close();
-    }
-    if (_newModelFile.is_open()) {
-        _newModelFile.close();
-    }
-    if (_oldOutput.is_open()) {
-        _oldOutput.close();
-    }
-    if (_newOutput.is_open()) {
-        _newOutput.close();
-    }
+    _oldModelFile.close();
+    _oldOutput.close();
+    _newModelFile.close();
+    _newOutput.close();
     if (_direction) delete[] _direction;
     if (_trees){
         for(int iTree=0;iTree<_nTrees;iTree++)
@@ -164,10 +162,10 @@ void loadModel::rebuild() {
         return;
     //variables list
     char oldTrainAccuracyStr[1024], oldTestAccuracyStr[1024], oldTrainLossStr[1024], oldTestLossStr[1024];
-    
+
     float  oldTrainAccuracy, oldTestAccuracy, oldTrainLoss, oldTestLoss;
     float  newTrainAccuracy, newTrainLoss;
-    
+
     _availableIterations=0;
     _oldOutput>>oldTrainAccuracyStr>>oldTestAccuracyStr>>oldTrainLossStr>>oldTestLossStr;
     oldTrainAccuracy=atof(oldTrainAccuracyStr);
@@ -178,7 +176,7 @@ void loadModel::rebuild() {
         return;
     if(!loadTree(true))
         return;
-    
+
     while(_oldOutput.good()&&_oldModelFile.good()){
         updateDirection();
         for(int iTree=0;iTree<_nTrees;iTree++)
@@ -215,7 +213,7 @@ bool loadModel::loadTree(bool isFirstIteration) {
         _oldModelFile >> _nClass >> _nVariable >> _nMaximumIteration>>_shrinkage;
         //_newModelFile <<k<<" "<<_nClass<<" "<<_nVariable<<" "<<_nMaximumIteration<<" "<<_shrinkage<<endl;
         _direction = new float [_nClass];
-        
+
         switch (_treeType) {
             case directionFunction::_ABC_LOGITBOOST_:
                 _nTrees = _nClass - 1;
@@ -312,6 +310,6 @@ bool loadModel::buildTree(const char* tree, struct _NODE_* root) {
             curNode->_class = iclass;
         }
     }
-    
+
     return ret;
 }

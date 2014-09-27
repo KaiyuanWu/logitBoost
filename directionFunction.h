@@ -9,13 +9,15 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <QFile>
+#include <QDataStream>
 using namespace std;
 class directionFunction {
 public:
     directionFunction();
     virtual void eval(float * pnt, float * direction)= 0;
     virtual void buildDirection()= 0;
-    virtual void saveTree(ofstream& fileDB)= 0;
+    virtual void saveTree(QDataStream& fileDBReader)= 0;
     virtual ~directionFunction();
     enum _TREE_TYPE_{_LOGITBOOST_=0,_ABC_LOGITBOOST_,_MART_,_AOSO_LOGITBOOST_,_SLOGITBOOST_};
     

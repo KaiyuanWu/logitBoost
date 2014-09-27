@@ -10,7 +10,8 @@
 
 #include "dataManager.h"
 #include "directionFunction.h"
-
+#include <QFile>
+#include <QDataStream>
 
 //linearSearch class will encapsulate the minimization
 //it will store all the training parameters
@@ -38,14 +39,14 @@ public:
     dataManager*  _data;
     void updateDirection(int iRound);
     void buildDirection();
-    void saveDirection(ofstream& fileDB);
+    void saveDirection(QDataStream& fileDBReader);
     
     void updateDirection1();
     void updateDirection2();
     
     //variables for the "FAST abcLogitBoost"
     int _g,_G,_baseClass;
-    float  *_F;
+    float* _F;
 };
 
 #endif	/* LINEARSEARCH_H */

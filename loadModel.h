@@ -9,6 +9,8 @@
 #define	LOADMODEL_H
 #include <fstream>
 #include <iostream>
+#include <QFile>
+#include <QDataStream>
 #include "stdlib.h"
 #include "string.h"
 #include "dataManager.h"
@@ -36,7 +38,6 @@ class loadModel {
           }
         };
          void printInfo(const char* indent, bool last) {
-            bool ret;
             char leftS[1024];
             char rightS[1024];
             if (_isInternal) {
@@ -71,10 +72,15 @@ public:
     virtual ~loadModel();
     int _availableIterations;
 private:
-    ifstream _oldModelFile;
-    ifstream _oldOutput;
-    ofstream _newModelFile;
-    ofstream _newOutput;
+    QFile _oldModelFile;
+    QFile _oldOutput;
+    QFile _newModelFile;
+    QFile _newOutput;
+    
+    QDataStream _oldModelFileReader;
+    QDataStream _oldOutputReader;
+    QDataStream _newModelFileReader;
+    QDataStream _newOutputReader;
     
     dataManager* _data;
 

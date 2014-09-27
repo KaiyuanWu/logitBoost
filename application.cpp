@@ -20,6 +20,7 @@ application::application(const char* fileDBName) {
 }
 
 application::application(const application& orig) {
+
 }
 
 application::~application() {
