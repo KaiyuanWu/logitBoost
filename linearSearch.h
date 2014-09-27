@@ -10,22 +10,22 @@
 
 #include "dataManager.h"
 #include "directionFunction.h"
-#include <QDataStream>
+
 
 //linearSearch class will encapsulate the minimization
 //it will store all the training parameters
 //it will organize the train iteration
 class linearSearch {
 public:
-    linearSearch(dataManager*  data,int nLeaves,float  shrinkage,int minimumNodeSize,directionFunction::_TREE_TYPE_ treeType);
+    linearSearch(dataManager*  data,int nLeaves,double shrinkage,int minimumNodeSize,directionFunction::_TREE_TYPE_ treeType);
     virtual ~linearSearch();
     
-    float  minimization(int iRound=0);
+    double minimization(int iRound=0);
     //parameter for training
     directionFunction::_TREE_TYPE_ _treeType;
     
     int _nLeaves;
-    float  _shrinkage;
+    double _shrinkage;
     int _minimumNodeSize;
     
     int _nClass;
@@ -38,14 +38,14 @@ public:
     dataManager*  _data;
     void updateDirection(int iRound);
     void buildDirection();
-    void saveDirection(QDataStream& fileDB);
+    void saveDirection(ofstream& fileDB);
     
     void updateDirection1();
     void updateDirection2();
     
     //variables for the "FAST abcLogitBoost"
     int _g,_G,_baseClass;
-    float  *_F;
+    double *_F;
 };
 
 #endif	/* LINEARSEARCH_H */

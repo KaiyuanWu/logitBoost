@@ -13,17 +13,17 @@ using namespace std;
 class directionFunction {
 public:
     directionFunction();
-    virtual void eval(float * pnt, float * direction)= 0;
+    virtual void eval(double* pnt, double* direction)= 0;
     virtual void buildDirection()= 0;
     virtual void saveTree(ofstream& fileDB)= 0;
     virtual ~directionFunction();
-    enum _TREE_TYPE_{_LOGITBOOST_=0,    _ABC_LOGITBOOST_,_MART_,_AOSO_LOGITBOOST_,_SLOGITBOOST_};
+    enum _TREE_TYPE_{_LOGITBOOST_=0,_ABC_LOGITBOOST_,_MART_,_AOSO_LOGITBOOST_,_SLOGITBOOST_};
     
 public:
     int _nDimension;
     int _nClass;
     int _nEvents;
-    float  _zMax;
+    double _zMax;
     int _round;
     //bagging probability
     int _nLeaves;

@@ -11,7 +11,7 @@
 #include <map>
 
 train::train(char* fTrain, char* fTest, char* fOut, int nTrainEvents,int nTestEvents,int nClass,int nVariables,
-            directionFunction::_TREE_TYPE_ treeType, float  shrinkage,int nLeaves,int minimumNodeSize,int nMaxIteration){
+            directionFunction::_TREE_TYPE_ treeType, double shrinkage,int nLeaves,int minimumNodeSize,int nMaxIteration){
     //dataset parameters
     _fTrain=fTrain;
     _fTest=fTest;
@@ -30,7 +30,7 @@ train::train(char* fTrain, char* fTest, char* fOut, int nTrainEvents,int nTestEv
     _nMaxIteration=nMaxIteration;
 }
 train::train(char* fTrain, 
-            directionFunction::_TREE_TYPE_ treeType, float  shrinkage,int nLeaves,int minimumNodeSize,int nMaxIteration){
+            directionFunction::_TREE_TYPE_ treeType, double shrinkage,int nLeaves,int minimumNodeSize,int nMaxIteration){
     _fTrain=fTrain;
     char paramPrefix[1024];
     switch(treeType){
@@ -71,7 +71,7 @@ train::train(char* fTrain,
 }
 
 train::train(char* fTrain, char* fOldOut,
-            directionFunction::_TREE_TYPE_ treeType, float  shrinkage,int nLeaves,int minimumNodeSize,int nMaxIteration){
+            directionFunction::_TREE_TYPE_ treeType, double shrinkage,int nLeaves,int minimumNodeSize,int nMaxIteration){
     _fTrain=fTrain;
     char paramPrefix[1024];
     switch(treeType){
@@ -119,18 +119,18 @@ train::train(char* fTrain, char* fOldOut,
 }
 
 void train::init(){
-    float * X=new float [_nVariables];
+    double* X=new double[_nVariables];
     int     label;
     
-    _accuracyTrainArray=new float [_nMaxIteration];
-    _accuracyTestArray=new float [_nMaxIteration];
-    _lossTestArray=new float [_nMaxIteration];
-    _lossTrainArray=new float [_nMaxIteration];
+    _accuracyTrainArray=new double[_nMaxIteration];
+    _accuracyTestArray=new double[_nMaxIteration];
+    _lossTestArray=new double[_nMaxIteration];
+    _lossTrainArray=new double[_nMaxIteration];
     
-    memset(_accuracyTrainArray,0,sizeof(float )*_nMaxIteration);
-    memset(_accuracyTestArray,0,sizeof(float )*_nMaxIteration);
-    memset(_lossTestArray,0,sizeof(float )*_nMaxIteration);
-    memset(_lossTrainArray,0,sizeof(float )*_nMaxIteration);
+    memset(_accuracyTrainArray,0,sizeof(double)*_nMaxIteration);
+    memset(_accuracyTestArray,0,sizeof(double)*_nMaxIteration);
+    memset(_lossTestArray,0,sizeof(double)*_nMaxIteration);
+    memset(_lossTrainArray,0,sizeof(double)*_nMaxIteration);
     
     _data = new dataManager(_nVariables, _nClass,_treeType,_nTrainEvents, _nTestEvents);
     ifstream infTrain(_fTrain.c_str(),ifstream::in);
@@ -205,7 +205,7 @@ void train::getDataInformation(char* fileInName,int& nEvent,int& nClass,int& nVa
     nVariable=0;
     stringstream ss;
     ss.str(line);
-    float  t;int l;
+    double t;int l;
     ss>>t;
     while(ss.good()){
         nVariable++;

@@ -22,37 +22,37 @@ class dataManager {
 public:
     dataManager(int nDimension,int nClass, directionFunction::_TREE_TYPE_ treeType, int nTrainEvent,int nTestEvent=0);
     //adding training event, after adding training events, and initialize the logist p/F
-    void   addEvent(float * event,int iclass)   ;
+    void   addEvent(double* event,int iclass)   ;
     //adding validating event, after adding validating events, and initialize the logist p/F
-    void   addValidateEvent(float * event,int iclass)   ;
+    void   addValidateEvent(double* event,int iclass)   ;
     //do some check after finishing adding events
     void   finishAddingEvent();
     
     //allocate data space
     void   allocateDataSpace() ;
     //increment the logist p/F
-    void   increment(float  shrinkage,int iRound=0) ;
+    void   increment(double shrinkage,int iRound=0) ;
     virtual ~dataManager() ;
 
     //space for training data
     //training features
-    float * _trainX;
+    double* _trainX;
     //training labels
     int* _trainClass;
     //discending directions of training samples
-    float * _trainDescendingDirection;    
+    double* _trainDescendingDirection;    
     //classifiers values of the training samples
-    float * _trainF;
+    double* _trainF;
     //gradient and hessian values of the training samples
     int _nG;
-    float * _lossGradient;
-    float * _lossHessian;
+    double* _lossGradient;
+    double* _lossHessian;
     //loss value of each sample
-    float * _loss;
+    double* _loss;
     //total training loss
-    float   _trainLoss;
+    double  _trainLoss;
     int  _trainCurrentEvent;
-    float    _trainAccuracy             ;
+    double   _trainAccuracy             ;
     int      _trainCorrectClassification;
     //orders information of the training samples
     //original index of the sorted array
@@ -64,23 +64,23 @@ public:
     //reverse index table;
     int** _dataReverseIndex0;
     //temporary array
-    float * _projectedX;
+    double* _projectedX;
     int* _dataIndexTemp;
 
     
     //space for testing data
     //features of test samples
-    float * _testX;
+    double* _testX;
     //labels of test samples
     int* _testClass;
     //discending directions of test samples
-    float * _testDescendingDirection;   
+    double* _testDescendingDirection;   
     //classifier values of test samples
-    float * _testF;
+    double* _testF;
     
     int _testCurrentEvent;
-    float    _testAccuracy;
-    float    _testLoss;
+    double   _testAccuracy;
+    double   _testLoss;
     int      _testCorrectClassification;
 
     int _nClass;
