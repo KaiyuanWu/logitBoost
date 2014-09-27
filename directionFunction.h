@@ -13,7 +13,7 @@ using namespace std;
 class directionFunction {
 public:
     directionFunction();
-    virtual void eval(double* pnt, double* direction)= 0;
+    virtual void eval(float * pnt, float * direction)= 0;
     virtual void buildDirection()= 0;
     virtual void saveTree(ofstream& fileDB)= 0;
     virtual ~directionFunction();
@@ -23,7 +23,7 @@ public:
     int _nDimension;
     int _nClass;
     int _nEvents;
-    double _zMax;
+    float  _zMax;
     int _round;
     //bagging probability
     int _nLeaves;

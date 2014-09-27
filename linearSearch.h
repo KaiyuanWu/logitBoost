@@ -17,15 +17,15 @@
 //it will organize the train iteration
 class linearSearch {
 public:
-    linearSearch(dataManager*  data,int nLeaves,double shrinkage,int minimumNodeSize,directionFunction::_TREE_TYPE_ treeType);
+    linearSearch(dataManager*  data,int nLeaves,float  shrinkage,int minimumNodeSize,directionFunction::_TREE_TYPE_ treeType);
     virtual ~linearSearch();
     
-    double minimization(int iRound=0);
+    float  minimization(int iRound=0);
     //parameter for training
     directionFunction::_TREE_TYPE_ _treeType;
     
     int _nLeaves;
-    double _shrinkage;
+    float  _shrinkage;
     int _minimumNodeSize;
     
     int _nClass;
@@ -45,7 +45,7 @@ public:
     
     //variables for the "FAST abcLogitBoost"
     int _g,_G,_baseClass;
-    double *_F;
+    float  *_F;
 };
 
 #endif	/* LINEARSEARCH_H */

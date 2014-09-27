@@ -10,7 +10,7 @@
 #include "treeScalarDirection.h"
 
 
-linearSearch::linearSearch(dataManager*  data,int nLeaves,double shrinkage,int minimumNodeSize,directionFunction::_TREE_TYPE_ treeType){
+linearSearch::linearSearch(dataManager*  data,int nLeaves,float  shrinkage,int minimumNodeSize,directionFunction::_TREE_TYPE_ treeType){
     _data=data;
     _nClass=_data->_nClass;
     _nDimension=_data->_nDimension;
@@ -51,7 +51,7 @@ linearSearch::linearSearch(dataManager*  data,int nLeaves,double shrinkage,int m
     _g=20;
     _G=20;
     _baseClass=0;
-    _F=new double[_nClass];
+    _F=new float [_nClass];
 }
 linearSearch::~linearSearch() {
     for(int id=0;id<_nDirection;id++)
@@ -59,8 +59,8 @@ linearSearch::~linearSearch() {
     delete[] _df;
     delete _F;
 }
-double linearSearch::minimization(int iRound){
-    double ret=0.;
+float  linearSearch::minimization(int iRound){
+    float  ret=0.;
     buildDirection();
     updateDirection(iRound);
     _data->increment(_shrinkage,  iRound);
@@ -70,14 +70,14 @@ double linearSearch::minimization(int iRound){
 void linearSearch::updateDirection1() {
     for (int iEvent = 0; iEvent < _nTrainEvents; iEvent++) {
         for (int iClass = 0; iClass < _nClass; iClass++) {
-            double d ;
+            float  d ;
             _df[iClass]->eval(_data->_trainX + iEvent * _nDimension,&d);
             _data->_trainDescendingDirection[iEvent * _nClass + iClass] = d;
         }
     }
     for (int iEvent = 0; iEvent < _nTestEvents; iEvent++) {
         for (int iClass = 0; iClass < _nClass; iClass++) {
-            double d;
+            float  d;
             _df[iClass]->eval(_data->_testX + iEvent * _nDimension,&d);
             _data->_testDescendingDirection[iEvent * _nClass + iClass] = d;
         }
@@ -85,23 +85,23 @@ void linearSearch::updateDirection1() {
 }
 
 void linearSearch::updateDirection2() {
-    double maxL = -1;
+    float  maxL = -1;
     //reset baseClass and search the best base class
     if (_g == _G) {
         _baseClass = 0;
-        double maxF = -1.e300, sumF, sumExpF, py;
+        float  maxF = -1.e300, sumF, sumExpF, py;
         //search the best base classifier
         //loop of base classifier
         for (int iClass1 = 0; iClass1 < _nClass; iClass1++) {
-            double L = 0.;
+            float  L = 0.;
             for (int iEvent = 0; iEvent < _nTrainEvents; iEvent++) {
                 maxF = -1.e300;
-                memset(_F, 0, sizeof (double)*_nClass);
+                memset(_F, 0, sizeof (float )*_nClass);
                 sumF = 0.;
                 for (int iClass2 = 0; iClass2 < _nClass; iClass2++) {
                     if (iClass1 == iClass2)
                         continue;
-                    double d;
+                    float  d;
                     _df[iClass1 * _nClass + iClass2]->eval(_data->_trainX + iEvent * _nDimension,&d);
 //                    if(iClass1<iClass2)
                         _F[iClass2] = _data->_trainF[iEvent * _nClass + iClass2] + _shrinkage * d;
@@ -132,11 +132,11 @@ void linearSearch::updateDirection2() {
     }
     //cout<<"Base Class= "<<_baseClass<<endl;
     for (int iEvent = 0; iEvent < _nTrainEvents; iEvent++) {
-        double sumD = 0.;
+        float  sumD = 0.;
         for (int iClass = 0; iClass < _nClass; iClass++) {
             if (iClass == _baseClass)
                 continue;
-            double d;
+            float  d;
             _df[_baseClass * _nClass + iClass]->eval(_data->_trainX + iEvent * _nDimension,&d);
             _data->_trainDescendingDirection[iEvent * _nClass + iClass] = -d;
             sumD += d;
@@ -144,11 +144,11 @@ void linearSearch::updateDirection2() {
         _data->_trainDescendingDirection[iEvent * _nClass + _baseClass] = sumD;
     }
     for (int iEvent = 0; iEvent < _nTestEvents; iEvent++) {
-        double sumD = 0.;
+        float  sumD = 0.;
         for (int iClass = 0; iClass < _nClass; iClass++) {
             if (iClass == _baseClass)
                 continue;
-            double d;
+            float  d;
             _df[_baseClass * _nClass + iClass]->eval(_data->_testX + iEvent * _nDimension,&d);
 //            if(iClass<_baseClass)
 //                d*= -1.;

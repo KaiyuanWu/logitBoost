@@ -84,8 +84,8 @@ private:
     int _nClass;
     int _nVariable;
     int _nMaximumIteration;
-    double _shrinkage;
-    double *_direction;
+    float  _shrinkage;
+    float  *_direction;
     //for abc-LogitBoost
     int _baseClass;
     int  _nTrees;
@@ -99,8 +99,8 @@ private:
     bool loadTree(bool isFirstIteration=false);
     bool buildTree(const char* tree,struct _NODE_* root);
     void updateDirection();
-    void evalS(double* pnt);
-    void evalV(double* pnt);
+    void evalS(float * pnt);
+    void evalV(float * pnt);
     
 };
 

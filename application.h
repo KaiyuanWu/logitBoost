@@ -11,6 +11,8 @@
 #include<iostream>
 #include<sstream>
 #include<string>
+#include<QFile>
+#include<QDataStream>
 #include"directionFunction.h"
 
 using namespace std;
@@ -53,24 +55,24 @@ public:
                     printf("%s|-f= %f\n", rightS, _f);
                 }
             }
-        };
+        }
     };
 public:
     application(const char* fileDBName);
     application(const application& orig);
-    void eval(double* pnt, double* f,int nIteration=0);
-    void eval(double* pnt,int iIteration);
-    double* _direction;
-    void evalV(double* pnt,int iIteration);
-    void evalS(double* pnt,int iIteration);
+    void eval(float * pnt, float * f,int nIteration=0);
+    void eval(float * pnt,int iIteration);
+    float* _direction;
+    void evalV(float * pnt,int iIteration);
+    void evalS(float * pnt,int iIteration);
     virtual ~application();
     int _nClass;
     int _nVariable;
     int _nMaximumIteration;
-    double _shrinkage;
+    float  _shrinkage;
 private:
     string _fileDBName;
-    ifstream* _fileDB;
+    QDataStream* _fileDB;
     directionFunction::_TREE_TYPE_ _treeType;
     bool init();
     void buildTree(const char* tree,struct _NODE_* root);

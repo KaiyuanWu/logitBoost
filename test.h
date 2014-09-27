@@ -23,8 +23,8 @@ public:
 private:
     int _iTask;
     int _iDataset;
-    int getBestAccuracy(string& modelFile,string& dataFile, double& bestAccuracy);
-    double getBestAccuracy(string& modelFile,string& dataFile,int iIteration);
+    int getBestAccuracy(string& modelFile,string& dataFile, float & bestAccuracy);
+    float  getBestAccuracy(string& modelFile,string& dataFile,int iIteration);
     int getNEvents(string& file);
 };
 

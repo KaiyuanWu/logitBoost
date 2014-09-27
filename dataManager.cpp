@@ -26,10 +26,10 @@ dataManager::dataManager(int nDimension,int nClass, directionFunction::_TREE_TYP
 }
 void dataManager::allocateDataSpace() {
     if (_nTrainEvents > 0) {
-        _trainDescendingDirection=new double[_nTrainEvents*_nClass];
-        _trainX=new double[_nTrainEvents*_nDimension];
-        _trainF=new double[_nTrainEvents*_nClass];
-        _loss=new double[_nTrainEvents];
+        _trainDescendingDirection=new float [_nTrainEvents*_nClass];
+        _trainX=new float [_nTrainEvents*_nDimension];
+        _trainF=new float [_nTrainEvents*_nClass];
+        _loss=new float [_nTrainEvents];
         _trainClass=new int[_nTrainEvents];
         switch(_treeType){
             case directionFunction::_LOGITBOOST_:
@@ -43,10 +43,10 @@ void dataManager::allocateDataSpace() {
                 break;
                 
         }
-        _lossGradient=new double[_nTrainEvents*_nG];
-        _lossHessian=new double[_nTrainEvents*_nG];
+        _lossGradient=new float [_nTrainEvents*_nG];
+        _lossHessian=new float [_nTrainEvents*_nG];
 
-        _projectedX = new double[_nTrainEvents];
+        _projectedX = new float [_nTrainEvents];
         _dataIndex = new int*[_nDimension];
         _dataIndex0 = new int*[_nDimension];
         _dataReverseIndex = new int*[_nDimension];
@@ -62,9 +62,9 @@ void dataManager::allocateDataSpace() {
     }
     
     if (_nTestEvents > 0) {
-        _testDescendingDirection=new double[_nTestEvents*_nClass];
-        _testX=new double[_nTestEvents*_nDimension];
-        _testF=new double[_nTestEvents*_nClass];
+        _testDescendingDirection=new float [_nTestEvents*_nClass];
+        _testX=new float [_nTestEvents*_nDimension];
+        _testF=new float [_nTestEvents*_nClass];
         _testClass=new int[_nTestEvents];
     }
     
@@ -93,7 +93,7 @@ void dataManager::allocateDataSpace() {
     _testCurrentEvent=0;
 }
 
-void dataManager::addEvent(double* event,int iclass){
+void dataManager::addEvent(float * event,int iclass){
     for(int iDimension=0;iDimension<_nDimension;iDimension++)
         _trainX[_trainCurrentEvent*_nDimension+iDimension]=event[iDimension];
     for(int iClass=0;iClass<_nClass;iClass++)
@@ -101,7 +101,7 @@ void dataManager::addEvent(double* event,int iclass){
     _trainClass[_trainCurrentEvent]=iclass;
     _trainCurrentEvent++;
 }
-void dataManager::addValidateEvent(double* event,int iclass){
+void dataManager::addValidateEvent(float * event,int iclass){
     for(int iDimension=0;iDimension<_nDimension;iDimension++)
         _testX[_testCurrentEvent*_nDimension+iDimension]=event[iDimension];
     for(int iClass=0;iClass<_nClass;iClass++)
@@ -178,7 +178,7 @@ void dataManager::finishAddingEvent(){
 //        cout << endl;
 //    }
     
-    double g, h;
+    float  g, h;
     _trainLoss=0.;
     _testLoss=0.;
     for (int iEvent = 0; iEvent < _nTrainEvents; iEvent++) {
@@ -194,7 +194,7 @@ void dataManager::finishAddingEvent(){
         _testLoss+=_lossFunction->loss(_testF + iEvent*_nClass, _testClass[iEvent], g, h,1);
     
 }
-void  dataManager::increment(double shrinkage,int iRound) {
+void  dataManager::increment(float  shrinkage,int iRound) {
 //    //test the direction
 //    for(int ix=0;ix<_nTrainEvents;ix++){
 //        for(int ic=0;ic<_nClass;ic++)
@@ -215,7 +215,7 @@ void  dataManager::increment(double shrinkage,int iRound) {
     _trainLoss=0.;
     _testLoss=0.;
     for(int iEvent=0;iEvent<_nTrainEvents;iEvent++){
-       double maxF=-1.e300;
+       float  maxF=-1.e300;
        int maxI=-1;
        for(int iClass=0;iClass<_nClass;iClass++){
            _trainF[iEvent*_nClass+iClass]+=shrinkage*_trainDescendingDirection[iEvent*_nClass+iClass];
@@ -235,7 +235,7 @@ void  dataManager::increment(double shrinkage,int iRound) {
             }
         }
        //update the gradients and hessian informations
-        double g, h;
+        float  g, h;
         for (int iG = 0; iG < _nG; iG++) {
             _loss[iEvent] = _lossFunction->loss(_trainF + iEvent*_nClass, _trainClass[iEvent],  g, h,iG);
             _lossGradient[iEvent * _nG + iG] = g;
@@ -246,8 +246,8 @@ void  dataManager::increment(double shrinkage,int iRound) {
     }
     //_trainLoss/=_nTrainEvents;
     for (int iEvent = 0; iEvent < _nTestEvents; iEvent++) {
-        double maxF = -1.e300;
-        double maxI = -1;
+        float  maxF = -1.e300;
+        float  maxI = -1;
         for (int iClass = 0; iClass < _nClass; iClass++){
             _testF[iEvent * _nClass + iClass] += shrinkage * _testDescendingDirection[iEvent * _nClass + iClass];
             if(maxF<_testF[iEvent * _nClass + iClass]){
@@ -265,26 +265,26 @@ void  dataManager::increment(double shrinkage,int iRound) {
                     _wrongNewTest[iClass]++;
             }
         }
-        double g,h;
+        float  g,h;
         _testLoss+=_lossFunction->loss(_testF + iEvent*_nClass, _testClass[iEvent], g, h,0);
         //_testLoss+=_lossFunction->_costMatrix[_testClass[iEvent]*_nClass+_maxI];
     }
     //_testLoss/=_nTestEvents;
     if(_nTrainEvents>0){
-        _trainAccuracy=double(_trainCorrectClassification)/_nTrainEvents;
+        _trainAccuracy=float (_trainCorrectClassification)/_nTrainEvents;
         _trainLoss/=_nTrainEvents;
     }
     else
         _trainAccuracy=0.;
     if(_nTestEvents>0){
-        _testAccuracy=double(_testCorrectClassification)/_nTestEvents;
+        _testAccuracy=float (_testCorrectClassification)/_nTestEvents;
         _trainLoss/=_nTrainEvents;
     }
     else
         _nTestEvents=0.;
     if (iRound % OUTPUT_INTERVAL == OUTPUT_INTERVAL-1) {
-        double totalOld=0.;
-        double totalNew=0.;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+        float  totalOld=0.;
+        float  totalNew=0.;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
         for(int iClass = 0; iClass < _nClass; iClass++){
             totalOld+=_correctOld[iClass];
             totalNew+=_correctNew[iClass];
@@ -341,7 +341,7 @@ void dataManager::sort(int low, int high, int iDimension, bool atInit) {
 void dataManager::swap(int i, int j, int iDimension, bool atInit) {
     if (i == j)
         return;
-    double temp = _projectedX[i];
+    float  temp = _projectedX[i];
     _projectedX[i] = _projectedX[j];
     _projectedX[j] = temp;
     if (atInit) {

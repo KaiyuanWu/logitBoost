@@ -35,7 +35,7 @@ void test1(int jobID, int fold, int nLeaves, int minimumNodeSize, int nMaxIterat
     sprintf(fOut, "%s/output/logitBoost_Fold%dDataset%snLeaves%dminimumNodeSize%dMaxiteration%d.dat", prefix, fold, datasetNames[jobID], nLeaves, minimumNodeSize, nMaxIteration);
 
     directionFunction::_TREE_TYPE_ treeType = directionFunction::_ABC_LOGITBOOST_;
-    double shrinkage = 0.1;
+    float  shrinkage = 0.1;
 
     int nTrainEventsA[] = {
         16000, 16000, 16000, 16000, 16000,
@@ -74,9 +74,9 @@ void testApplication(int argc, char** argv) {
     //read in test data
     int nVariable = app._nVariable;
     int nClass = app._nClass;
-    double* x = new double[nVariable];
+    float * x = new float [nVariable];
     int l;
-    double* f = new double[nClass];
+    float * f = new float [nClass];
     ifstream infs(data, ifstream::in);
     if (!infs.good()) {
         cout << "Can not open " << data << endl;

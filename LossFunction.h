@@ -16,18 +16,18 @@ class LossFunction {
 public:
     LossFunction(directionFunction::_TREE_TYPE_ treeType,int nDimension,int nClass);
     virtual ~LossFunction();
-    double loss(double*f,int y,double& gradient, double& hessian, int c1);
+    float  loss(float *f,int y,float & gradient, float & hessian, int c1);
 private:
     directionFunction::_TREE_TYPE_ _treeType;
     int _nDimension;
     int _nClass;
     
-    double lossSNewton(double* f, int y, int c, double& gradient, double& hessian);
-    double lossNewton(double* f, int y, int c, double& gradient, double& hessian);
-    double lossabcLogitNewton(double* f, int y, int c1, int c2, double& gradient, double& hessian);
+    float  lossSNewton(float * f, int y, int c, float & gradient, float & hessian);
+    float  lossNewton(float * f, int y, int c, float & gradient, float & hessian);
+    float  lossabcLogitNewton(float * f, int y, int c1, int c2, float & gradient, float & hessian);
     
 private:
-    double _MIN_HESSIAN_;
+    float  _MIN_HESSIAN_;
 };
 
 #endif	/* LOSSFUNCTION_H */

@@ -12,7 +12,7 @@
 #include <map>
 
 crossValidate::crossValidate(int jobID,int nFold, directionFunction::_TREE_TYPE_ treeType, 
-        double shrinkage,int nLeaves,int minimumNodeSize,int nMaxIteration){
+        float  shrinkage,int nLeaves,int minimumNodeSize,int nMaxIteration){
     _nFold=nFold;
     _jobID=jobID;
     _shrinkage=shrinkage;
@@ -103,20 +103,20 @@ void crossValidate::init(char* prefix, char* outputPrefix){
     _nClass=nClass[_jobID];
     cout<<"Dataset Name: "<<fileNames[_jobID]<<", nEvents= "<<_nEvents<<", nVariables= "<<_nVariables<<", nClass= "<<_nClass<<endl;
     
-    _dataX=new double[_nEvents*_nVariables];
+    _dataX=new float [_nEvents*_nVariables];
     _classX=new int[_nEvents];
     _foldIndex=new int[_nEvents];
     _numberPerFold=new int[_nFold];
-    _accuracyTrainArray=new double[_nMaxIteration];
-    _accuracyTestArray=new double[_nMaxIteration];
-    _lossTestArray=new double[_nMaxIteration];
-    _lossTrainArray=new double[_nMaxIteration];
+    _accuracyTrainArray=new float [_nMaxIteration];
+    _accuracyTestArray=new float [_nMaxIteration];
+    _lossTestArray=new float [_nMaxIteration];
+    _lossTrainArray=new float [_nMaxIteration];
     
     memset(_numberPerFold,0,sizeof(int)*_nFold);
-    memset(_accuracyTrainArray,0,sizeof(double)*_nMaxIteration);
-    memset(_accuracyTestArray,0,sizeof(double)*_nMaxIteration);
-    memset(_lossTestArray,0,sizeof(double)*_nMaxIteration);
-    memset(_lossTrainArray,0,sizeof(double)*_nMaxIteration);
+    memset(_accuracyTrainArray,0,sizeof(float )*_nMaxIteration);
+    memset(_accuracyTestArray,0,sizeof(float )*_nMaxIteration);
+    memset(_lossTestArray,0,sizeof(float )*_nMaxIteration);
+    memset(_lossTrainArray,0,sizeof(float )*_nMaxIteration);
     
     ifstream infs(_fileInName.c_str(),ifstream::in);
     _outf=new ofstream(_fileOutName.c_str(),ofstream::out);
@@ -232,7 +232,7 @@ void crossValidate::getDataInformation(char* fileInName,int& nEvent,int& nClass,
     nVariable=0;
     stringstream ss;
     ss.str(line);
-    double t;int l;
+    float  t;int l;
     ss>>t;
     while(ss.good()){
         nVariable++;

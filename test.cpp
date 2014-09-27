@@ -19,7 +19,7 @@ test::test(const test& orig) {
 
 test::~test() {
 }
-int test::getBestAccuracy(string& modelFile,string& dataFile, double& bestAccuracy){
+int test::getBestAccuracy(string& modelFile,string& dataFile, float & bestAccuracy){
     int bestIteration=-1;
     bestAccuracy=-1;
     application app(modelFile.c_str());
@@ -27,11 +27,11 @@ int test::getBestAccuracy(string& modelFile,string& dataFile, double& bestAccura
     int nClass=app._nClass;
     int nMaxIteration=app._nMaximumIteration;
     int nEvents=getNEvents(dataFile);
-    double* x=new double[nVariable*nEvents];
+    float * x=new float [nVariable*nEvents];
     int* l=new int[nEvents];
-    double* f=new double[nClass*nEvents];
+    float * f=new float [nClass*nEvents];
     //reset f
-    memset(f,0,sizeof(double)*nClass*nEvents);
+    memset(f,0,sizeof(float )*nClass*nEvents);
     //read in data
     ifstream infile(dataFile.c_str(),ifstream::in);
     for(int iEvent=0;iEvent<nEvents;iEvent++){
@@ -40,8 +40,8 @@ int test::getBestAccuracy(string& modelFile,string& dataFile, double& bestAccura
         infile>>l[iEvent];
     }
     for(int iIteration=0;iIteration<nMaxIteration;iIteration++){
-        double accuracy=0.;
-        double maxF=-1.e300;
+        float  accuracy=0.;
+        float  maxF=-1.e300;
         int maxI=0;
         for(int iEvent=0;iEvent<nEvents;iEvent++){
             maxF=-1.e300;
@@ -79,7 +79,7 @@ int test::getBestAccuracy(string& modelFile,string& dataFile, double& bestAccura
     delete[] f;
     return bestIteration;
 }
-double test::getBestAccuracy(string& modelFile,string& dataFile,int iIteration){
+float  test::getBestAccuracy(string& modelFile,string& dataFile,int iIteration){
     application app(modelFile.c_str());
     int nVariable=app._nVariable;
     int nClass=app._nClass;
@@ -87,11 +87,11 @@ double test::getBestAccuracy(string& modelFile,string& dataFile,int iIteration){
     if(iIteration>=nMaxIteration)
         iIteration=nMaxIteration-1;
     int nEvents=getNEvents(dataFile);
-    double* x=new double[nVariable*nEvents];
+    float * x=new float [nVariable*nEvents];
     int* l=new int[nEvents];
-    double* f=new double[nClass*nEvents];
+    float * f=new float [nClass*nEvents];
     //reset f
-    memset(f,0,sizeof(double)*nClass*nEvents);
+    memset(f,0,sizeof(float )*nClass*nEvents);
     //read in data
     ifstream infile(dataFile.c_str(),ifstream::in);
     for(int iEvent=0;iEvent<nEvents;iEvent++){
@@ -100,8 +100,8 @@ double test::getBestAccuracy(string& modelFile,string& dataFile,int iIteration){
         infile>>l[iEvent];
     }
 
-    double accuracy = 0.;
-    double maxF = -1.e300;
+    float  accuracy = 0.;
+    float  maxF = -1.e300;
     int maxI = 0;
     for (int iEvent = 0; iEvent < nEvents; iEvent++) {
         maxF = -1.e300;
@@ -157,10 +157,10 @@ void test::start() {
         exit(-1);
     }
     
-    double* bestValAccuracy = new double[nL * nExes];
+    float * bestValAccuracy = new float [nL * nExes];
     int* bestValIteration = new int[nL * nExes];
     int* bestValLeaves = new int[nExes];
-    double* testAccuracy = new double[nExes];
+    float * testAccuracy = new float [nExes];
     
     for(int iExe=0;iExe<nExes;iExe++){
         for(int iL=0;iL<nL;iL++){
@@ -176,7 +176,7 @@ void test::start() {
         }
     }
     for(int iExe=0;iExe<nExes;iExe++){
-        double bestA=-1;
+        float  bestA=-1;
         for(int iL=0;iL<nL;iL++){
             if(bestValAccuracy[iExe*nL+iL]>bestA){
                 bestA=bestValAccuracy[iExe*nL+iL];

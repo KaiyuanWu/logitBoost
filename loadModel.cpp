@@ -86,7 +86,7 @@ void loadModel::updateDirection() {
     }
     _data->increment(_shrinkage,_availableIterations);
 }
-void loadModel::evalS(double* pnt){
+void loadModel::evalS(float * pnt){
     for (int iClass = 0; iClass < _nClass; iClass++)
         _direction[iClass] = 0.;
     for(int iTree = 0; iTree < _nTrees; iTree++) {
@@ -116,7 +116,7 @@ void loadModel::evalS(double* pnt){
         }
     }
 }
-void loadModel::evalV(double* pnt) {
+void loadModel::evalV(float * pnt) {
     for (int iClass = 0; iClass < _nClass; iClass++)
         _direction[iClass] = 0.;
     struct _NODE_ *n = _trees[0];
@@ -128,7 +128,7 @@ void loadModel::evalV(double* pnt) {
             n = n->_rightChildNode;
         }
     }
-    double f;
+    float  f;
     int workingClass, workingClass1, workingClass2;
     f = n->_f;
     workingClass = n->_class;
@@ -165,8 +165,8 @@ void loadModel::rebuild() {
     //variables list
     char oldTrainAccuracyStr[1024], oldTestAccuracyStr[1024], oldTrainLossStr[1024], oldTestLossStr[1024];
     
-    double oldTrainAccuracy, oldTestAccuracy, oldTrainLoss, oldTestLoss;
-    double newTrainAccuracy, newTrainLoss;
+    float  oldTrainAccuracy, oldTestAccuracy, oldTrainLoss, oldTestLoss;
+    float  newTrainAccuracy, newTrainLoss;
     
     _availableIterations=0;
     _oldOutput>>oldTrainAccuracyStr>>oldTestAccuracyStr>>oldTrainLossStr>>oldTestLossStr;
@@ -214,7 +214,7 @@ bool loadModel::loadTree(bool isFirstIteration) {
         _treeType = directionFunction::_TREE_TYPE_(k);
         _oldModelFile >> _nClass >> _nVariable >> _nMaximumIteration>>_shrinkage;
         //_newModelFile <<k<<" "<<_nClass<<" "<<_nVariable<<" "<<_nMaximumIteration<<" "<<_shrinkage<<endl;
-        _direction = new double[_nClass];
+        _direction = new float [_nClass];
         
         switch (_treeType) {
             case directionFunction::_ABC_LOGITBOOST_:

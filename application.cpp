@@ -5,6 +5,8 @@
  * Created on August 4, 2014, 7:42 PM
  */
 
+#include <Qt/qdatastream.h>
+
 #include "application.h"
 #include "stdlib.h"
 
@@ -29,7 +31,7 @@ application::~application() {
     if(_treeType==directionFunction::_ABC_LOGITBOOST_)
         delete[] _baseClass;
 }
-void application::eval(double* pnt,int iIteration){
+void application::eval(float * pnt,int iIteration){
     switch(_treeType) {
         case directionFunction::_ABC_LOGITBOOST_:
             evalS(pnt, iIteration);
@@ -49,7 +51,7 @@ void application::eval(double* pnt,int iIteration){
             break;
     }
 }
-void application::eval(double* pnt, double* f,int nIteration){
+void application::eval(float * pnt, float * f,int nIteration){
     for(int iClass=0;iClass<_nClass;iClass++)
         f[iClass]=0.;
     if(nIteration<=0||nIteration>=_nMaximumIteration)
@@ -84,14 +86,14 @@ void application::eval(double* pnt, double* f,int nIteration){
             break;
     }
 }
-void application::evalS(double* pnt,int iIteration){
+void application::evalS(float * pnt,int iIteration){
     for (int iClass = 0; iClass < _nClass; iClass++)
         _direction[iClass] = 0.;
     struct _NODE_ *n;
     for(int iTree = 0; iTree < _nTrees; iTree++) {
         n = _bootedTrees[iIteration * _nTrees + iTree];
         while (n->_isInternal) {
-            if (pnt[n->_iDimension] <= n->_cut) {
+            if (pnt[n->_iDimension] <= 1.0000005*n->_cut) {
                 n = n->_leftChildNode;
             } else {
                 n = n->_rightChildNode;
@@ -107,19 +109,19 @@ void application::evalS(double* pnt,int iIteration){
         }
     }
 }
-void application::evalV(double* pnt,int iIteration) {
+void application::evalV(float * pnt,int iIteration) {
     for (int iClass = 0; iClass < _nClass; iClass++)
         _direction[iClass] = 0.;
     struct _NODE_ *n = _bootedTrees[iIteration];
 //    _bootedTrees[iIteration]->printInfo("",true);
     while (n->_isInternal) {
-        if (pnt[n->_iDimension] <= n->_cut) {
+        if (pnt[n->_iDimension] <= 1.0000005*n->_cut) {
             n = n->_leftChildNode;
         } else {
             n = n->_rightChildNode;
         }
     }
-    double f;
+    float  f;
     int workingClass, workingClass1, workingClass2;
     f = n->_f;
     workingClass = n->_class;
@@ -149,8 +151,8 @@ void application::evalV(double* pnt,int iIteration) {
             break;
     }
 }
-void application::buildTree(const char* tree, struct _NODE_* root){
-    char op;
+void application::buildTree(QDataStream& fileDBReader, struct _NODE_* root){
+    qint8 op;
     int  iDimension,iclass;
     float cut,f;
     bool internal;
@@ -159,17 +161,15 @@ void application::buildTree(const char* tree, struct _NODE_* root){
     root->_rightChildNode=NULL;
     root->_parentNode=NULL;
     curNode=root;
-    stringstream ss;
-    ss.str(tree);
-    ss >> iDimension >> cut>>f>>internal>>iclass;
+    fileDBReader >> iDimension >> cut>>f>>internal>>iclass;
     
     root->_cut = cut;
     root->_iDimension = iDimension;
     root->_f = f;
     root->_isInternal=internal;
     root->_class=iclass;
-    while(ss.good()){
-        ss>>op;
+    while(1){
+        fileDBReader>>op;
         switch(op){
             case '(':
                 curNode->_leftChildNode=new struct _NODE_;
@@ -189,11 +189,19 @@ void application::buildTree(const char* tree, struct _NODE_* root){
                 
             case '+':
                 curNode=curNode->_rightChildNode;
-                ss>>op;
+                fileDBReader>>op;
+                break;
+            case ';':
+                break;      
+            default:
+                cout<<"Error: parse the database!";
+                exit(0);
                 break;
         }
+        if(op==';')
+            break;
         if(op=='(') {
-            ss >> iDimension >> cut>>f>>internal>>iclass;
+            fileDBReader >> iDimension >> cut>>f>>internal>>iclass;
             curNode->_cut = cut;
             curNode->_iDimension = iDimension;
             curNode->_f = f;
@@ -204,16 +212,19 @@ void application::buildTree(const char* tree, struct _NODE_* root){
 }
 bool application::init(){
     bool ret=true;
-    _fileDB=new ifstream(_fileDBName.c_str(),ifstream::in);
-    if(!_fileDB->good()){
+    QFile fileDB(_fileDBName.c_str());
+    fileDB.open(QIODevice::ReadOnly);
+    if(!fileDB.good()){
         cout<<"Can not open "<<_fileDBName<<endl;
         return false;
     }
-    int k;
-    (*_fileDB)>>k;
-    _treeType=directionFunction::_TREE_TYPE_(k);
-    (*_fileDB)>>_nClass>>_nVariable>>_nMaximumIteration>>_shrinkage;
-    _direction=new double[_nClass];
+    QDataStream fileDBReader(&fileDB);
+
+    int treeType,baseClass;
+    fileDBReader>>treeType;
+    _treeType=directionFunction::_TREE_TYPE_(treeType);
+    fileDBReader>>_nClass>>_nVariable>>_nMaximumIteration>>_shrinkage;
+    _direction=new float [_nClass];
     if(_treeType==directionFunction::_ABC_LOGITBOOST_){
         _baseClass=new int[_nMaximumIteration];
     }
@@ -235,25 +246,16 @@ bool application::init(){
             break;
     }
     _bootedTrees=new struct _NODE_*[_nTrees*_nMaximumIteration];
-    for(int iT=0;iT<_nTrees*_nMaximumIteration;iT++){
+    for(int iT=0;iT<_nTrees*_nMaximumIteration;iT++)
         _bootedTrees[iT]=new struct _NODE_;
-    }
-    string tree;
     //skip the first endl
-    getline(*_fileDB,tree);
     for(int iIteration=0;iIteration<_nMaximumIteration;iIteration++) {
         if (_treeType == directionFunction::_ABC_LOGITBOOST_) {
-            getline(*_fileDB, tree);
-            _baseClass[iIteration] = atoi(tree.c_str());
+            fileDBReader>>baseClass;
+            _baseClass[iIteration] = baseClass;
         }
-//        cout<<"------------- iIteration= "<<iIteration<<" baseClass= "<<_baseClass[iIteration]<<" -------------"<<endl;
-        for(int iTree=0;iTree<_nTrees;iTree++){
-            getline(*_fileDB,tree);
-            buildTree(tree.c_str(),_bootedTrees[iIteration*_nTrees+iTree]);
-//            cout<<"["<<iIteration*_nTrees+iTree<<"]"<<endl;
-//            _bootedTrees[iIteration*_nTrees+iTree]->printInfo("",true);
-        }
-//        cout<<endl;
+        for(int iTree=0;iTree<_nTrees;iTree++)
+            buildTree(fileDBReader,_bootedTrees[iIteration*_nTrees+iTree]);
     }
     return ret;
 }
