@@ -22,6 +22,7 @@ bitArray::bitArray(int nElement) {
     memset(_data,0,_nChar);
     
 }
+
 void bitArray::randomMask(float  r){
     for(int i=0;i<_nElement;i++)
         _index[i]=i;
@@ -33,6 +34,7 @@ void bitArray::randomMask(float  r){
         _index[ie]=_index[_nElement-iE-1];
     }
 }
+
 void bitArray::randomMask(int r){
     for(int i=0;i<_nElement;i++)
         _index[i]=i;
@@ -43,6 +45,7 @@ void bitArray::randomMask(int r){
         _index[ie]=_index[_nElement-iE-1];
     }
 }
+
 bool bitArray::test(int index){
     if(index>_nElement){
         cout<<"[Test] Caution "<<index<<" is greater than "<<_nElement<<" in bit array!"<<endl;

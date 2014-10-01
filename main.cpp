@@ -104,6 +104,10 @@ void testApplication(int argc, char** argv) {
     outf.close();
 }
 
+void testApplication2(int argc, char** argv) {
+    char* model = argv[1];
+    application app(model);
+}
 int main(int argc, char** argv) {
     //testApplication2(argc, argv);
     //return 0;
@@ -140,11 +144,11 @@ int main(int argc, char** argv) {
         t.init();
         t.start();
         t.saveResult();
-    } else if (argc == 2) {
+    } else if (argc == 4) {
         test t(atoi(argv[1]), 0);
         t.start();
     } else {
-        testApplication(argc, argv);
+        testApplication2(argc, argv);
     }
 
     return 0;

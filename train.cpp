@@ -247,20 +247,19 @@ void train::start(){
 
         _accuracyTestArray[iIteration] = _data->_testAccuracy ;
         _accuracyTrainArray[iIteration]= _data->_trainAccuracy;
-        _lossTrainArray[iIteration] = _data->_trainLoss/_nTrainEvents;
-        _lossTestArray[iIteration] = _data->_testLoss/_nTestEvents;
+        _lossTrainArray[iIteration] = _data->_trainLoss;
+        _lossTestArray[iIteration] = _data->_testLoss;
         
         if(_accuracyTestArray[iIteration]>_bestAccuracy){
             _bestAccuracy=_accuracyTestArray[iIteration];
             _bestIteration=iIteration;
         }
-
+        cout<<"Iteration "<<iIteration<<": "<<_accuracyTrainArray[iIteration]<<", "<<_accuracyTestArray[iIteration]<<", "<<_lossTrainArray[iIteration]<<", "<<_lossTestArray[iIteration]<<endl;
         _outFileReader<<_accuracyTrainArray[iIteration]<<_accuracyTestArray[iIteration]<<_lossTrainArray[iIteration]<<_lossTestArray[iIteration];
         _outFile->flush();
     }
 }
 void train::saveResult(){
-//    _data->saveF();
     _outFile->close();
     _paramFile->close();
 }

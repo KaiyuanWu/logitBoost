@@ -24,23 +24,26 @@
       </nativedebugger>
       <runprofile version="9">
         <runcommandpicklist>
-          <runcommandpicklistitem>"${OUTPUT_PATH}"   ../../datasets/trValTestData/letterT_0.dat 8 0 10</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}"   ../../datasets/trValTestData/letterTr_0.dat.model ../../datasets/trValTestData/letterTr_0</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}"  ../../datasets/trValTestData/letterTr_0.dat 8 0 10</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}"   ../../datasets/trValTestData/letterTr_0.dat.model ../../datasets/trValTestData/letterTr_0.dat</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}"   ../../datasets/trValTestData/letterTr_0.dat 8 0 10</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}"   ../../datasets/trValTestData/letterTr_0.dat 8 1 10</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}"   0</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}"   1</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}"  5 1 8 1 1000 /Users/kaiwu/Documents/MulticlassLossFunctionComparision/files/</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}"  /home/kaiwu/Documents/MulticlassLossFunctionComparision/src/test/new/covTypeTr_0.dat  /home/kaiwu/Documents/MulticlassLossFunctionComparision/src/test/old/covTypeTr_0.dat 1 21 1 8000</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" dnaTr_1.dat 0 2 100
+</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" /home/kaiwu/Documents/MulticlassLossFunctionComparision/src/AllInOne/data/dnaTr_1.dat 0 2 100</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" /home/kaiwu/Documents/MulticlassLossFunctionComparision/src/AllInOne/data/dnaTr_1.dat 0 2 1 100</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" /home/kaiwu/Documents/MulticlassLossFunctionComparision/src/AllInOne/data/dnaTr_1.datlogit_shrinkage0.100000_nLeave2_minimumNodeSize1_nMaxIteration100.model</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}"  /home/kaiwu/Documents/MulticlassLossFunctionComparision/src/test/new/covTypeTr_0.dat  /home/kaiwu/Documents/MulticlassLossFunctionComparision/src/test/old/covTypeTr_0.dat 1 21 1 8000</runcommand>
+        <runcommand>"${OUTPUT_PATH}" /home/kaiwu/Documents/MulticlassLossFunctionComparision/src/AllInOne/data/dnaTr_1.datlogit_shrinkage0.100000_nLeave2_minimumNodeSize1_nMaxIteration100.model</runcommand>
         <rundir></rundir>
         <buildfirst>true</buildfirst>
         <terminal-type>0</terminal-type>
         <remove-instrumentation>0</remove-instrumentation>
         <environment>
+          <variable name="LD_LIBRARY_PATH"
+                    value="/home/kaiwu/Downloads/root/lib:/home/kaiwu/bin/lib64:/home/kaiwu/bin/lib64:/home/kaiwu/bin/lib64:/usr/lib64/mpi/gcc/openmpi/lib64:/home/kaiwu/Qt5.0.1/5.0.1/gcc_64/lib:/home/kaiwu/Qt5.0.1/5.0.1/gcc_64/lib:/home/kaiwu/Qt5.0.1/5.0.1/gcc_64/lib:/opt/Qt5.0.1/5.0.1/gcc_64/lib"/>
         </environment>
       </runprofile>
     </conf>
@@ -75,6 +78,8 @@
         <terminal-type>0</terminal-type>
         <remove-instrumentation>0</remove-instrumentation>
         <environment>
+          <variable name="LD_LIBRARY_PATH"
+                    value="/home/kaiwu/Downloads/root/lib:/home/kaiwu/bin/lib64:/home/kaiwu/bin/lib64:/home/kaiwu/bin/lib64:/usr/lib64/mpi/gcc/openmpi/lib64:/home/kaiwu/Qt5.0.1/5.0.1/gcc_64/lib:/home/kaiwu/Qt5.0.1/5.0.1/gcc_64/lib:/home/kaiwu/Qt5.0.1/5.0.1/gcc_64/lib:/opt/Qt5.0.1/5.0.1/gcc_64/lib"/>
         </environment>
       </runprofile>
     </conf>

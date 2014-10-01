@@ -83,7 +83,7 @@ void treeScalarDirection::NODE::saveNode(QDataStream& fileDBReader){
     if(_isInternal){
         fileDBReader<<qint8('(');
         _leftChildNode->saveNode(fileDBReader);
-        fileDBReader<<qint8(')')<<qint8('+')<<qint8('()');
+        fileDBReader<<qint8(')')<<qint8('+')<<qint8('(');
         _rightChildNode->saveNode(fileDBReader);
         fileDBReader<<qint8(')');
     }
