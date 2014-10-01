@@ -121,6 +121,9 @@ int main(int argc, char** argv) {
     //    int maxIterations=atoi(argv[5]);
     //    char* prefix=argv[6];
     //    test1(jobID,iFold,nLeaves,minimumSize,maxIterations,prefix);
+    test t(1,3);
+    t.start2(0,0, 100);
+    return 0;
     if (argc == 6) {
         char* data = argv[1];
         int treeType = atoi(argv[2]);

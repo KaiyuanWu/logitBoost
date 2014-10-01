@@ -206,3 +206,72 @@ void test::start() {
     }
     outf.close();
 }
+
+void test::start2(int iExe, int iLeave, int nMaxIterations) {
+    string modelFileNamePrefix="/home/kaiwu/Documents/MulticlassLossFunctionComparision/src/AllInOne/data/";
+    string dataFileNamePrefix="/home/kaiwu/Documents/MulticlassLossFunctionComparision/src/AllInOne/data/";
+    char* datasets[] = {"covType","zip","isolet","dna"};
+    int nDatasets = sizeof (datasets) / sizeof (char*);
+    int nLeaves[] = {2, 8, 11, 21};
+    int nL = sizeof (nLeaves) / sizeof (int);
+    //_LOGITBOOST_=0,_ABC_LOGITBOOST_,_MART_,_AOSO_LOGITBOOST_,_SLOGITBOOST_
+    char* exes[] = {"logit","abcLogit",   "mart", "aosoLogit","slogit"};
+    
+    int nExes = sizeof (exes) / sizeof (char*);
+    int nTasks = 60;
+
+    char fileName[1024];
+    sprintf(fileName, "%sTr_%d.dat%s_shrinkage0.100000_nLeave%d_minimumNodeSize1_nMaxIteration%d.model",
+            datasets[_iDataset], _iTask, exes[iExe], nLeaves[iLeave], nMaxIterations);
+    string modelFile = modelFileNamePrefix + fileName;
+    sprintf(fileName, "%sTr_%d.dat", datasets[_iDataset], _iTask);
+    string dataFile = dataFileNamePrefix + fileName;
+    cout<<"Model file is: "<<endl;
+    cout<<modelFile<<endl;
+    cout<<"Datafile is: "<<endl;
+    cout<<dataFile<<endl;
+    //the Application object
+    application app(modelFile.c_str());
+    int nVariable=app._nVariable;
+    int nClass=app._nClass;
+    int nMax=app._nMaximumIteration;
+    if(nMax!=nMaxIterations){
+        cout<<"Warning max iterations in the model file is: "<<nMax<<" not "<<nMaxIterations<<endl;
+    }
+    int nEvents=getNEvents(dataFile);
+    float * x=new float [nVariable*nEvents];
+    int* l=new int[nEvents];
+    float * f=new float [nClass*nEvents];
+    //reset f
+    memset(f,0,sizeof(float )*nClass*nEvents);
+    //read in data
+    ifstream infile(dataFile.c_str(),ifstream::in);
+    for(int iEvent=0;iEvent<nEvents;iEvent++){
+        for(int iV=0;iV<nVariable;iV++)
+            infile>>x[iEvent*nVariable+iV];
+        infile>>l[iEvent];
+    }
+    
+    for(int iIteration=0;iIteration<nMaxIterations;iIteration++){
+        float  accuracy,maxF;
+        int maxI=0;
+        accuracy=0.;
+        for(int iEvent=0;iEvent<nEvents;iEvent++){
+            maxF=-1.e300;
+            maxI=0;
+            app.eval(x+iEvent*nVariable,iIteration);
+            for(int iClass=0;iClass<nClass;iClass++){
+                f[iEvent*nClass+iClass]+=app._direction[iClass];
+                if(f[iEvent*nClass+iClass]>maxF){
+                    maxF=f[iEvent*nClass+iClass];
+                    maxI=iClass;
+                }
+            }
+            if(maxI==l[iEvent])
+                accuracy+=1.;
+        }
+        accuracy/=nEvents;
+        cout<<iIteration<<": "<<accuracy<<endl;
+    }
+
+}

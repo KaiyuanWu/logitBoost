@@ -19,6 +19,7 @@ public:
     test(int iTask,int iDataset);
     test(const test& orig);
     void start();
+    void start2(int iExe,int iLeave, int nMaxIterations);
     virtual ~test();
 private:
     int _iTask;

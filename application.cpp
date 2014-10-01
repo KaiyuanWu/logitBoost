@@ -255,13 +255,13 @@ bool application::init(){
         for(int iTree=0;iTree<_nTrees;iTree++)
             buildTree(fileDBReader,_bootedTrees[iIteration*_nTrees+iTree]);
     }
-    //output the tree structure
-    for(int iIteration=0;iIteration<_nMaximumIteration;iIteration++){
-        cout<<"Iteration "<<iIteration<<": "<<endl;
-        for(int iTree=0;iTree<_nTrees;iTree++){
-            cout<<"=================  Tree "<<iTree<<"  ===================="<<endl;
-            _bootedTrees[iTree]->printInfo("",false);
-        }
-    }
+//    //output the tree structure
+//    for(int iIteration=0;iIteration<_nMaximumIteration;iIteration++){
+//        cout<<"Iteration "<<iIteration<<": "<<endl;
+//        for(int iTree=0;iTree<_nTrees;iTree++){
+//            cout<<"=================  Tree "<<iTree<<"  ===================="<<endl;
+//            _bootedTrees[iTree]->printInfo("",false);
+//        }
+//    }
     return ret;
 }
